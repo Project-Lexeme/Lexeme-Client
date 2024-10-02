@@ -15,19 +15,16 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
 
     #image = Image.open(filepath)
     image = cv.imread(filepath)
-    if preprocess_image:
+    if preprocessing == True:
         image = preprocess_image(image)
     else:
         image = cv.imread(filepath)
 
     d = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang=language)
 
-
-
     if print_confidence_levels:
         for i, w in enumerate(d['conf']):
             print(f"{d['text'][i]} with confidence {d['conf'][i]}")
-
 
     text = ''.join(d['text'])
     if minimum_confidence != None:
@@ -50,6 +47,7 @@ def filter_low_confidence(data: dict, min_confidence: int) -> list:
             filtered_data.append(data['text'][i])
 
     filtered_text = ''.join(filtered_data)
+    print(filtered_text)
     return filtered_text
 
 def display_text_box_image(data: dict, img: np.array) -> None:
@@ -77,18 +75,42 @@ def preprocess_image(img: np.array) -> np.array:
     # Crop the image
     cropped_image = img[start_row:end_row, start_col:end_col]
     cropped_image = cv.cvtColor(cropped_image, cv.COLOR_BGR2GRAY)
+    #cropped_image = cv.cvtColor(cropped_image, cv.IMREAD_GRAYSCALE)
 
     # Optionally, display the cropped image
-    cv.imshow('Cropped Image', cropped_image)
+    # cv.imshow('Cropped Image', cropped_image)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
+    
+    # laplacian = cv.Laplacian(cropped_image,cv.CV_64F, ksize=3, scale=2)
+    
+    _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
+    #thresh = 255 - thresh
+    cv.imshow('threshold', thresh)
     cv.waitKey(0)
-    cv.destroyAllWindows()
-    ret1, th1 = cv.threshold(cropped_image,127,255,cv.THRESH_BINARY)
-    ret1, th1 = cv.threshold(cropped_image,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
-    preprocessed_image = th1
+
+    plt.clf()
+    
+    # Find contours
+    # contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    
+    # img2 = thresh
+    # cv.drawContours(img2, contours, -1, (0, 255, 0), 1) 
+    # cv.imshow('OG', thresh)
+    # cv.imshow('contours', img2)
+    # cv.waitKey(0)
+
+
+    ### inverts color
+    preprocessed_image =thresh#cv.convertScaleAbs(thresh)
+    
+    #cv.convertScaleAbs(laplacian)
+
     return preprocessed_image
 
 
 
 language = "chi_sim"
 #preprocess_image("E:/ProjectLexeme_Server/uploads/Screenshot.png")
-read_text_from_image(filepath="E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=True, minimum_confidence=10, print_confidence_levels=True)
+
+read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=70, print_confidence_levels=False)
