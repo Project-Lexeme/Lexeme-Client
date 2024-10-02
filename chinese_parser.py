@@ -1,19 +1,29 @@
 import pytesseract
 from PIL import Image
 import matplotlib.pyplot as plt
-import cv2
+import cv2 as cv
+import numpy as np
 
 pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-def read_text_from_image(filepath: str, language: str, **kwargs) -> str: 
+def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
     # returns string of the text detected in the image
 
     minimum_confidence = kwargs.get('minimum_confidence')
     print_confidence_levels = kwargs.get('print_confidence_levels')
     display_text_boxes = kwargs.get('display_text_boxes')
 
-    image = Image.open(filepath)
+    #image = Image.open(filepath)
+    if preprocess_image:
+        image = preprocess_image(filepath)
+    else:
+        image = cv.imread(filepath)
+    
+    
+
     d = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang=language)
+
+
 
     if print_confidence_levels:
         for i, w in enumerate(d['conf']):
@@ -25,7 +35,7 @@ def read_text_from_image(filepath: str, language: str, **kwargs) -> str:
         text = filter_low_confidence(d, minimum_confidence)
 
     print(text) 
-    
+
     if display_text_boxes == True: 
         display_text_box_image(d, filepath)
 
@@ -45,16 +55,24 @@ def filter_low_confidence(data: dict, min_confidence: int) -> list:
 
 def display_text_box_image(data: dict, filepath: str) -> None:
     # displays text boxes all neat-like
-    img = cv2.imread(filepath)
+    img = cv.imread(filepath)
     n_boxes = len(data['level'])
     for i in range(n_boxes):
         (x, y, w, h) = (data['left'][i], data['top'][i], data['width'][i], data['height'][i])
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    cv2.imshow('img', img)
-    cv2.waitKey(0)
+    cv.imshow('img', img)
+    cv.waitKey(0)
     return
+
+def preprocess_image(filepath: np.array) -> np.array:
+
+    img = cv.imread(filepath, cv.IMREAD_GRAYSCALE)
+    #
+    return img
+
 
 
 language = "chi_sim"
-read_text_from_image(filepath="E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, display_text_boxes=True, minimum_confidence=90, print_confidence_levels=True)
+#preprocess_image("E:/ProjectLexeme_Server/uploads/Screenshot.png")
+read_text_from_image(filepath="E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=True, minimum_confidence=80, print_confidence_levels=False)
