@@ -15,6 +15,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
@@ -42,6 +43,10 @@ def upload_image():
 def get_uploaded_file(filename):
     # conveyor belt the images
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+
+# @app.route('/LLMResponse')
+# def handleLLMResponse()
 
 
 if __name__ == '__main__':

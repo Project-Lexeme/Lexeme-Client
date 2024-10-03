@@ -3,6 +3,7 @@ from spacy.pipeline.dep_parser import DEFAULT_PARSER_MODEL
 import io
 import csv
 import random
+import pandas as pd
 
 # this prompt-generating script needs to take in a string, whether it be full sentences or whatever our OCR thing can gen up
 # figure out what parts of speech are in there to derive nouns, verbs, etc. into meaningful prompts
@@ -14,6 +15,26 @@ import random
 # when this screencap gets to the server, process each image individually and add them as row to the CSV in here
 
 
+
+# def generate_from_sentence(sentence):
+#     prompts = []
+#     for s in sentence:
+#         prompt = call_function_below(s)
+#         prompts.append(prompt)
+#    return prompts
+
+# def find_noun_in_sentence():
+    
+    
+#     return noun
+
+# def generate_from_noun_and_scaffolded_prompt():
+    
+#     return prompt
+
+
+
+# need to take in ONE STRING/ONE SENTENCE
 def generate_prompts_from_scaffolded_prompts_and_sentences(scaffolded_prompts_csv_filename: str, sample_sentences_csv_filename: str) -> list:
     nlp = spacy.load("zh_core_web_sm")
     chinese_samples = load_chinese_samples_csv(sample_sentences_csv_filename)
@@ -36,7 +57,7 @@ def generate_prompts_from_scaffolded_prompts_and_sentences(scaffolded_prompts_cs
         list_of_prompts.append(f_str)
         print(f_str)
 
-    return list_of_prompts
+    return list_of_prompts # need to return ONE PROMPT
 
 
 def load_chinese_samples_csv(file_name: str) -> list:
@@ -54,4 +75,20 @@ def load_scaffolded_prompts(file_name: str) -> list:
         for s in scaffolded_prompts:
             list_of_scaffolded_prompts.append(s)
     return list_of_scaffolded_prompts
+
+
+
+# process each image individually and add them as row to the CSV in here
+
+# in unity game, create a timer that sends a screengrab every second
+# when this screencap gets to the server, process each image individually and add them as row to the CSV in here
+def save_prompts(list_of_prompts: list): 
+    df = pd.Series(list_of_prompts)
+    df2 = pd.read_csv('prompts.csv').iloc[:,0]
+    concat_df = pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True)
+    concat_df.to_csv('prompts.csv', index=False)
+    
+    
+
+save_prompts(list_of_prompts=["kajsndkj", "for real though i'm nervous this doesn't work", "recall"])
 
