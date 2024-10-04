@@ -4,16 +4,6 @@ import io
 import csv
 import random
 
-# this prompt-generating script needs to take in a string, whether it be full sentences or whatever our OCR thing can gen up
-# figure out what parts of speech are in there to derive nouns, verbs, etc. into meaningful prompts
-# these parts of speech need to be stored in a database-like object (could just be a .csv)
-# further thought could be given to what to do with these sentences/fragments that are spit out by OCR.
-# process each image individually and add them as row to the CSV in here
-
-# in unity game, create a timer that sends a screengrab every second
-# when this screencap gets to the server, process each image individually and add them as row to the CSV in here
-
-
 def generate_prompts_from_scaffolded_prompts_and_sentences(scaffolded_prompts_csv_filename: str, sample_sentences_csv_filename: str) -> list:
     nlp = spacy.load("zh_core_web_sm")
     chinese_samples = load_chinese_samples_csv(sample_sentences_csv_filename)
