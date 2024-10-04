@@ -42,7 +42,6 @@ def upload_image():
     if file.filename == '':
         return 'No selected file', 400
     
-    # could conveyor belt images here
     # Save the file to the designated folder
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path)
@@ -54,7 +53,6 @@ def upload_image():
 
 @app.route('/uploads/<filename>')
 def get_uploaded_file(filename):
-    # conveyor belt the images
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 

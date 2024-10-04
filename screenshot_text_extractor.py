@@ -108,6 +108,5 @@ def preprocess_image(img: np.array) -> np.array:
 
 
 language = "chi_sim"
-#preprocess_image("E:/ProjectLexeme_Server/uploads/Screenshot.png")
 
 # read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=70, print_confidence_levels=False)
