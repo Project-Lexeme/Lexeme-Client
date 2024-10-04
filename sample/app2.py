@@ -67,7 +67,7 @@ def await_post():
 
         # Post the processed data to another server
         try:
-            post_url = "http://127.0.0.1:5001"  # Assuming this is the URL from post.py
+            post_url = "http://127.0.0.1:5001/"  # Assuming this is the URL from post.py
             post_response = requests.post(post_url, json=response)
             if post_response.status_code == 200:
                 print("Successfully posted processed data to server")
