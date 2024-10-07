@@ -9,7 +9,7 @@ import LLMserver
 
 
 app = Flask(__name__)
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'

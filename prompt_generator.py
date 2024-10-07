@@ -1,5 +1,4 @@
 import spacy
-from spacy.pipeline.dep_parser import DEFAULT_PARSER_MODEL
 import io
 import csv
 import random
@@ -15,16 +14,15 @@ import pandas as pd
 # when this screencap gets to the server, process each image individually and add them as row to the CSV in here
 
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: str) -> list:
-    nlp = spacy.load("zh_core_web_sm")
-    nouns = []
+def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: str, nlp: spacy.Language) -> list:
+    parts_of_speech = []
     doc = nlp(sentence)
     for token in doc:
         #print(f"Token: {token.text}, POS: {token.pos_}, Dependency: {token.dep_}, Head: {token.head.text}") # Lemma: {token.lemma_} <- not used in Chinese
         if token.pos_ == part_of_speech:
             #TODO: get rid of nouns that just don't make damn sense
-            nouns.append(token.text)
-    return nouns
+            parts_of_speech.append(token.text)
+    return parts_of_speech
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
 def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts_csv_filename: str) -> list:
@@ -56,11 +54,79 @@ def save_prompts(list_of_prompts: list):
     df2 = pd.read_csv('prompts.csv').iloc[:,0]
     concat_df = pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True)
     concat_df.to_csv('prompts.csv', index=False)
-    
-    
-def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech='NOUN'): # defaults to noun, not sure if ideal behavior
-    assert len(find_parts_of_speech_in_sentence(sentence, part_of_speech)) > 0, "did not find any target parts of speech"
-    noun = find_parts_of_speech_in_sentence(sentence, part_of_speech)[0]
-    prompt = format_prompts_from_term_and_scaffolded_prompt(noun, "beginner_scaffolded_prompts.csv")[0] 
-    return prompt
 
+def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language):
+    target_vectors = []
+    doc = nlp(sentence)
+    for target in target_parts_of_speech:
+        target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
+    
+    
+def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random'): 
+    '''
+    returns a formatted string prompt with target part of speech
+
+    args:
+        sentence - string in target language
+        
+        part_of_speech -    ADJ: adjective
+                            ADP: adposition
+                            ADV: adverb
+                            AUX: auxiliary
+                            CCONJ: coordinating conjunction
+                            DET: determiner
+                            INTJ: interjection
+                            NOUN: noun
+                            NUM: numeral
+                            PART: particle
+                            PRON: pronoun
+                            PROPN: proper noun
+                            PUNCT: punctuation
+                            SCONJ: subordinating conjunction
+                            SYM: symbol
+                            VERB: verb
+                            X: other
+        
+        nlp - spacy.Language, specifically the one you're using in the program - this is passed in as arg so that it can be loaded in server script and not reloaded everytime a prompt is generated
+        
+        target_term -       'random' returns random
+                            'first'
+                            'last'
+                            'vector' is PLANNED to compare whole sentence versus individual token vector to find the most impactful target_term in the sentence
+        
+        prompt -            'random' returns random
+                            int-type returns corresponding index location of scaffolded prompts
+    '''
+
+
+    assert len(find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)) > 0, "did not find any target parts of speech"
+    target_parts_of_speech = find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)
+    
+    print(f'Here are the {part_of_speech}s: {target_parts_of_speech}')
+    
+    if target_term=="random":
+        max_length = len(target_parts_of_speech)-1
+        target_part_of_speech = target_parts_of_speech[random.randint(0, max_length)] # returns a random target part of speech
+
+    elif target_term=='first':
+        target_part_of_speech = target_parts_of_speech[0]
+
+    elif target_term=='last':
+        target_part_of_speech = target_parts_of_speech[-1]
+
+    # elif target_term=='vector':
+    #     target_part_of_speech = find_greatest_vector_in_sentence(sentence, target_parts_of_speech, nlp)
+
+    prompts = format_prompts_from_term_and_scaffolded_prompt(target_part_of_speech, "beginner_scaffolded_prompts.csv")
+
+    if prompt=="random":
+        max_length = len(prompts)-1
+        formatted_prompt = prompts[random.randint(0, max_length)] # returns a random target part of speech
+
+    elif type(prompt)==int:
+        formatted_prompt = prompts[prompt]
+    
+    return formatted_prompt
+
+sentence = '啊，我猜他可能一只手往塞着披萨，另一只手看管。、要的是了，正在招人有找到了人SupAheod'
+print(generate_prompt_from_sentence_and_part_of_speech(sentence, 'VERB', spacy.load("zh_core_web_sm")))
