@@ -26,6 +26,10 @@ def run_demo():
     print(f'The prompt is: "{prompt}"')
     LLMserver.post_prompt_to_LLM(prompt)
 
+@app.route('/button_pressed', methods=['GET'])
+def help_button_pressed():
+    print("Button was pressed")
+    return "Button Pressed!"
 
 @app.route('/upload', methods=['POST'])
 def upload_image():

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Button</title>
+    <script>
+        function buttonClicked() {
+            fetch('http://localhost:5000/help_button_pressed') // this is where help_button_pressed in app.py is called 
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+    <button onclick="buttonClicked()">Help me understand the most recent text!</button>
+</body>
+</html>
