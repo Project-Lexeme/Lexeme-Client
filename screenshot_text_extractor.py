@@ -33,7 +33,7 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
     if display_text_boxes == True: 
         display_text_box_image(d, image)
 
-       
+    print(text)
     return text
 
 def filter_low_confidence(data: dict, min_confidence: int) -> list:
@@ -55,8 +55,8 @@ def display_text_box_image(data: dict, img: np.array) -> None:
         (x, y, w, h) = (data['left'][i], data['top'][i], data['width'][i], data['height'][i])
         cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    # cv.imshow('img', img)
-    # cv.waitKey(0)
+    cv.imshow('img', img)
+    cv.waitKey(0)
     return
 
 def preprocess_image(img: np.array) -> np.array:
@@ -109,4 +109,4 @@ def preprocess_image(img: np.array) -> np.array:
 
 language = "chi_sim"
 
-# read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=70, print_confidence_levels=False)
+read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=60, print_confidence_levels=False)
