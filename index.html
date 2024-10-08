@@ -3,17 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Help Button</title>
-    <script>
-        function buttonClicked() {
-            fetch('http://localhost:5000/help_button_pressed') // this is where help_button_pressed in app.py is called 
-                .then(response => response.text())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
+    <title>Dynamic Dropdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
         }
-    </script>
+        #dropdown {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <button onclick="buttonClicked()">Help me understand the most recent text!</button>
+
+<button id="fetch-button">Fetch Choices</button>
+<select id="dropdown"></select>
+<button id="submit-button" style="display: none;">Submit Choice</button>
+<div id="response"></div>
+
+<script>
+    document.getElementById('fetch-button').addEventListener('click', function() {
+        fetch('/choices')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const dropdown = document.getElementById('dropdown');
+                dropdown.innerHTML = ''; // Clear previous options
+                data.forEach(choice => {
+                    const option = document.createElement('option');
+                    option.value = choice;
+                    option.textContent = choice;
+                    dropdown.appendChild(option);
+                });
+                dropdown.style.display = 'block'; // Show dropdown
+                document.getElementById('submit-button').style.display = 'inline'; // Show submit button
+            })
+            .catch(error => console.error('Error fetching choices:', error));
+    });
+
+    document.getElementById('submit-button').addEventListener('click', function() {
+        const dropdown = document.getElementById('dropdown');
+        const selectedChoice = dropdown.value;
+
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ choice: selectedChoice })  // Send the selected choice as JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('response').textContent = data.message;
+        })
+        .catch(error => console.error('Error submitting choice:', error));
+    });
+</script>
+
 </body>
 </html>

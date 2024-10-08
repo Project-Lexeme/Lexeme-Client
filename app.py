@@ -3,6 +3,7 @@ import spacy
 from PIL import Image
 from io import BytesIO
 import os
+import spacy
 import screenshot_text_extractor, prompt_generator
 import LLMserver
 # import typing 
@@ -26,10 +27,10 @@ def run_demo():
     print(f'The prompt is: "{prompt}"')
     LLMserver.post_prompt_to_LLM(prompt)
 
-@app.route('/button_pressed', methods=['GET'])
-def help_button_pressed():
-    print("Button was pressed")
-    return "Button Pressed!"
+@app.route('/choices', methods=['GET'])
+def get_choices():
+    choices = ['汉字', '律师', '菊花', '比萨'] # TO DO: Make this legit later
+    return jsonify(choices)
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
@@ -53,16 +54,27 @@ def upload_image():
     #run_demo()
 
     return jsonify({'message': 'Image received and processed'}), 200
+
+
+@app.route('/submit', methods=['POST'])
+def submit_choice():
+    data = request.get_json()  # Get the JSON data from the request body
+    selected_choice = data.get('choice')
+    print(selected_choice)
+    scaffolded_prompts =  prompt_generator.load_scaffolded_prompts("beginner_scaffolded_prompts.csv") ## here
     
+    response = {"message": f"You selected: {selected_choice}"} ## TODO: change response
+    return jsonify(response)
 
 @app.route('/uploads/<filename>')
 def get_uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-# @app.route('/LLMResponse')
-# def handleLLMResponse()
-
+@app.route('/')
+def home():
+    return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
+    nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)
