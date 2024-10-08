@@ -1,13 +1,21 @@
 import requests
-import prompt_generator
+from PIL import Image
 
 
-def sample_post():
-    url = "http://127.0.0.1:5000"
-    text = {"text": "Hello world"}
-    requests.post(url, json=text)
+## currently broken
+
+def upload_screenshot(url):
+    # Get the screenshot as bytes
+    with Image.open("E:/ProjectLexeme_Server/uploads/Screenshot.png") as screenshot:
+        screenshot_bytes = screenshot.tobytes()
+    # Prepare the files dictionary
+    files = {'image': ('Screenshot.png', screenshot_bytes, 'image/png')}
     
+    # Send the POST request
+    response = requests.post(url, files=files)
+    
+    # Print the response from the server
+    print(response.json())
 
-prompt_generator.generate_prompts_from_scaffolded_prompts_and_sentences("beginner_scaffolded_prompts.csv", 'chinese_samples.csv')
-
-#sample_post()
+if __name__ == '__main__':
+    upload_screenshot('http://127.0.0.1:5000/upload')

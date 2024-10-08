@@ -6,7 +6,11 @@ import os
 import spacy
 import screenshot_text_extractor, prompt_generator
 import LLMserver
-# import typing 
+import random
+
+
+# TODO: add app.route for LLM response and <div> object in index.html
+
 
 
 app = Flask(__name__)
@@ -18,10 +22,10 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def run_demo():
+def run_demo_with_LLM():
     ### DEMO PURPOSES ###
     language = 'chi_sim'
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
+    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=50)
     
     prompt = prompt_generator.generate_prompt_from_sentence_and_part_of_speech(text)
     print(f'The prompt is: "{prompt}"')
@@ -29,7 +33,8 @@ def run_demo():
 
 @app.route('/choices', methods=['GET'])
 def get_choices():
-    choices = ['汉字', '律师', '菊花', '比萨'] # TO DO: Make this legit later
+    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
+    choices = prompt_generator.find_parts_of_speech_in_sentence(text, 'NOUN', nlp) # TO DO: Make this legit later
     return jsonify(choices)
 
 @app.route('/upload', methods=['POST'])
@@ -55,15 +60,18 @@ def upload_image():
 
     return jsonify({'message': 'Image received and processed'}), 200
 
+# TODO: add app.route for LLM response and <div> object in index.html HERE
 
 @app.route('/submit', methods=['POST'])
 def submit_choice():
     data = request.get_json()  # Get the JSON data from the request body
     selected_choice = data.get('choice')
     print(selected_choice)
-    scaffolded_prompts =  prompt_generator.load_scaffolded_prompts("beginner_scaffolded_prompts.csv") ## here
+    scaffolded_prompts =  prompt_generator.load_scaffolded_prompts("beginner_scaffolded_prompts.csv")
+    scaffolded_prompt = scaffolded_prompts[random.randint(0,len(scaffolded_prompts)-1)][0] 
+    prompt = scaffolded_prompt.format(selected_choice) ## here
     
-    response = {"message": f"You selected: {selected_choice}"} ## TODO: change response
+    response = {"message": f"This is your prompt: {prompt}"} ## TODO: change response
     return jsonify(response)
 
 @app.route('/uploads/<filename>')
@@ -76,5 +84,6 @@ def home():
     return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
+    language = 'chi_sim'
     nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)

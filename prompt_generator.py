@@ -128,5 +128,5 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     
     return formatted_prompt
 
-sentence = '啊，我猜他可能一只手往塞着披萨，另一只手看管。、要的是了，正在招人有找到了人SupAheod'
-print(generate_prompt_from_sentence_and_part_of_speech(sentence, 'VERB', spacy.load("zh_core_web_sm")))
+#sentence = '啊，我猜他可能一只手往塞着披萨，另一只手看管。、要的是了，正在招人有找到了人SupAheod'
+#print(generate_prompt_from_sentence_and_part_of_speech(sentence, 'VERB', spacy.load("zh_core_web_sm")))

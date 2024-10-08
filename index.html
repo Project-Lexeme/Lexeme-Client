@@ -8,13 +8,16 @@
         body {
             font-family: Arial, sans-serif;
         }
-        #dropdown {
-            display: none;
-            margin-top: 10px;
+        #content {
+            display: none; /* Initially hide the content */
+        }
+        #response {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+
 
 <button id="fetch-button">Fetch Choices</button>
 <select id="dropdown"></select>
@@ -22,6 +25,7 @@
 <div id="response"></div>
 
 <script>
+    // Function to show content
     document.getElementById('fetch-button').addEventListener('click', function() {
         fetch('/choices')
             .then(response => {
@@ -54,14 +58,18 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ choice: selectedChoice })  // Send the selected choice as JSON
+            body: JSON.stringify({ choice: selectedChoice })
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('response').textContent = data.message;
+            document.getElementById('response').textContent = data.message; // Update the response div
         })
         .catch(error => console.error('Error submitting choice:', error));
     });
+
+    // Call handleUpload when needed, e.g., after a certain action
+    // For demonstration, we'll call it after 5 seconds
+    // setTimeout(handleUpload, 5000); // Simulate an upload call after 5 seconds // UNCOMMENT THIS to dummy call upload handle, which WILL RESULT in bad posts in terminal
 </script>
 
 </body>
