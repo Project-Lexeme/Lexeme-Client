@@ -63,6 +63,9 @@
         .then(response => response.json())
         .then(data => {
             document.getElementById('response').textContent = data.message; // Update the response div
+
+            // Redirect to /lesson after displaying the message
+            window.location.href = `/lesson?choice=${encodeURIComponent(selectedChoice)}`; // Redirects to the /lesson page
         })
         .catch(error => console.error('Error submitting choice:', error));
     });

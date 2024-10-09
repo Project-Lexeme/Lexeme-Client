@@ -19,4 +19,4 @@ def post_prompt_to_LLM(prompt:str):
     )
 
     print(completion.choices[0].message.content)
-    return
+    return completion.choices[0].message.content
