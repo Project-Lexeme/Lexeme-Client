@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 import numpy as np
 
-pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe" # 
 
 def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
     # returns string of the text detected in the image
@@ -33,7 +33,7 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
     if display_text_boxes == True: 
         display_text_box_image(d, image)
 
-       
+    print(text)
     return text
 
 def filter_low_confidence(data: dict, min_confidence: int) -> list:
@@ -55,8 +55,8 @@ def display_text_box_image(data: dict, img: np.array) -> None:
         (x, y, w, h) = (data['left'][i], data['top'][i], data['width'][i], data['height'][i])
         cv.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    # cv.imshow('img', img)
-    # cv.waitKey(0)
+    cv.imshow('img', img)
+    cv.waitKey(0)
     return
 
 def preprocess_image(img: np.array) -> np.array:
@@ -74,28 +74,7 @@ def preprocess_image(img: np.array) -> np.array:
     cropped_image = cv.cvtColor(cropped_image, cv.COLOR_BGR2GRAY)
     #cropped_image = cv.cvtColor(cropped_image, cv.IMREAD_GRAYSCALE)
 
-    # Optionally, display the cropped image
-    # cv.imshow('Cropped Image', cropped_image)
-    # cv.waitKey(0)
-    # cv.destroyAllWindows()
-    
-    # laplacian = cv.Laplacian(cropped_image,cv.CV_64F, ksize=3, scale=2)
-    
     _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
-    #thresh = 255 - thresh
-    # cv.imshow('threshold', thresh)
-    # cv.waitKey(0)
-
-    # plt.clf()
-    
-    # Find contours
-    # contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    
-    # img2 = thresh
-    # cv.drawContours(img2, contours, -1, (0, 255, 0), 1) 
-    # cv.imshow('OG', thresh)
-    # cv.imshow('contours', img2)
-    # cv.waitKey(0)
 
 
     ### inverts color
@@ -109,4 +88,4 @@ def preprocess_image(img: np.array) -> np.array:
 
 language = "chi_sim"
 
-# read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=70, print_confidence_levels=False)
+#read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=60, print_confidence_levels=False)

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+    <script>
+        function sendResponse(response) {
+            fetch('/submit-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ response: response , choice: choice})
+            })
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = '/'; 
+                    //return res.json(); // Optional: handle server response
+                    
+                } else {
+                    throw new Error('Error sending response');
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Lesson Page</h1>
+    <div id="lesson-content">
+        Loading lesson content...
+        <div id="choice-message"></div>
+        <div id="llm-response">{{ llm_response | safe }}</div> <!-- Rendered from Flask -->
+    </div>
+
+    <script>
+        // Get the choice from the query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const choice = urlParams.get('choice');
+
+        // Display the choice in the lesson content area
+        const choiceMessage = document.getElementById('choice-message');
+        if (choice) {
+            choiceMessage.textContent = `You navigated to the lesson with choice: ${choice}`;
+        } else {
+            choiceMessage.textContent = 'No choice was provided.';
+        }
+    </script>
+    
+    <h3>Please respond:</h3>
+    <button onclick="sendResponse('yes')">Yes</button>
+    <button onclick="sendResponse('no')">No</button>
+
+</body>
+</html>

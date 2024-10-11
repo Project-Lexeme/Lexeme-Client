@@ -12,11 +12,11 @@ def post_prompt_to_LLM(prompt:str):
     completion = client.chat.completions.create(
     model="mradermacher/aya-23-8B-GGUF",
     messages=[
-        {"role": "system", "content": "Always answer in rhymes."},
+        {"role": "system", "content": "You are a Chinese teacher teaching simplified Chinese to English learners. You always provide answers primarily in simplified Chinese but using easy-to-understand terms and examples. You occasionally use an English sentence to explain a difficult concept."},
         {"role": "user", "content": f"{prompt}"}
     ],
-    temperature=0.7,
+    temperature=0.3,
     )
 
     print(completion.choices[0].message.content)
-    return
+    return completion.choices[0].message.content
