@@ -16,22 +16,35 @@
         h1 {
             color: #333;
         }
-        #lesson-content {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-        }
     </style>
+    <script>
+        function sendResponse(response) {
+            fetch('/submit-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ response: response , choice: choice})
+            })
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = '/'; 
+                    //return res.json(); // Optional: handle server response
+                    
+                } else {
+                    throw new Error('Error sending response');
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+        }
+    </script>
 </head>
 <body>
-
     <h1>Lesson Page</h1>
     <div id="lesson-content">
         Loading lesson content...
         <div id="choice-message"></div>
-        <div id="llm-response">{{ llm_response | safe}}</div> <!-- Updated here -->
+        <div id="llm-response">{{ llm_response | safe }}</div> <!-- Rendered from Flask -->
     </div>
 
     <script>
@@ -47,6 +60,10 @@
             choiceMessage.textContent = 'No choice was provided.';
         }
     </script>
+    
+    <h3>Please respond:</h3>
+    <button onclick="sendResponse('yes')">Yes</button>
+    <button onclick="sendResponse('no')">No</button>
 
 </body>
 </html>

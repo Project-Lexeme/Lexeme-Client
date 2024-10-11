@@ -23,7 +23,12 @@ def log(term: str, on: str):
         touched_terms.loc[touched_terms['Term'] == term, on] = summed
     
     touched_terms.to_csv('learner_profile.csv', index=False)
-    
+
+def get_terms(sort_by='weakest'):
+    terms_df = pd.read_csv('learner_profile.csv')
+    if sort_by == 'weakest': ## TODO: add in actual support for sorting here
+        terms = terms_df['Term'].to_list()
+    return terms
 
 #log('老师', on='Number of touches)
-log('你好', on='Number incorrect')
+#log('你好', on='Number incorrect')

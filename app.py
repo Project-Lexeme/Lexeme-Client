@@ -8,10 +8,9 @@ import random
 import logger
 
 
-# TODO: add app.route for LLM response and <div> object in index.html
-# TODO: design scaffold for definition, examples, and a question
-# 
-# DONE: add all terms to touched_terms CSV for review
+# TODO: Add in yes/no button in lesson.html for "did you learn this?"
+# TODO: Add in review drop-down in index.html and review prompts
+# TODO: check out Koboldcpp for a means to deploy LLM server 
 
 
 
@@ -24,17 +23,45 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+@app.route('/submit-response', methods=['POST']) # need to inherit choice from URL
+def log_student_response_to_lesson():
+    data = request.get_json()
+    term = data.get('choice')
+    response = data.get('response')
+    # Process the response here, e.g., update database or perform logic
+    print(f'Response received: {response}')
+    
+    if response == 'yes':
+        logger.log(term, on='Number correct')
+        return "Keep it up!"
+    elif response == 'no':
+        logger.log(term, on="Number incorrect")
+        return "I'll add it to the list of terms to review" # TODO: think about the list of terms to review  
+    return jsonify({'status': 'success', 'received': response})
+
+    # print(answer)
+    
+
 @app.route('/lesson', methods=['GET'])
-def get_lesson():
+def get_lesson(): # need to divide the multiple choice up into another prompt
     term = request.args.get('choice', 'No choice provided')
-    prompt = f"""Could you define what the term {term} means, with the definition both in simplified Chinese and English. 
-    Please give me 1 example sentence in simplified Chinese with an English description, 
+
+    # TODO: vary this prompt using the prompt generator functions
+    prompt = f"""Could you define what the term {term} means.  
+    Please give me 1 example sentence in simplified Chinese, 
     then give me a multiple choice question in simplified Chinese (without pinyin or English) 
-    asking to define {term} with the answers (again, without pinyin or English) being all single sentence definitions of other terms that relate to {term}. 
-    Please use realistic distractors but make the correct answer unambiguous. 
+    asking to define {term} with the answers (again, without pinyin or English) being all single sentence definitions of other terms. 
+    Please use realistic distractors but make the correct answer unambiguous. Please state which the correct answer is.
     Finally, end the response by asking, "Did you get it right?" but with a slight variation. Can you also add an HTML line break after each paragraph?"""
     llm_response = LLMserver.post_prompt_to_LLM(prompt)
     return render_template('lesson.html', choice=term, llm_response=llm_response)
+
+@app.route('/review-choices')
+def get_review_choices():
+    choices = logger.get_terms()    
+    return jsonify(choices)
+
 
 @app.route('/choices', methods=['GET'])
 def get_choices(part_of_speech='NOUN'):
