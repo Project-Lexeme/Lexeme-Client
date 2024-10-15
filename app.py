@@ -8,10 +8,13 @@ import random
 import logger
 
 
-# TODO: Add in yes/no button in lesson.html for "did you learn this?"
-# TODO: Add in review drop-down in index.html and review prompts
-# TODO: check out Koboldcpp for a means to deploy LLM server 
 
+# TODO: every three seconds screencap - Unity interface
+# TODO: do all OCR up-front, don't store screencaps themselves - flask server app.py
+# TODO: add text to a .csv or other data object - modify logger.py to append terms to a working csv of context
+# TODO: feed it to an LLM with a prompt explaining that it's subtitles from a movie without a lot of other context, may be multiple characters talking, take its best guess about what the situation is and explain in target language - prompt_generator.py to fuse things together
+# TODO: save the text in a file and use that for prompting later, like post - logger.py, etc. 
+# TODO: check out Koboldcpp for a means to deploy LLM server 
 
 
 app = Flask(__name__)
@@ -53,7 +56,16 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
     then give me a multiple choice question in simplified Chinese (without pinyin or English) 
     asking to define {term} with the answers (again, without pinyin or English) being all single sentence definitions of other terms. 
     Please use realistic distractors but make the correct answer unambiguous. Please state which the correct answer is.
-    Finally, end the response by asking, "Did you get it right?" but with a slight variation. Can you also add an HTML line break after each paragraph?"""
+    can you format the Questions with the term {term}
+    giving me the correct answer below given the term {term} the script under the answer column, and the correct answer has to be within the A to D answer pool
+    Finally, end the response by asking, "Did you get it right?" but with a slight variation. Can you also use an HTML paragraph formatting, one line after the next, line break after each paragraph?
+    can you make 
+    with the format "答案是：[insert answer here]"
+    
+    can you also add supplimentary information to help the language user learn the language in a simplified manner, and give a hint to the user so they can get the correct answer.
+    
+    """
+
     llm_response = LLMserver.post_prompt_to_LLM(prompt)
     return render_template('lesson.html', choice=term, llm_response=llm_response)
 
