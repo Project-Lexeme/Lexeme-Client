@@ -60,7 +60,18 @@ def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[s
     doc = nlp(sentence)
     for target in target_parts_of_speech:
         target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
+
+def generate_prompt_from_list_of_subtitles(csv_filepath: str, prompt: str) -> str:
+    '''
+    # TODO: think about whether these prompts should also come from a csv so that we can have variety
+
+    filepath - location of csv with recent subtitles
+    returns a formatted text string
+    '''
+    # TODO: take in a csv location and return a formatted text string
     
+    return ''
+
     
 def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random'): 
     '''

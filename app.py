@@ -9,7 +9,6 @@ import logger
 
 
 
-# TODO: every three seconds screencap - Unity interface
 # TODO: do all OCR up-front, don't store screencaps themselves - flask server app.py
 # TODO: add text to a .csv or other data object - modify logger.py to append terms to a working csv of context
 # TODO: feed it to an LLM with a prompt explaining that it's subtitles from a movie without a lot of other context, may be multiple characters talking, take its best guess about what the situation is and explain in target language - prompt_generator.py to fuse things together
@@ -36,10 +35,10 @@ def log_student_response_to_lesson():
     print(f'Response received: {response}')
     
     if response == 'yes':
-        logger.log(term, on='Number correct')
+        logger.log_term(term, on='Number correct')
         return "Keep it up!"
     elif response == 'no':
-        logger.log(term, on="Number incorrect")
+        logger.log_term(term, on="Number incorrect")
         return "I'll add it to the list of terms to review" # TODO: think about the list of terms to review  
     return jsonify({'status': 'success', 'received': response})
 
@@ -79,7 +78,7 @@ def get_review_choices():
 def get_choices(part_of_speech='NOUN'):
     text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
     choices = prompt_generator.find_parts_of_speech_in_sentence(text, part_of_speech, nlp) # TO DO: Make this legit later - be able to pass in POS as arg
-    for choice in choices: logger.log(choice, 'Number of touches')
+    for choice in choices: logger.log_term(choice, 'Number of touches')
     return jsonify(choices)
 
 @app.route('/upload', methods=['POST'])
@@ -101,7 +100,7 @@ def upload_image():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path)
 
-    #run_demo()
+    # need to save contents - call log_subtitle() in logger.py
 
     return jsonify({'message': 'Image received and processed'}), 200
 
