@@ -21,6 +21,7 @@
 
 <button id="fetch-from-screenshot-button">Fetch from Recent Screenshot</button>
 <button id="fetch-review-button">Get review terms</button>
+<button id="begin-recording-button">Begin recording screen</button>
 <select id="dropdown"></select>
 <button id="submit-button" style="display: none;">Submit Choice</button>
 <div id="response"></div>
@@ -93,10 +94,22 @@
         })
         .catch(error => console.error('Error submitting choice:', error));
     });
+    document.getElementById('begin-recording-button').addEventListener('click', function() {
+        fetch('/begin-recording', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: "Hello from the client!" }) // Example payload
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('response').textContent = data.message; // Update the response div
+        })
+        .catch(error => console.error('Error calling Flask function:', error));
+    });
+    
 
-    // Call handleUpload when needed, e.g., after a certain action
-    // For demonstration, we'll call it after 5 seconds
-    // setTimeout(handleUpload, 5000); // Simulate an upload call after 5 seconds // UNCOMMENT THIS to dummy call upload handle, which WILL RESULT in bad posts in terminal
 </script>
 
 </body>

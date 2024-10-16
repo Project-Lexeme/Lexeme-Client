@@ -72,17 +72,18 @@ def preprocess_image(img: np.array) -> np.array:
     # Crop the image
     cropped_image = img[start_row:end_row, start_col:end_col]
     cropped_image = cv.cvtColor(cropped_image, cv.COLOR_BGR2GRAY)
+    return cropped_image
     #cropped_image = cv.cvtColor(cropped_image, cv.IMREAD_GRAYSCALE)
 
-    _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
+    # _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
 
 
-    ### inverts color
-    preprocessed_image =thresh#cv.convertScaleAbs(thresh)
+    # ### inverts color
+    # preprocessed_image =thresh#cv.convertScaleAbs(thresh)
     
     #cv.convertScaleAbs(laplacian)
-
-    return preprocessed_image
+    
+    #return preprocessed_image
 
 
 

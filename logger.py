@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+
 def log_term(term: str, on: str):
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
@@ -30,10 +31,12 @@ def get_terms(sort_by='weakest'):
         terms = terms_df['Term'].to_list()
     return terms
 
-def log_subtitle(subtitle: str):
+def log_subtitle(subtitle: str, filepath: str):
     # TODO: add support for appending subtitles from a specific recording into a specific csv (please create new csv for each time this happens)
     # TODO: handle logic for eliminating duplicate subtitles
     # TODO: call log_term to add target POS to touched_terms.csv??
+    with open(filepath, 'a', encoding='utf-8') as f:
+        f.write(f'{subtitle}\n')
     return
 
 def get_subtitles_csv(filepath: str) -> list:
