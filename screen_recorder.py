@@ -4,46 +4,31 @@ import pyautogui
 import time
 import re
 import threading
-import asyncio
+import logger
+import screenshot_text_extractor
 
 
 def clean_filename(title):
     # Replace invalid characters with underscores or remove them
     return re.sub(r'[<>:"/\\|?*.]', '_', title)
 
-def capture_window(window_title):
-    try:
-        print("0")
-        print(f"{gw.getWindowsWithTitle(window_title)}")
-        window = gw.getWindowsWithTitle(window_title)[0]
-        print("1")
-        window.activate()
-        print("2")
-        time.sleep(1)
-        screenshot = pyautogui.screenshot(region=(window.left, window.top, window.width, window.height))
-        print("3")
-        current_time = time.localtime()
-        print("4")
-        current_time = time.strftime("%H:%M:%S", current_time)
-        filename = window_title[:20] + current_time
-        filename = clean_filename(filename)
-        screenshot.save(f"E:/projectlexeme_server/uploads/Screenshot.png")
-        print(f"Screenshot saved at /uploads/Screenshot.png")
-    except IndexError:
-        print(f"Window with title '{window_title}' not found.")
-
-    asyncio.sleep(3)
 
 
 
 
 class ScreenRecorder:
-    def __init__(self):
+    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps):
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
         self.window_title = self.select_window()
         self.window = gw.getWindowsWithTitle(self.window_title)[0]
+        self.language = language
+        self.use_preprocessing = use_preprocessing
+        self.minimum_confidence = minimum_confidence
+        self.filename = clean_filename(self.window_title[:20] + str(time.localtime().tm_yday) + str(time.localtime().tm_hour)+ str(time.localtime().tm_min))
+        self.config = config
+        self.time_between_screencaps = time_between_screencaps
 
     def capture_screen(self):
         while self.is_recording:
@@ -51,9 +36,7 @@ class ScreenRecorder:
                 if self.window:
                     left, top = self.window.left, self.window.top
                     width, height = self.window.width, self.window.height
-
-                    
-                    screenshot = pyautogui.screenshot(region=(left, top, left + width, top + height))
+                    screenshot = pyautogui.screenshot(region=(left, top, width, height))
                     current_time = time.localtime()
                     current_time = time.strftime("%H:%M:%S", current_time)
                     filename = self.window_title[:20] + current_time
@@ -62,8 +45,8 @@ class ScreenRecorder:
                     #print(f"Screenshot saved at /uploads/Screenshot.png")
             except Exception as e:
                 print(f"Error taking screenshot: {e}")
-            
-            time.sleep(3)
+            self.log_screencap_subtitles()
+            time.sleep(self.time_between_screencaps)
 
     def select_window(self):
         def on_button_click(window_title):
@@ -106,3 +89,7 @@ class ScreenRecorder:
                     self.record_thread = None
                 return True
             return False
+        
+    def log_screencap_subtitles(self):
+        text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        logger.log_subtitle(text, self.filename)
