@@ -8,11 +8,8 @@ import LLMserver
 import logger
 
 # TODO: feed it to an LLM with a prompt explaining that it's subtitles from a movie without a lot of other context, may be multiple characters talking, take its best guess about what the situation is and explain in target language - prompt_generator.py to fuse things together
-# TODO: save the text in a file and use that for prompting later, like post - logger.py, etc. 
 # TODO: check out Koboldcpp for a means to deploy LLM server 
 # TODO: add app.route for LLM response and <div> object in index.html HERE 
-# TODO: think about whether current choices/lessons functions can be used. 
-
 
 app = Flask(__name__)
 nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
@@ -135,6 +132,6 @@ def home():
     return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
-    recorder = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
+    recorder = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
     nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)
