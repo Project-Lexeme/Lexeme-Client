@@ -3,7 +3,7 @@ import spacy
 import os
 import spacy
 import screenshot_text_extractor, prompt_generator
-from window_selector import select_window, capture_window, clean_filename
+from window_selector import ScreenRecorder #select_window, capture_window, clean_filename,
 import LLMserver
 import random
 import logger
@@ -115,22 +115,19 @@ def upload_image():
 # TODO: add app.route for LLM response and <div> object in index.html HERE 
 # TODO: think about whether current choices/lessons functions can be used. 
 
-
-# TODO: work on begin_recording
 @app.route('/begin-recording', methods=['POST'])
-def begin_recording():
-    
-    # global running
-    # if not running:  # Check if the task is already running
-    #     running = True
-    #     asyncio.create_task(periodic_recording_async())
-    #     return jsonify({"message": "Task started!"})
-    # else:
-    #     return jsonify({"message": "Task is already running!"})
-     
-    # text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=70)
-    # logger.log_subtitle(text)
-    return
+def begin_recording(): 
+    if recorder.start_recording():
+        return jsonify({"status":"success", "message":"Recording started"})
+    return jsonify({"status":"error", "message":"Recording already started"})
+
+
+@app.route('/stop-recording', methods=['POST'])
+def stop_recording():
+    if recorder.stop_recording():
+        return jsonify({"status":"success", "message":"Recording stopped"})
+    return jsonify({"status":"error", "message":"No recording in progress"})
+   
 
 @app.route('/submit', methods=['POST'])
 def submit_choice():
@@ -154,8 +151,9 @@ def home():
 
 
 if __name__ == '__main__':
-    window = select_window()
+    #window = select_window()
     #capture_window(window)
+    recorder = ScreenRecorder()
     language = 'chi_sim'
     nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)
