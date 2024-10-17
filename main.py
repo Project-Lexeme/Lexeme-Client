@@ -132,6 +132,7 @@ def home():
     return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
-    recorder = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
+    language = 'chi-sim'
+    recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
     nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)
