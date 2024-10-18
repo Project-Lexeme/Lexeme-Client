@@ -3,22 +3,13 @@ import spacy
 import os
 import spacy
 import screenshot_text_extractor, prompt_generator
-from window_selector import select_window, capture_window, clean_filename
+from screen_recorder import ScreenRecorder #select_window, capture_window, clean_filename,
 import LLMserver
-import random
 import logger
-import asyncio
-import time
-import pygetwindow as gw
-import pyautogui
 
-
-# TODO: do all OCR up-front, don't store screencaps themselves - flask server app.py
-# TODO: add text to a .csv or other data object - modify logger.py to append terms to a working csv of context
 # TODO: feed it to an LLM with a prompt explaining that it's subtitles from a movie without a lot of other context, may be multiple characters talking, take its best guess about what the situation is and explain in target language - prompt_generator.py to fuse things together
-# TODO: save the text in a file and use that for prompting later, like post - logger.py, etc. 
 # TODO: check out Koboldcpp for a means to deploy LLM server 
-
+# TODO: add app.route for LLM response and <div> object in index.html HERE 
 
 app = Flask(__name__)
 nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
@@ -112,26 +103,18 @@ def upload_image():
 
     return jsonify({'message': 'Image received and processed'}), 200
 
-# TODO: add app.route for LLM response and <div> object in index.html HERE 
-# TODO: think about whether current choices/lessons functions can be used. 
-
-
-# TODO: work on begin_recording
 @app.route('/begin-recording', methods=['POST'])
-def begin_recording():
-    
-    # global running
-    # if not running:  # Check if the task is already running
-    #     running = True
-    #     asyncio.create_task(periodic_recording_async())
-    #     return jsonify({"message": "Task started!"})
-    # else:
-    #     return jsonify({"message": "Task is already running!"})
-     
-    # text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=70)
-    # logger.log_subtitle(text)
-    return
+def begin_recording(): 
+    if recorder.start_recording():
+        return jsonify({"status":"success", "message":"Recording started"})
+    return jsonify({"status":"error", "message":"Recording already started"})
 
+@app.route('/stop-recording', methods=['POST'])
+def stop_recording():
+    if recorder.stop_recording():
+        return jsonify({"status":"success", "message":"Recording stopped"})
+    return jsonify({"status":"error", "message":"No recording in progress"})
+   
 @app.route('/submit', methods=['POST'])
 def submit_choice():
     data = request.get_json()  # Get the JSON data from the request body
@@ -144,18 +127,12 @@ def submit_choice():
 def get_uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
-
-
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
 
-
-
 if __name__ == '__main__':
-    window = select_window()
-    #capture_window(window)
-    language = 'chi_sim'
+    language = 'chi-sim'
+    recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
     nlp = spacy.load("zh_core_web_sm")
     app.run(port=5000)
