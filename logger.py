@@ -1,7 +1,6 @@
 import pandas as pd
 
-
-def log(term: str, on: str):
+def log_term(term: str, on: str):
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
     '''
@@ -30,5 +29,29 @@ def get_terms(sort_by='weakest'):
         terms = terms_df['Term'].to_list()
     return terms
 
+def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
+    # TODO: add support for appending subtitles from a specific recording into a specific csv (please create new csv for each time this happens)
+    # TODO: handle logic for eliminating duplicate subtitles
+    # TODO: call log_term to add target POS to touched_terms.csv??
+    with open(filepath, 'a', encoding='utf-8') as f:
+        pass
+
+    if len(subtitle) > 1:
+        if drop_duplicates:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = str(f.read()).split('\n')
+                data.remove('')
+                if len(data) > 0:
+                    if data[-1] == subtitle:
+                        return
+                
+        with open(filepath, 'a', encoding='utf-8') as f:
+            f.write(f'{subtitle}\n')
+    return
+
+def get_subtitles_csv(filepath: str) -> list:
+    # TODO: get all subtitles from a .csv and return it as a list for formatting into an LLM prompt
+    return []
+
 #log('老师', on='Number of touches)
-#log('你好', on='Number incorrect')
+#print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))
