@@ -3,6 +3,7 @@ import io
 import csv
 import random
 import pandas as pd
+from logger import get_subtitles_csv
 
 # this prompt-generating script needs to take in a string, whether it be full sentences or whatever our OCR thing can gen up
 # figure out what parts of speech are in there to derive nouns, verbs, etc. into meaningful prompts
@@ -13,6 +14,33 @@ import pandas as pd
 # in unity game, create a timer that sends a screengrab every second
 # when this screencap gets to the server, process each image individually and add them as row to the CSV in here
 
+def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
+    if choice.endswith('.csv'):
+        data = get_subtitles_csv(choice)
+        prompt = f"""The following is a list of line-break-separated subtitles from a movie. 
+        There may be multiple characters in the scene talking in these subtitles. 
+        What information can you get from this exchange? Please share at least 10 sentences about this situation. 
+        Then, please share the same 10 sentence in simplified Chinese.
+        '{data}'
+        """
+        print(data)
+        return prompt
+
+    else:         
+        # TODO: vary this prompt using the prompt generator functions
+        prompt = f"""Could you define what the term {choice} means.  
+        Please give me 1 example sentence in simplified Chinese, 
+        then give me a multiple choice question in simplified Chinese (without pinyin or English) 
+        asking to define {choice} with the answers (again, without pinyin or English) being all single sentence definitions of other terms. 
+        Please use realistic distractors but make the correct answer unambiguous. Please state which the correct answer is.
+        can you format the Questions with the term {choice}
+        giving me the correct answer below given the term {choice} the script under the answer column, and the correct answer has to be within the A to D answer pool
+        Finally, end the response by asking, "Did you get it right?" but with a slight variation. 
+        Can you also use an HTML paragraph formatting, one line after the next, line break after each paragraph?
+        can you use the format "答案是：[insert answer here]"
+        can you also add supplementary information to help the language user learn the language in a simplified manner, and give a hint to the user so they can get the correct answer.
+        """
+        return prompt
 
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: str, nlp: spacy.Language) -> list:
     parts_of_speech = []

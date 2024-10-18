@@ -63,7 +63,7 @@ def display_text_box_image(data: dict, img: np.array) -> None:
     cv.waitKey(0)
     return
 
-def preprocess_image(img: np.array) -> np.array:
+def preprocess_image(img: np.array) -> np.array: # TODO: work on this
 
     height, width = img.shape[:2]
 

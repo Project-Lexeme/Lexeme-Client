@@ -60,7 +60,7 @@ class ScreenRecorder:
         self.language = language
         self.use_preprocessing = use_preprocessing
         self.minimum_confidence = minimum_confidence
-        self.filename = clean_filename(self.window_title[:20] + str(time.localtime().tm_yday) + str(time.localtime().tm_hour)+ str(time.localtime().tm_min)) + '.csv'
+        self.filename = clean_filename(self.window_title[:20] + str(time.localtime().tm_yday) + str(time.localtime().tm_hour)+ str(time.localtime().tm_min)) + '.csv'  # TODO: think about how to create folder for this
         self.config = config
         self.time_between_screencaps = time_between_screencaps
 
@@ -80,10 +80,10 @@ class ScreenRecorder:
                     left, top = self.window[0], self.window[1]
                     width, height = self.window[2] - self.window[0], self.window[3]-self.window[1]
                     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-                    current_time = time.localtime()
-                    current_time = time.strftime("%H:%M:%S", current_time)
-                    filename = self.window_title[:20] + current_time
-                    filename = clean_filename(filename)
+                    # current_time = time.localtime()
+                    # current_time = time.strftime("%H:%M:%S", current_time)
+                    # filename = self.window_title[:20] + current_time
+                    # filename = clean_filename(filename)
                     screenshot.save(f"E:/projectlexeme_server/uploads/Screenshot.png")
                     #print(f"Screenshot saved at /uploads/Screenshot.png")
             except Exception as e:

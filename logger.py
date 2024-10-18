@@ -50,8 +50,11 @@ def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
     return
 
 def get_subtitles_csv(filepath: str) -> list:
-    # TODO: get all subtitles from a .csv and return it as a list for formatting into an LLM prompt
-    return []
+    # TODO: think about how to do this in a smart systematic way for the user
+    with open(filepath, 'r', encoding='utf-8') as f:
+        data = str(f.read()).split('\n')
+        data.remove('')
+    return data
 
 #log('老师', on='Number of touches)
 #print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))
