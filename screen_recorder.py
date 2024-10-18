@@ -80,12 +80,7 @@ class ScreenRecorder:
                     left, top = self.window[0], self.window[1]
                     width, height = self.window[2] - self.window[0], self.window[3]-self.window[1]
                     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-                    # current_time = time.localtime()
-                    # current_time = time.strftime("%H:%M:%S", current_time)
-                    # filename = self.window_title[:20] + current_time
-                    # filename = clean_filename(filename)
                     screenshot.save(f"E:/projectlexeme_server/uploads/Screenshot.png")
-                    #print(f"Screenshot saved at /uploads/Screenshot.png")
             except Exception as e:
                 print(f"Error taking screenshot: {e}")
             self.log_screencap_subtitles()
@@ -95,8 +90,6 @@ class ScreenRecorder:
         def on_button_click(window_title):
             nonlocal selected_title
             selected_title = window_title
-            
-
             root.destroy()  # Close the GUI after selection
 
         root = tk.Tk()

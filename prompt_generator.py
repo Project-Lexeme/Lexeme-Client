@@ -5,22 +5,12 @@ import random
 import pandas as pd
 from logger import get_subtitles_csv
 
-# this prompt-generating script needs to take in a string, whether it be full sentences or whatever our OCR thing can gen up
-# figure out what parts of speech are in there to derive nouns, verbs, etc. into meaningful prompts
-# these parts of speech need to be stored in a database-like object (could just be a .csv)
-# further thought could be given to what to do with these sentences/fragments that are spit out by OCR.
-# process each image individually and add them as row to the CSV in here
-
-# in unity game, create a timer that sends a screengrab every second
-# when this screencap gets to the server, process each image individually and add them as row to the CSV in here
-
 def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
     if choice.endswith('.csv'):
         data = get_subtitles_csv(choice)
         prompt = f"""The following is a list of line-break-separated subtitles from a movie. 
         There may be multiple characters in the scene talking in these subtitles. 
-        What information can you get from this exchange? Please share at least 10 sentences about this situation. 
-        Then, please share the same 10 sentence in simplified Chinese.
+        What information can you get from this exchange? Please share at least 10 sentences in only simplified Chinese about this situation. 
         '{data}'
         """
         print(data)
