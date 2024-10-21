@@ -7,6 +7,8 @@ import LLMserver
 import logger
 import subprocess
 import sys
+import webbrowser
+import time
 
 '''
 TODO: check out Koboldcpp for a means to deploy LLM server 
@@ -159,4 +161,7 @@ if __name__ == '__main__':
     nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
     setup_pytesseract.setup_tessdata(language)
     recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
+    webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
+
+    
