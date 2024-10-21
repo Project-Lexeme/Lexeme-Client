@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import spacy
 import os
-import screenshot_text_extractor, prompt_generator, startup
+import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract
 from screen_recorder import ScreenRecorder 
 import LLMserver
 import logger
@@ -159,5 +159,6 @@ if __name__ == '__main__':
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()
     install_and_import_nlp_lang(nlp_lang)
     nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
+    setup_pytesseract.setup_tessdata(language)
     recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
     app.run(port=5000)
