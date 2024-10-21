@@ -67,7 +67,7 @@ class ScreenRecorder:
     def get_rectangle(self):
         root = tk.Tk()
         window = gw.getWindowsWithTitle(self.window_title)[0]
-        rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height)
+        rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height) # TODO: ensure 'left' and 'top' are actually left and top, i.e. user started at top-left corner
         root.mainloop()
         print(rect.coords)
         

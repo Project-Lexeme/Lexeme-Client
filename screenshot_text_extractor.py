@@ -3,8 +3,17 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import cv2 as cv
 import numpy as np
+import os
+import sys
 
-pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe" # 
+if getattr(sys, 'frozen', False):
+    # If running as a bundled executable
+    tesseract_cmd = os.path.join(sys._MEIPASS, 'tesseract')
+else:
+    # If running in a normal Windows Python environment
+    tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
+
+pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
 def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
     # returns string of the text detected in the image

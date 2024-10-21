@@ -1,21 +1,28 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import spacy
 import os
-import spacy
-import screenshot_text_extractor, prompt_generator
+import screenshot_text_extractor, prompt_generator, startup
 from screen_recorder import ScreenRecorder 
 import LLMserver
 import logger
+import subprocess
+import sys
 
-# TODO: check out Koboldcpp for a means to deploy LLM server 
-# TODO: add app.route for LLM response and <div> object in index.html HERE
-# TODO: review TODOs and fix things
-# TODO: look closer at how choices get passed back and forth
-# TODO: rework the subtitle.csv naming convention and work in a folder 
-# TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
-# TODO: work on screen recorder performance
-# TODO: add support for second monitor
-# TODO: think about nlp/language global variables and handle elegantly
+'''
+TODO: check out Koboldcpp for a means to deploy LLM server 
+TODO: review TODOs and fix things
+TODO: look closer at how choices get passed back and forth
+TODO: rework the subtitle.csv naming convention and work in a folder 
+TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
+TODO: work on screen recorder OCR performance
+TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
+TODO: figure out potential hang-ups for packing this thing up. To include
+    X - loading SpaCy.nlp corpus 
+    - finding pytesseract executable on machine
+        - this cmd may make this work pyinstaller --onefile --add-data "path_to_tesseract;tesseract" your_script.py
+
+'''
+
 
 app = Flask(__name__)
 nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
@@ -138,8 +145,19 @@ def get_uploaded_file(filename):
 def home():
     return send_from_directory('.', 'index.html')
 
+
+def install_and_import_nlp_lang(module_name):
+    try:
+        # Attempt to import the module as test of whether it's there
+        __import__(module_name)
+    except ImportError:
+        # If the module is not found, install it
+        print(f"{module_name} not found. Installing...")
+        subprocess.check_call([sys.executable, '-m', 'spacy', 'download', module_name])
+
 if __name__ == '__main__':
-    language = 'chi_sim'
+    language, nlp_lang, proficiency = startup.get_language_and_proficiency()
+    install_and_import_nlp_lang(nlp_lang)
+    nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
     recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
-    nlp = spacy.load("zh_core_web_sm") # TODO: is this the best practice?
     app.run(port=5000)
