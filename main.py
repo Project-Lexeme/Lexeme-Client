@@ -16,16 +16,14 @@ TODO: rework the subtitle.csv naming convention and work in a folder
 TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
 TODO: work on screen recorder OCR performance
 TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
-TODO: figure out potential hang-ups for packing this thing up. To include
-    X - loading SpaCy.nlp corpus 
-    - finding pytesseract executable on machine
-        - this cmd may make this work pyinstaller --onefile --add-data "path_to_tesseract;tesseract" your_script.py
+TODO: TEST packaging the thing up and launching from a clean environment. At home, maybe
+TODO: add support for config file with LLM API info, potentially have user-input required with opening windows if no config file is found?
 
 '''
 
 
 app = Flask(__name__)
-nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
+#nlp = spacy.load("zh_core_web_sm") #
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'

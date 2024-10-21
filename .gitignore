@@ -7,3 +7,6 @@
 
 # Ignore screencaps
 *.png
+
+# Ignore tessdata directory
+tessdata/*

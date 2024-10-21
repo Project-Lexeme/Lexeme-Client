@@ -11,7 +11,6 @@ else:
     # If running in a normal Windows Python environment
     tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
 
-pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
 def setup_tessdata(language):
     # Define the tessdata path
@@ -29,6 +28,8 @@ def setup_tessdata(language):
         print(f"{language}.traineddata not found. Downloading...")
         download_language_data(language, tessdata_path)
 
+    os.environ['TESSDATA_PREFIX'] = tessdata_path
+
     return tessdata_path
 
 def download_language_data(language, tessdata_path): # TODO call this in main
@@ -43,3 +44,4 @@ def download_language_data(language, tessdata_path): # TODO call this in main
         print(f"Failed to download {language}.traineddata. Status code: {response.status_code}")
         sys.exit(1)
 
+pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
