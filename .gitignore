@@ -1,0 +1,5 @@
+# Ignore CSVs with learner profiles
+*.csv
+
+# Ignore screencaps
+*.png

@@ -39,7 +39,15 @@ class DrawRectangleApp:
     
     def on_button_release(self, event):
         self.rect_end = (event.x, event.y)
-        self.coords = (self.rect_start[0], self.rect_start[1], event.x, event.y)
+        start_x, start_y, end_x, end_y = self.rect_start[0], self.rect_start[1], event.x, event.y
+        if self.rect_start[0] > event.x: # handles if rectangle was drawn with origin NOT at top-left
+            start_x = event.x
+            end_x = self.rect_start[0]
+        if self.rect_start[1] > event.y:
+            start_y = event.y
+            end_y = self.rect_start[1]
+
+        self.coords = (start_x, start_y, end_x, end_y)
         self.canvas.delete(self.rect)  # Remove the rectangle from the canvas
         self.root.destroy()  # Close the drawing window
         print(f"Rectangle coordinates per on_button_release: {self.rect_start}, {self.rect_end}")
