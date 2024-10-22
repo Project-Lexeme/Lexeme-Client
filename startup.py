@@ -1,8 +1,25 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import configparser
 
 # Function to update the second dropdown based on the selected language
+
+def get_config(): # TODO
+    try: 
+        with open('config.ini','r') as configfile:
+            print('yes')
+    except: # this needs wrapped in a function and called instead of going here 
+        with open('config.ini','w') as configfile:
+            config = configparser.ConfigParser()
+            # Add sections and key-value pairs
+            config['General'] = {'debug': True, 'log_level': 'info'}
+            config['Server'] = {'base_url': 'sample_base_url', 
+                                'api_key': 'sample_api_key', 'model': 'sample_model'}
+            config.write(configfile)
+
+    return config
+
 def get_language_and_proficiency():
     selected_values = {"language": None, "proficiency": None}
     
@@ -55,4 +72,4 @@ def get_language_and_proficiency():
 
     return language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']
 
-#print(get_language_and_proficiency())
+print(get_config())

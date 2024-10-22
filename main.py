@@ -156,6 +156,7 @@ def install_and_import_nlp_lang(module_name):
         subprocess.check_call([sys.executable, '-m', 'spacy', 'download', module_name])
 
 if __name__ == '__main__':
+    config = startup.get_config()
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()
     install_and_import_nlp_lang(nlp_lang)
     nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
