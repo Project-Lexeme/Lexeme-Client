@@ -8,9 +8,11 @@ from logger import get_subtitles_csv
 def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
     if choice.endswith('.csv'):
         data = get_subtitles_csv(choice)
-        prompt = f"""The following is a list of line-break-separated subtitles from a movie. 
+        prompt = f"""The following is a list of line-break-separated subtitles from a movie. Please do not guess what specific movie this comes from. 
         There may be multiple characters in the scene talking in these subtitles. 
-        What information can you get from this exchange? Please share at least 10 sentences in only simplified Chinese about this situation. 
+        You can ignore errant punctuation marks or individual characters without context.
+        What information can you get from this exchange? Please share a paragraph in only simplified Chinese about this situation.
+        If there are any useful idioms in the text, could you share a single sentence describing what they mean? 
         '{data}'
         """
         print(data)
