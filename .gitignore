@@ -11,5 +11,9 @@
 # Ignore tessdata directory
 tessdata/*
 
+# Ignore build and dist files
+build
+dist
+
 # Ignore .pyc files
 *.pyc

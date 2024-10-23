@@ -100,4 +100,4 @@ def get_language_and_proficiency():
 
     return language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']
 
-print(get_config())
+#print(get_config())

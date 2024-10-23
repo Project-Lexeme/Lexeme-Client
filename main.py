@@ -8,7 +8,6 @@ import logger
 import subprocess
 import sys
 import webbrowser
-import time
 
 '''
 TODO: check out Koboldcpp for a means to deploy LLM server 
@@ -146,21 +145,34 @@ def home():
 
 
 def install_and_import_nlp_lang(module_name):
-    try:
+    if module_name in spacy.util.get_installed_models():
         # Attempt to import the module as test of whether it's there
-        __import__(module_name)
-    except ImportError:
+        module_name in spacy.util.get_installed_models()
+    else:
         # If the module is not found, install it
         print(f"{module_name} not found. Installing...")
-        subprocess.check_call([sys.executable, '-m', 'spacy', 'download', module_name])
+         # Determine the Python executable path to use pip
+        if hasattr(sys, 'frozen'):
+            # Running from a bundled executable
+            python_executable = os.path.join(os.path.dirname(sys.executable), 'python.exe')
+        else:
+            # Running from a Python script
+            python_executable = sys.executable
+            
+        subprocess.check_call([python_executable, '-m', 'spacy', 'download', module_name])
 
 if __name__ == '__main__':
     config = startup.get_config()
+    print("Config loaded successfully!")
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()
+    print(f"You chose {language} at a {proficiency} level!")
     install_and_import_nlp_lang(nlp_lang)
     nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
+    print("SpaCy installed, imported, and loaded")
     setup_pytesseract.setup_tessdata(language)
+    print("PyTesseract set up!")
     recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files
+    print("ScreenRecorder is set up")
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
 
