@@ -160,7 +160,7 @@ if __name__ == '__main__':
     install_and_import_nlp_lang(nlp_lang)
     nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
     setup_pytesseract.setup_tessdata(language)
-    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=50, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files
+    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
 
