@@ -45,16 +45,6 @@ def get_config(): # TODO
         LLMserver.set_url(base_url)
         LLMserver.set_api_key(api_key)
         LLMserver.set_model(model)
-        # with open('config.ini','w') as configfile:
-        #     config = configparser.ConfigParser()
-        #     # Add sections and key-value pairs
-        #     config['General'] = {'debug': True, 'log_level': 'info'}
-        #     config['Server'] = {'base_url': 'http://localhost:1234/v1', # TODO: placeholder for user-interaction 
-        #                         'api_key': 'lm-studio', 'model': 'mradermacher/aya-23-8B-GGUF'}
-        #     config.write(configfile)
-        #     LLMserver.set_url(config["Server"]["base_url"])
-        #     LLMserver.set_api_key(config["Server"]["api_key"])
-        #     LLMserver.set_model(config['Server']['model'])
 
     return config
 

@@ -1,12 +1,13 @@
 import requests
 from PIL import Image
+import os
 
 
 ## currently broken
 
 def upload_screenshot(url):
     # Get the screenshot as bytes
-    with Image.open("E:/ProjectLexeme_Server/uploads/Screenshot.png") as screenshot:
+    with Image.open(f"{os.cwd()}/uploads/Screenshot.png") as screenshot:
         screenshot_bytes = screenshot.tobytes()
     # Prepare the files dictionary
     files = {'image': ('Screenshot.png', screenshot_bytes, 'image/png')}

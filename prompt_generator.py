@@ -5,6 +5,8 @@ import random
 import pandas as pd
 from logger import get_subtitles_csv
 
+
+# TODO TODAY: generate_prompt_from_choice needs to pull from csvs for end users to customize
 def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
     if choice.endswith('.csv'):
         data = get_subtitles_csv(choice)

@@ -25,7 +25,6 @@ TODO: add support for config file with LLM API info, potentially have user-input
 
 
 app = Flask(__name__)
-#nlp = spacy.load("zh_core_web_sm") #
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -86,7 +85,7 @@ def get_subtitle_files(): #TODO: fix this to reflect changes in file saving func
 
 @app.route('/choices', methods=['GET'])
 def get_choices(part_of_speech='NOUN'):
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
+    text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
     choices = prompt_generator.find_parts_of_speech_in_sentence(text, part_of_speech, nlp) # TO DO: Make this legit later - be able to pass in POS as arg
     
     return jsonify(choices)
@@ -111,7 +110,7 @@ def upload_image(): #TODO refactor to simplify if possible
     file.save(file_path)
 
     # NOTIONAL 
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
+    text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
     logger.log_subtitle(text, 'subtitles.csv')
     # NOTIONAL
 

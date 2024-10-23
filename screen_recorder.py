@@ -6,6 +6,7 @@ import re
 import threading
 import logger
 import screenshot_text_extractor
+import os
 
 
 def clean_filename(title):
@@ -88,7 +89,7 @@ class ScreenRecorder:
                     left, top = self.window[0], self.window[1]
                     width, height = self.window[2] - self.window[0], self.window[3]-self.window[1]
                     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-                    screenshot.save(f"E:/projectlexeme_server/uploads/Screenshot.png")
+                    screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
             except Exception as e:
                 print(f"Error taking screenshot: {e}")
             self.log_screencap_subtitles()
@@ -136,7 +137,7 @@ class ScreenRecorder:
             return False
         
     def log_screencap_subtitles(self):
-        text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
         logger.log_subtitle(text, self.filename)
 
 #this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)
