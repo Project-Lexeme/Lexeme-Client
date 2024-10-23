@@ -10,3 +10,6 @@
 
 # Ignore tessdata directory
 tessdata/*
+
+# Ignore .pyc files
+*.pyc

@@ -69,7 +69,7 @@ class ScreenRecorder:
         self.language = language
         self.use_preprocessing = use_preprocessing
         self.minimum_confidence = minimum_confidence
-        self.filename = clean_filename(self.window_title[:20] + str(time.localtime().tm_yday) + str(time.localtime().tm_hour)+ str(time.localtime().tm_min)) + '.csv'  # TODO: think about how to create folder for this
+        self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'  # TODO: think about how to create folder for this
         self.config = config
         self.time_between_screencaps = time_between_screencaps
 

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def log_term(term: str, on: str):
     '''
@@ -33,14 +34,15 @@ def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
     # TODO: add support for appending subtitles from a specific recording into a specific csv (please create new csv for each time this happens)
     # TODO: handle logic for eliminating duplicate subtitles
     # TODO: call log_term to add target POS to touched_terms.csv??
-    with open(filepath, 'a', encoding='utf-8') as f:
+    with open(filepath, 'a', encoding='utf-8') as f: # this creates the file if it doesn't already exist
         pass
-
+    
+    subtitle = subtitle.replace(r'[〉」『|={_-#【“|\[\\】\]/《「〈」…<~^]','') # cleans a number of errant characters
     if len(subtitle) > 1:
         if drop_duplicates:
             with open(filepath, 'r', encoding='utf-8') as f:
-                data = str(f.read()).split('\n')
-                data.remove('')
+                data = str(f.read()).split('\n') ## splits string by newline into list
+                data.remove('') # removes empty line that appears at end of the list
                 if len(data) > 0:
                     if data[-1] == subtitle:
                         return

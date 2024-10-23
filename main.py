@@ -110,9 +110,9 @@ def upload_image(): #TODO refactor to simplify if possible
     file.save(file_path)
 
     # NOTIONAL 
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
-    logger.log_subtitle(text, 'subtitles.csv')
-    # NOTIONAL
+    # text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
+    # logger.log_subtitle(text, 'subtitles.csv')
+    # # NOTIONAL
 
     return jsonify({'message': 'Image received and processed'}), 200
 
