@@ -8,8 +8,14 @@
 # Ignore screencaps
 *.png
 
+# Ignore config file
+*.ini
+
 # Ignore tessdata directory
 tessdata/*
+
+# Ignore venv directory
+venv
 
 # Ignore build and dist files
 build

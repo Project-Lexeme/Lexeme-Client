@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import spacy
+from spacy.cli import download
 import os
 import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract
 from screen_recorder import ScreenRecorder 
@@ -8,6 +9,7 @@ import logger
 import subprocess
 import sys
 import webbrowser
+import pip
 
 '''
 TODO: check out Koboldcpp for a means to deploy LLM server 
@@ -144,31 +146,49 @@ def home():
     return send_from_directory('.', 'index.html')
 
 
-def install_and_import_nlp_lang(module_name):
-    if module_name in spacy.util.get_installed_models():
-        # Attempt to import the module as test of whether it's there
-        module_name in spacy.util.get_installed_models()
+# def load_spacy_model(language):
+#     if getattr(sys, 'frozen', False):
+#         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{language}')
+#     else:
+#         model_path = language
+#     return spacy.load(model_path)
+
+
+def install_and_load_nlp_lang(module_name): 
+    '''
+    TODO: need to send a GET to here https://github.com/explosion/spacy-models/tree/master/meta
+    - implementation of the above can be implemented as argument to e.g. spacy.cli.download(executable-friendly=True)
+    '''
+    
+    if getattr(sys, 'frozen', False):
+        print("The fearful programmer is hopeful that this will work.")
+        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}') #, fr'{module_name}[-.0-9]*') # _MEIPASS is temp directory, zh_core_web_sm is passed in .spec file to be stored in spacy/data/module name and config is stored in module name- version subdirectory
     else:
-        # If the module is not found, install it
-        print(f"{module_name} not found. Installing...")
-         # Determine the Python executable path to use pip
-        if hasattr(sys, 'frozen'):
-            # Running from a bundled executable
-            python_executable = os.path.join(os.path.dirname(sys.executable), 'python.exe')
+        if module_name in spacy.util.get_installed_models():
+        # Attempt to import the module as test of whether it's there
+            module_name in spacy.util.get_installed_models()
         else:
-            # Running from a Python script
-            python_executable = sys.executable
-            
-        subprocess.check_call([python_executable, '-m', 'spacy', 'download', module_name])
+            # If the module is not found, install it
+            print(f"{module_name} not found. Installing...")
+            download(module_name)
+        model_path = module_name
+    return spacy.load(model_path)
+
+def install_and_import(package):
+    if hasattr(pip, 'main'):
+        pip.main(['install', package])
+    else:
+        pip._internal.main(['install', package])
 
 if __name__ == '__main__':
     config = startup.get_config()
     print("Config loaded successfully!")
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()
     print(f"You chose {language} at a {proficiency} level!")
-    install_and_import_nlp_lang(nlp_lang)
-    nlp = spacy.load(nlp_lang) # this is passed in as arg here in main.py
+    nlp = install_and_load_nlp_lang(nlp_lang)
     print("SpaCy installed, imported, and loaded")
+    print("Setting up PyTesseract now...")
+    install_and_import('pytesseract')
     setup_pytesseract.setup_tessdata(language)
     print("PyTesseract set up!")
     recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files

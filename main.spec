@@ -3,9 +3,11 @@
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=['venv/Lib/site-packages'],
     binaries=[],
-    datas=[],
+    datas=[('venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
+    ('venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -22,7 +24,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='main',
+    name='Project Lexeme',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
