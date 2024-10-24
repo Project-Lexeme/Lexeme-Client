@@ -5,6 +5,9 @@ import cv2 as cv
 import numpy as np
 import os
 import sys
+import pandas as pd
+
+#pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 
 def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
@@ -38,7 +41,7 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
     if display_text_boxes == True: 
         display_text_box_image(d, image)
 
-    print(text)
+    #print(text)
     return text
 
 def filter_low_confidence(data: dict, min_confidence: int) -> list:
@@ -69,7 +72,7 @@ def preprocess_image(img: np.array) -> np.array: # TODO: work on this
     height, width = img.shape[:2]
 
     # Calculate the coordinates for the bottom fourth
-    start_row = height // 2   # Start from 1/2 of the height
+    start_row = height // 2 * 1   # Start from 2/1 of the height #switched to half frame due to some of the options that pop up. 
     end_row = height               # End at the bottom of the image
     start_col = 0                 # Start from the leftmost column
     end_col = width                # End at the rightmost column
@@ -77,21 +80,36 @@ def preprocess_image(img: np.array) -> np.array: # TODO: work on this
     # Crop the image
     cropped_image = img[start_row:end_row, start_col:end_col]
     cropped_image = cv.cvtColor(cropped_image, cv.COLOR_BGR2GRAY)
-    return cropped_image
+    
+    #add filters so these can stack, however have to find the right blend, #may need to enlarge this
+    laplacian = cv.Laplacian(cropped_image, cv.CV_64F, ksize=3, scale=2)
+    laplacian = cv.convertScaleAbs(laplacian)
+    plt.imshow(laplacian, cmap='gray')
+    plt.title('Laplacian Image')
+    plt.axis('off')
+    #plt.show()
+    # Threshold the Laplacian image
+    _, thresh = cv.threshold(laplacian, 100, 255, cv.THRESH_BINARY)
+    preprocessed_image = thresh
     #cropped_image = cv.cvtColor(cropped_image, cv.IMREAD_GRAYSCALE)
 
-    # _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
+    _, thresh = cv.threshold(cropped_image, 100, 255, cv.THRESH_BINARY)
 
 
     # ### inverts color
-    # preprocessed_image =thresh#cv.convertScaleAbs(thresh)
+    preprocessed_image =thresh#cv.convertScaleAbs(thresh)
     
     #cv.convertScaleAbs(laplacian)
     
-    #return preprocessed_image
+    return preprocessed_image
+    #return cropped_image
+
+language = "chi_sim"
 
 
+text = read_text_from_image(filepath=f"./uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=35, print_confidence_levels=True)
+print(f"\n{text}")
 
-#language = "chi_sim"
+#save the text to the csv
 
 #read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, display_text_boxes=False, minimum_confidence=60, print_confidence_levels=False)
