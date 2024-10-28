@@ -4,6 +4,7 @@ import pyautogui
 import time
 import re
 import threading
+import config
 import logger
 import screenshot_text_extractor
 import os
@@ -138,6 +139,6 @@ class ScreenRecorder:
         
     def log_screencap_subtitles(self):
         text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
-        logger.log_subtitle(text, self.filename)
+        logger.log_subtitle(text, f'{config.get_data_directory()}/{self.filename}')
 
 #this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)

@@ -1,12 +1,24 @@
+from pathlib import Path
 import pandas as pd
 import os
+import config
+
+
+def check_for_learner_profile():
+    csv_file = Path(f'{config.get_data_directory()}/learner_profile.csv')
+    if not csv_file.is_file():  # Check if the file exists
+        # If it doesn't exist, create it
+        csv_file.touch()
+        with csv_file.open('w') as f:
+            f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
 def log_term(term: str, on: str):
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
     '''
+    check_for_learner_profile()
 
-    touched_terms = pd.read_csv('learner_profile.csv') # term, no_touches
+    touched_terms = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv') # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
 
     if len(indexer) == 0: # if term is not in list of terms
@@ -22,10 +34,10 @@ def log_term(term: str, on: str):
         touched_terms.drop_duplicates('Term', inplace=True)
         touched_terms.loc[touched_terms['Term'] == term, on] = summed
     
-    touched_terms.to_csv('learner_profile.csv', index=False)
+    touched_terms.to_csv(f'{config.get_data_directory()}/learner_profile.csv', index=False)
 
 def get_terms(sort_by='weakest'):
-    terms_df = pd.read_csv('learner_profile.csv')
+    terms_df = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv')
     if sort_by == 'weakest': ## TODO: add in actual support for sorting here
         terms = terms_df['Term'].to_list()
     return terms
@@ -51,8 +63,9 @@ def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
             f.write(f'{subtitle}\n')
     return
 
-def get_subtitles_csv(filepath: str) -> list:
+def get_subtitles_csv(filename: str) -> list:
     # TODO: think about how to do this in a smart systematic way for the user
+    filepath = os.path.join(config.get_data_directory(), filename)
     with open(filepath, 'r', encoding='utf-8') as f:
         data = str(f.read()).split('\n')
         data.remove('')

@@ -3,6 +3,7 @@ import io
 import csv
 import random
 import pandas as pd
+import config
 from logger import get_subtitles_csv
 
 
@@ -73,9 +74,9 @@ def load_scaffolded_prompts(file_name: str) -> list:
 
 def save_prompts(list_of_prompts: list): 
     df = pd.Series(list_of_prompts)
-    df2 = pd.read_csv('prompts.csv').iloc[:,0]
+    df2 = pd.read_csv(f'{config.get_data_directory()}/prompts.csv').iloc[:,0]
     concat_df = pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True)
-    concat_df.to_csv('prompts.csv', index=False)
+    concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
 def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language):
     target_vectors = []

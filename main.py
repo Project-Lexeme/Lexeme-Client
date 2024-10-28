@@ -2,14 +2,14 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 import spacy
 from spacy.cli import download
 import os
-import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract
+import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract, config
 from screen_recorder import ScreenRecorder 
 import LLMserver
 import logger
-import subprocess
 import sys
 import webbrowser
 import pip
+from pathlib import Path
 
 '''
 TODO: check out Koboldcpp for a means to deploy LLM server 
@@ -59,12 +59,12 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
     choice = request.args.get('choice', 'No choice provided')
     if choice.endswith('.csv'):
         text = logger.get_subtitles_csv(choice)
-        print(f"this is in get lesson{text}")
+        #print(f"this is in get lesson{text}")
         for sentence in text:
-            print(f"this is the first sentence: {sentence}")
+            #print(f"this is the first sentence: {sentence}")
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, 'NOUN', nlp)
             for term in terms:
-                print(f"this is the first term: {term}")
+                #print(f"this is the first term: {term}")
                 logger.log_term(term, 'Number of touches')
     prompt = prompt_generator.generate_prompt_from_choice(choice)
 
@@ -79,8 +79,10 @@ def get_review_choices():
 @app.route('/get-subtitle-files')
 def get_subtitle_files(): #TODO: fix this to reflect changes in file saving function in logger
     file_extension = '.csv' 
-    current_directory = os.getcwd()
-    files = [f for f in os.listdir(current_directory) if os.path.isfile(f) and f.endswith(file_extension)]
+    current_directory = config.get_data_directory()
+    files = [f for f in os.listdir(current_directory) if os.path.isfile(os.path.join(current_directory, f)) and f.endswith(file_extension)]
+    print(os.listdir(current_directory))
+    print(files)
     return files
 
 
@@ -146,23 +148,11 @@ def home():
     return send_from_directory('.', 'index.html')
 
 
-# def load_spacy_model(language):
-#     if getattr(sys, 'frozen', False):
-#         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{language}')
-#     else:
-#         model_path = language
-#     return spacy.load(model_path)
-
-
 def install_and_load_nlp_lang(module_name): 
-    '''
-    TODO: need to send a GET to here https://github.com/explosion/spacy-models/tree/master/meta
-    - implementation of the above can be implemented as argument to e.g. spacy.cli.download(executable-friendly=True)
-    '''
-    
+
     if getattr(sys, 'frozen', False):
-        print("The fearful programmer is hopeful that this will work.")
         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}') #, fr'{module_name}[-.0-9]*') # _MEIPASS is temp directory, zh_core_web_sm is passed in .spec file to be stored in spacy/data/module name and config is stored in module name- version subdirectory
+        
     else:
         if module_name in spacy.util.get_installed_models():
         # Attempt to import the module as test of whether it's there
@@ -174,21 +164,15 @@ def install_and_load_nlp_lang(module_name):
         model_path = module_name
     return spacy.load(model_path)
 
-def install_and_import(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package])
-
 if __name__ == '__main__':
-    config = startup.get_config()
+    cfg = config.get_config()
     print("Config loaded successfully!")
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()
     print(f"You chose {language} at a {proficiency} level!")
     nlp = install_and_load_nlp_lang(nlp_lang)
     print("SpaCy installed, imported, and loaded")
     print("Setting up PyTesseract now...")
-    install_and_import('pytesseract')
+    startup.install_and_import('pytesseract')
     setup_pytesseract.setup_tessdata(language)
     print("PyTesseract set up!")
     recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files

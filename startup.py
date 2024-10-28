@@ -1,52 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
-import configparser
-import LLMserver
+import pip
 
 # Function to update the second dropdown based on the selected language
 
-def get_config(): # TODO
-    config = configparser.ConfigParser()
-    try: 
-        with open('config.ini','r') as configfile:
-            config.read_file(configfile)
-            LLMserver.set_url(config["Server"]["base_url"])
-            LLMserver.set_api_key(config["Server"]["api_key"])
-            LLMserver.set_model(config['Server']['model'])
-
-    except FileNotFoundError: # this needs wrapped in a function and called instead of going here 
-        
-        def prompt_user_for_config():
-            base_url = simpledialog.askstring("Input", "Enter the base URL:")
-            api_key = simpledialog.askstring("Input", "Enter the API key:")
-            model = simpledialog.askstring("Input", "Enter the model:")
-            return base_url, api_key, model
-
-        # Initialize tkinter
-        root = tk.Tk()
-        root.withdraw()  # Hide the main window
-
-        # Get user input
-        base_url, api_key, model = prompt_user_for_config()
-
-        # Write the new config to the file
-        config['General'] = {'debug': True, 'log_level': 'info'}
-        config['Server'] = {
-            'base_url': base_url,
-            'api_key': api_key,
-            'model': model
-        }
-        
-        with open('config.ini', 'w') as configfile:
-            config.write(configfile)
-
-        # Set values for LLMserver
-        LLMserver.set_url(base_url)
-        LLMserver.set_api_key(api_key)
-        LLMserver.set_model(model)
-
-    return config
+def install_and_import(package):
+    if hasattr(pip, 'main'):
+        pip.main(['install', package])
+    else:
+        pip._internal.main(['install', package])
 
 def get_language_and_proficiency():
     selected_values = {"language": None, "proficiency": None}
