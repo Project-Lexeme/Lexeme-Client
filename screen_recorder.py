@@ -4,8 +4,10 @@ import pyautogui
 import time
 import re
 import threading
+import config
 import logger
 import screenshot_text_extractor
+import os
 
 
 def clean_filename(title):
@@ -39,7 +41,15 @@ class DrawRectangleApp:
     
     def on_button_release(self, event):
         self.rect_end = (event.x, event.y)
-        self.coords = (self.rect_start[0], self.rect_start[1], event.x, event.y)
+        start_x, start_y, end_x, end_y = self.rect_start[0], self.rect_start[1], event.x, event.y
+        if self.rect_start[0] > event.x: # handles if rectangle was drawn with origin NOT at top-left
+            start_x = event.x
+            end_x = self.rect_start[0]
+        if self.rect_start[1] > event.y:
+            start_y = event.y
+            end_y = self.rect_start[1]
+
+        self.coords = (start_x, start_y, end_x, end_y)
         self.canvas.delete(self.rect)  # Remove the rectangle from the canvas
         self.root.destroy()  # Close the drawing window
         print(f"Rectangle coordinates per on_button_release: {self.rect_start}, {self.rect_end}")
@@ -60,14 +70,14 @@ class ScreenRecorder:
         self.language = language
         self.use_preprocessing = use_preprocessing
         self.minimum_confidence = minimum_confidence
-        self.filename = clean_filename(self.window_title[:20] + str(time.localtime().tm_yday) + str(time.localtime().tm_hour)+ str(time.localtime().tm_min)) + '.csv'
+        self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'  # TODO: think about how to create folder for this
         self.config = config
         self.time_between_screencaps = time_between_screencaps
 
     def get_rectangle(self):
         root = tk.Tk()
         window = gw.getWindowsWithTitle(self.window_title)[0]
-        rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height)
+        rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height) # TODO: ensure 'left' and 'top' are actually left and top, i.e. user started at top-left corner
         root.mainloop()
         print(rect.coords)
         
@@ -80,12 +90,7 @@ class ScreenRecorder:
                     left, top = self.window[0], self.window[1]
                     width, height = self.window[2] - self.window[0], self.window[3]-self.window[1]
                     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-                    current_time = time.localtime()
-                    current_time = time.strftime("%H:%M:%S", current_time)
-                    filename = self.window_title[:20] + current_time
-                    filename = clean_filename(filename)
-                    screenshot.save(f"E:/projectlexeme_server/uploads/Screenshot.png")
-                    #print(f"Screenshot saved at /uploads/Screenshot.png")
+                    screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
             except Exception as e:
                 print(f"Error taking screenshot: {e}")
             self.log_screencap_subtitles()
@@ -95,8 +100,6 @@ class ScreenRecorder:
         def on_button_click(window_title):
             nonlocal selected_title
             selected_title = window_title
-            
-
             root.destroy()  # Close the GUI after selection
 
         root = tk.Tk()
@@ -135,7 +138,7 @@ class ScreenRecorder:
             return False
         
     def log_screencap_subtitles(self):
-        text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
-        logger.log_subtitle(text, self.filename)
+        text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        logger.log_subtitle(text, f'{config.get_data_directory()}/{self.filename}')
 
 #this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)

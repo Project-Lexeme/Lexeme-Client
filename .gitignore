@@ -1,0 +1,26 @@
+# Ignore CSVs with learner profiles
+*.csv
+!*_prompts.csv
+!*_samples.csv
+!subtitles.csv
+!learner_profile_sample.csv
+
+# Ignore screencaps
+*.png
+
+# Ignore config file
+*.ini
+
+# Ignore tessdata directory
+tessdata/*
+
+# Ignore venv directory
+venv
+
+# Ignore build, data, and dist files
+build
+dist
+data
+
+# Ignore .pyc files
+*.pyc

@@ -1,18 +1,31 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import spacy
+from spacy.cli import download
 import os
-import spacy
-import screenshot_text_extractor, prompt_generator
-from screen_recorder import ScreenRecorder #select_window, capture_window, clean_filename,
+import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract, config
+from screen_recorder import ScreenRecorder 
 import LLMserver
 import logger
+import sys
+import webbrowser
+import pip
+from pathlib import Path
 
-# TODO: feed it to an LLM with a prompt explaining that it's subtitles from a movie without a lot of other context, may be multiple characters talking, take its best guess about what the situation is and explain in target language - prompt_generator.py to fuse things together
-# TODO: check out Koboldcpp for a means to deploy LLM server 
-# TODO: add app.route for LLM response and <div> object in index.html HERE 
+'''
+TODO: check out Koboldcpp for a means to deploy LLM server 
+TODO: review TODOs and fix things
+TODO: look closer at how choices get passed back and forth
+TODO: rework the subtitle.csv naming convention and work in a folder 
+TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
+TODO: work on screen recorder OCR performance
+TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
+TODO: TEST packaging the thing up and launching from a clean environment. At home, maybe
+TODO: add support for config file with LLM API info, potentially have user-input required with opening windows if no config file is found?
+
+'''
+
 
 app = Flask(__name__)
-nlp = spacy.load("zh_core_web_sm") # TODO: pass this into the prompt generator?
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -43,42 +56,45 @@ def log_student_response_to_lesson():
 
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # need to divide the multiple choice up into another prompt
-    term = request.args.get('choice', 'No choice provided')
-
-    # TODO: vary this prompt using the prompt generator functions
-    prompt = f"""Could you define what the term {term} means.  
-    Please give me 1 example sentence in simplified Chinese, 
-    then give me a multiple choice question in simplified Chinese (without pinyin or English) 
-    asking to define {term} with the answers (again, without pinyin or English) being all single sentence definitions of other terms. 
-    Please use realistic distractors but make the correct answer unambiguous. Please state which the correct answer is.
-    can you format the Questions with the term {term}
-    giving me the correct answer below given the term {term} the script under the answer column, and the correct answer has to be within the A to D answer pool
-    Finally, end the response by asking, "Did you get it right?" but with a slight variation. Can you also use an HTML paragraph formatting, one line after the next, line break after each paragraph?
-    can you make 
-    with the format "答案是：[insert answer here]"
-    
-    can you also add supplimentary information to help the language user learn the language in a simplified manner, and give a hint to the user so they can get the correct answer.
-    
-    """
+    choice = request.args.get('choice', 'No choice provided')
+    if choice.endswith('.csv'):
+        text = logger.get_subtitles_csv(choice)
+        #print(f"this is in get lesson{text}")
+        for sentence in text:
+            #print(f"this is the first sentence: {sentence}")
+            terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, 'NOUN', nlp)
+            for term in terms:
+                #print(f"this is the first term: {term}")
+                logger.log_term(term, 'Number of touches')
+    prompt = prompt_generator.generate_prompt_from_choice(choice)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt)
-    return render_template('lesson.html', choice=term, llm_response=llm_response)
+    return render_template('lesson.html', choice=choice, llm_response=llm_response)
 
 @app.route('/review-choices')
 def get_review_choices():
     choices = logger.get_terms()    
     return jsonify(choices)
 
+@app.route('/get-subtitle-files')
+def get_subtitle_files(): #TODO: fix this to reflect changes in file saving function in logger
+    file_extension = '.csv' 
+    current_directory = config.get_data_directory()
+    files = [f for f in os.listdir(current_directory) if os.path.isfile(os.path.join(current_directory, f)) and f.endswith(file_extension)]
+    print(os.listdir(current_directory))
+    print(files)
+    return files
+
 
 @app.route('/choices', methods=['GET'])
 def get_choices(part_of_speech='NOUN'):
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
+    text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=False, minimum_confidence=50)
     choices = prompt_generator.find_parts_of_speech_in_sentence(text, part_of_speech, nlp) # TO DO: Make this legit later - be able to pass in POS as arg
-    for choice in choices: logger.log_term(choice, 'Number of touches')
+    
     return jsonify(choices)
 
 @app.route('/upload', methods=['POST'])
-def upload_image():
+def upload_image(): #TODO refactor to simplify if possible
     if 'image' not in request.files:
         print('error: No image file provided')
         return jsonify({'error': 'No image file provided'}), 400
@@ -97,9 +113,9 @@ def upload_image():
     file.save(file_path)
 
     # NOTIONAL 
-    text = screenshot_text_extractor.read_text_from_image(filepath=f"E:/ProjectLexeme_Server/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
-    logger.log_subtitle(text, 'subtitles.csv')
-    # NOTIONAL
+    # text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
+    # logger.log_subtitle(text, 'subtitles.csv')
+    # # NOTIONAL
 
     return jsonify({'message': 'Image received and processed'}), 200
 
@@ -131,8 +147,37 @@ def get_uploaded_file(filename):
 def home():
     return send_from_directory('.', 'index.html')
 
+
+def install_and_load_nlp_lang(module_name): 
+
+    if getattr(sys, 'frozen', False):
+        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}') #, fr'{module_name}[-.0-9]*') # _MEIPASS is temp directory, zh_core_web_sm is passed in .spec file to be stored in spacy/data/module name and config is stored in module name- version subdirectory
+        
+    else:
+        if module_name in spacy.util.get_installed_models():
+        # Attempt to import the module as test of whether it's there
+            module_name in spacy.util.get_installed_models()
+        else:
+            # If the module is not found, install it
+            print(f"{module_name} not found. Installing...")
+            download(module_name)
+        model_path = module_name
+    return spacy.load(model_path)
+
 if __name__ == '__main__':
-    language = 'chi-sim'
-    recorder = ScreenRecorder(language=language, use_preprocessing=True, minimum_confidence=50, config=r'', time_between_screencaps=1) #'--oem 3 --psm 11 -l chi_sim'
-    nlp = spacy.load("zh_core_web_sm")
+    cfg = config.get_config()
+    print("Config loaded successfully!")
+    language, nlp_lang, proficiency = startup.get_language_and_proficiency()
+    print(f"You chose {language} at a {proficiency} level!")
+    nlp = install_and_load_nlp_lang(nlp_lang)
+    print("SpaCy installed, imported, and loaded")
+    print("Setting up PyTesseract now...")
+    startup.install_and_import('pytesseract')
+    setup_pytesseract.setup_tessdata(language)
+    print("PyTesseract set up!")
+    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files
+    print("ScreenRecorder is set up")
+    webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
+
+    

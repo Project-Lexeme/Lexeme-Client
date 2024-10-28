@@ -23,6 +23,7 @@
 <button id="fetch-review-button">Get review terms</button>
 <button id="begin-recording-button">Begin recording screen</button>
 <button id="stop-recording-button">Stop recording screen</button>
+<button id="lesson-from-recent-subtitles-button">Get lesson from subtitles</button>
 <select id="dropdown"></select>
 <button id="submit-button" style="display: none;">Submit Choice</button>
 <div id="response"></div>
@@ -54,6 +55,29 @@
 
     document.getElementById('fetch-review-button').addEventListener('click', function() {
         fetch('/review-choices')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const dropdown = document.getElementById('dropdown');
+                dropdown.innerHTML = ''; // Clear previous options
+                data.forEach(choice => {
+                    const option = document.createElement('option');
+                    option.value = choice;
+                    option.textContent = choice;
+                    dropdown.appendChild(option);
+                });
+                dropdown.style.display = 'block'; // Show dropdown
+                document.getElementById('submit-button').style.display = 'inline'; // Show submit button
+            })
+            .catch(error => console.error('Error fetching choices:', error));
+    });
+
+    document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function() {
+        fetch('/get-subtitle-files')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
