@@ -36,8 +36,9 @@ def get_data_directory():
 
 def get_config(): # TODO
     cfg = configparser.ConfigParser()
+    data_dir = get_data_directory()
     try: 
-        with open('config.ini','r') as configfile:
+        with open(os.path.join(data_dir, 'config.ini'),'r') as configfile:
             cfg.read_file(configfile)
             LLMserver.set_url(cfg["Server"]["base_url"])
             LLMserver.set_api_key(cfg["Server"]["api_key"])
@@ -66,7 +67,7 @@ def get_config(): # TODO
             'model': model
         }
         
-        with open('config.ini', 'w') as configfile:
+        with open(os.path.join(data_dir, 'config.ini'), 'w') as configfile:
             cfg.write(configfile)
 
         # Set values for LLMserver
