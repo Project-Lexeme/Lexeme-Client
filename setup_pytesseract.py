@@ -2,6 +2,7 @@ import os
 import sys
 import pytesseract
 import requests
+import config
 
 # TODO: wrap all this in a new script
 if getattr(sys, 'frozen', False):
@@ -15,7 +16,7 @@ else:
 def setup_tessdata(language):
     # Define the tessdata path
     if getattr(sys, 'frozen', False):
-        tessdata_path = os.path.join(sys._MEIPASS, 'tessdata')
+        tessdata_path = os.path.join(config.get_data_directory(), 'tessdata')
     else:
         tessdata_path = os.path.join(os.path.dirname(__file__), 'tessdata')
 
