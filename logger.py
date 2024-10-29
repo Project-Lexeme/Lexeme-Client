@@ -46,6 +46,7 @@ def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
     # TODO: add support for appending subtitles from a specific recording into a specific csv (please create new csv for each time this happens)
     # TODO: handle logic for eliminating duplicate subtitles
     # TODO: call log_term to add target POS to touched_terms.csv??
+
     with open(filepath, 'a', encoding='utf-8') as f: # this creates the file if it doesn't already exist
         pass
     
@@ -65,7 +66,7 @@ def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
 
 def get_subtitles_csv(filename: str) -> list:
     # TODO: think about how to do this in a smart systematic way for the user
-    filepath = os.path.join(config.get_data_directory(), filename)
+    filepath = os.path.join(config.get_data_directory(),'subtitles', filename)
     with open(filepath, 'r', encoding='utf-8') as f:
         data = str(f.read()).split('\n')
         data.remove('')

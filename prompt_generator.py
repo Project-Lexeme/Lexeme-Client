@@ -96,7 +96,7 @@ def save_prompts(list_of_prompts: list):
     concat_df = pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True)
     concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
-def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language):
+def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language): # TODO: reconsider/implement this
     target_vectors = []
     doc = nlp(sentence)
     for target in target_parts_of_speech:

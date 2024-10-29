@@ -70,7 +70,7 @@ def log_student_response_to_lesson():
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # need to divide the multiple choice up into another prompt
     choice = request.args.get('choice', 'No choice provided')
-    if choice.endswith('.csv'):
+    if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         #print(f"this is in get lesson{text}")
         for sentence in text:
@@ -92,9 +92,9 @@ def get_review_choices():
 @app.route('/get-subtitle-files')
 def get_subtitle_files(): #TODO: fix this to reflect changes in file saving function in logger
     file_extension = '.csv' 
-    current_directory = config.get_data_directory()
-    files = [f for f in os.listdir(current_directory) if os.path.isfile(os.path.join(current_directory, f)) and f.endswith(file_extension)]
-    print(os.listdir(current_directory))
+    subtitle_directory = os.path.join(config.get_data_directory(), 'subtitles')
+    files = [f for f in os.listdir(subtitle_directory) if os.path.isfile(os.path.join(subtitle_directory, f)) and f.endswith(file_extension)]
+    print(os.listdir(subtitle_directory))
     print(files)
     return files
 
@@ -178,6 +178,7 @@ def install_and_load_nlp_lang(module_name):
     return spacy.load(model_path)
 
 if __name__ == '__main__':
+    startup.make_dirs()
     cfg = config.get_config()
     print("Config loaded successfully!")
     language, nlp_lang, proficiency = startup.get_language_and_proficiency()

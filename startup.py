@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 import pip
+import config
+import os
+from pathlib import Path
 
 # Function to update the second dropdown based on the selected language
 
@@ -10,6 +13,13 @@ def install_and_import(package):
         pip.main(['install', package])
     else:
         pip._internal.main(['install', package])
+
+def make_dirs():
+    path = config.get_data_directory()
+    subtitle_path = Path(os.path.join(path, 'subtitles'))
+    subtitle_path.mkdir(parents=True, exist_ok=True)
+    # data_path = Path(os.path.join(path, 'data'))
+    # data_path.mkdir(parents=True, exist_ok=True)
 
 def get_language_and_proficiency():
     selected_values = {"language": None, "proficiency": None}
