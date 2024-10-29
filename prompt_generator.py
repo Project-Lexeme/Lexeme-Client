@@ -1,3 +1,4 @@
+import re
 import spacy
 import io
 import csv
@@ -38,14 +39,31 @@ def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to hav
         return prompt
 
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: str, nlp: spacy.Language) -> list:
+    filtered_sentence = filter_different_scripts(sentence, nlp)
+    print(filtered_sentence)
     parts_of_speech = []
-    doc = nlp(sentence)
+    doc = nlp(filtered_sentence)
     for token in doc:
-        #print(f"Token: {token.text}, POS: {token.pos_}, Dependency: {token.dep_}, Head: {token.head.text}") # Lemma: {token.lemma_} <- not used in Chinese
         if token.pos_ == part_of_speech:
             #TODO: get rid of nouns that just don't make damn sense
             parts_of_speech.append(token.text)
     return parts_of_speech
+
+def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
+    '''
+    filter sentence to remove all characters not in a target script
+    '''
+    lang = nlp.meta['lang'] # returns two-letter spacy lang code e.g. en for English, fr for French
+    pattern_dict = {'en':'A-Za-zÀ-ÿ ', 'zh':'一-龯 ', 'ko':'가-힣 ', 'ru':'\u0400-\u04FF ', 'ja':'ァ-ヴぁ-ゔー '} # regex patterns that capture each target script INCLUDE A SPACE
+    print(lang)
+    if lang in pattern_dict:
+        
+        pattern = pattern_dict[lang]
+    else:
+        print('Catch-all case')
+        pattern = pattern_dict['en'] # this is a catch-all for Latin-based languages
+    filtered_sentence = re.findall(fr'[{pattern}]', sentence)
+    return ''.join(filtered_sentence)
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
 def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts_csv_filename: str) -> list:
@@ -103,23 +121,9 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     args:
         sentence - string in target language
         
-        part_of_speech -    ADJ: adjective
-                            ADP: adposition
-                            ADV: adverb
-                            AUX: auxiliary
-                            CCONJ: coordinating conjunction
-                            DET: determiner
-                            INTJ: interjection
-                            NOUN: noun
-                            NUM: numeral
-                            PART: particle
-                            PRON: pronoun
-                            PROPN: proper noun
-                            PUNCT: punctuation
-                            SCONJ: subordinating conjunction
-                            SYM: symbol
-                            VERB: verb
-                            X: other
+        part_of_speech -    ADJ: adjective, ADP: adposition, ADV: adverb, AUX: auxiliary, CCONJ: coordinating conjunction, DET: determiner
+                            INTJ: interjection, NOUN: noun, NUM: numeral, PART: particle, PRON: pronoun, PROPN: proper noun, PUNCT: punctuation
+                            SCONJ: subordinating conjunction, SYM: symbol, VERB: verb, X: other
         
         nlp - spacy.Language, specifically the one you're using in the program - this is passed in as arg so that it can be loaded in server script and not reloaded everytime a prompt is generated
         
@@ -162,5 +166,7 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     
     return formatted_prompt
 
-#sentence = '啊，我猜他可能一只手往塞着披萨，另一只手看管。、要的是了，正在招人有找到了人SupAheod'
-#print(generate_prompt_from_sentence_and_part_of_speech(sentence, 'VERB', spacy.load("zh_core_web_sm")))
+# sentence = 'Я вижу собаку, 고양이가 나무에 올라가요, 猫在树上, стол 자동차 un chat est sur la table, и это замечательно 你好，最近怎麼樣? Bonjour, comment ça va 어떻게 지내세요、こんにちは、お元気ですか要的是了，正在招人有找到了人SupAheod () 1010万'
+# langs = ['zh_core_web_sm', "fr_core_news_sm", "ja_core_news_sm", "ko_core_news_sm", "ru_core_news_sm"]
+# for l in langs: 
+#     print(find_parts_of_speech_in_sentence(sentence, 'NOUN', spacy.load(l)))

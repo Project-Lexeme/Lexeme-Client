@@ -37,3 +37,8 @@ def post_prompt_to_LLM(prompt:str):
 
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
+
+# set_url("http://10.0.0.16:1234/V1")
+# set_model("aya-23-8b@f16:2")
+# set_api_key('lm-studio')
+# post_prompt_to_LLM("Testing here")

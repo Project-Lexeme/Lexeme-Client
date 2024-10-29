@@ -33,6 +33,10 @@ think about poisoning
 
 '''
 
+'''
+python -m PyInstaller main.spec main.py
+'''
+
 
 app = Flask(__name__)
 

@@ -35,7 +35,8 @@ def get_language_and_proficiency():
     # language code values are [OCR lang code,SpaCy code]
     language_codes = {"English":["eng", "en_core_web_sm"], "Spanish":["spa", 'es_core_news_sm'] , "French":["fra","fr_core_news_sm"], 
                       "German":["deu","de_core_news_sm" ], "Chinese Simplified":["chi_sim", "zh_core_web_sm"], 
-                      "Chinese Traditional":["chi_tra", "zh_core_web_sm"] , "Japanese":["jpn", "ja_core_news_sm"], "Korean":["kor","ko_core_news_sm"], "Russian":['rus',"ru_core_news_sm"]}
+                      "Chinese Traditional":["chi_tra", "zh_core_web_sm"] , "Japanese":["jpn", "ja_core_news_sm"], 
+                      "Korean":["kor","ko_core_news_sm"], "Russian":['rus',"ru_core_news_sm"]}
 
     languages = [lang for lang in language_codes.keys()]
     # Variable to hold the selected language
