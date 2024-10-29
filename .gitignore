@@ -1,8 +1,6 @@
 # Ignore CSVs with learner profiles
 *.csv
 !*_prompts.csv
-!*_samples.csv
-!subtitles.csv
 !learner_profile_sample.csv
 
 # Ignore screencaps

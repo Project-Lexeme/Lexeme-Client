@@ -24,6 +24,15 @@ TODO: add support for config file with LLM API info, potentially have user-input
 
 '''
 
+'''
+Prompts could include the use of previously touched terms as reinforcement - e.g. Give me a summary of x. Please use as many touched terms as possible.
+Pictures
+prompts that broaden context around a target term by teaching related terms
+specify context of terms or choose multiple contexts to define terms
+think about poisoning 
+
+'''
+
 
 app = Flask(__name__)
 
