@@ -2,9 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 import pip
+import spacy
+from spacy.cli import download
 import config
 import os
 from pathlib import Path
+import sys
 
 # Function to update the second dropdown based on the selected language
 
@@ -20,6 +23,22 @@ def make_dirs():
     subtitle_path.mkdir(parents=True, exist_ok=True)
     # data_path = Path(os.path.join(path, 'data'))
     # data_path.mkdir(parents=True, exist_ok=True)
+
+def install_and_load_nlp_lang(module_name): 
+
+    if getattr(sys, 'frozen', False):
+        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}') #, fr'{module_name}[-.0-9]*') # _MEIPASS is temp directory, zh_core_web_sm is passed in .spec file to be stored in spacy/data/module name and config is stored in module name- version subdirectory
+        
+    else:
+        if module_name in spacy.util.get_installed_models():
+        # Attempt to import the module as test of whether it's there
+            module_name in spacy.util.get_installed_models()
+        else:
+            # If the module is not found, install it
+            print(f"{module_name} not found. Installing...")
+            download(module_name)
+        model_path = module_name
+    return spacy.load(model_path)
 
 def get_language_and_proficiency():
     selected_values = {"language": None, "proficiency": None}
