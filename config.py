@@ -45,34 +45,74 @@ def get_config(): # TODO
             LLMserver.set_model(cfg['Server']['model'])
 
     except FileNotFoundError: # this needs wrapped in a function and called instead of going here 
+        init_config()
         
-        def prompt_user_for_config():
-            base_url = simpledialog.askstring("Input", "Enter the base URL:")
-            api_key = simpledialog.askstring("Input", "Enter the API key:")
-            model = simpledialog.askstring("Input", "Enter the model:")
-            return base_url, api_key, model
-
-        # Initialize tkinter
-        root = tk.Tk()
-        root.withdraw()  # Hide the main window
-
-        # Get user input
-        base_url, api_key, model = prompt_user_for_config()
-
-        # Write the new config to the file
-        cfg['General'] = {'debug': True, 'log_level': 'info'}
-        cfg['Server'] = {
-            'base_url': base_url,
-            'api_key': api_key,
-            'model': model
-        }
-        
-        with open(os.path.join(data_dir, 'config.ini'), 'w') as configfile:
-            cfg.write(configfile)
-
-        # Set values for LLMserver
-        LLMserver.set_url(base_url)
-        LLMserver.set_api_key(api_key)
-        LLMserver.set_model(model)
 
     return cfg
+
+def init_config():
+    cfg = configparser.ConfigParser()
+    def prompt_user_for_config():
+        base_url = simpledialog.askstring("Input", "Enter the base URL:")
+        api_key = simpledialog.askstring("Input", "Enter the API key:")
+        model = simpledialog.askstring("Input", "Enter the model:")
+        return base_url, api_key, model
+
+        # Initialize tkinter
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+
+    # Get user input
+    base_url, api_key, model = prompt_user_for_config()
+
+    # Write the new config to the file
+    cfg['General'] = {'debug': True, 'log_level': 'info'}
+    cfg['Server'] = {
+        'base_url': base_url,
+        'api_key': api_key,
+        'model': model
+    }
+    data_dir = get_data_directory()
+    with open(os.path.join(data_dir, 'config.ini'), 'w') as configfile:
+        cfg.write(configfile)
+
+    # Set values for LLMserver
+    LLMserver.set_url(base_url)
+    LLMserver.set_api_key(api_key)
+    LLMserver.set_model(model)
+
+def set_config_default_language_and_proficiency(lang: str, proficiency: str):
+    cfg = configparser.ConfigParser()
+    data_dir = get_data_directory()
+    config_file_path = os.path.join(data_dir, 'config.ini')
+    cfg.read(config_file_path)
+
+    # Check if 'User' section exists
+    if not cfg.has_section('User'):
+        cfg.add_section('User')  # Create the section if it doesn't exist
+    
+    # Set values for primary_language and proficiency
+    cfg['User']['primary_language'] = lang
+    cfg['User']['proficiency'] = proficiency
+
+    try: 
+        # Write the updated configuration back to the file
+        with open(config_file_path, 'w') as configfile:
+            cfg.write(configfile)
+
+    except FileNotFoundError:
+        init_config()
+
+def get_config_default_language_and_proficiency()-> list[str]:
+    cfg = configparser.ConfigParser()
+    data_dir = get_data_directory()
+    try: 
+        with open(os.path.join(data_dir, 'config.ini'),'r') as configfile:
+            cfg.read_file(configfile)
+        lang_prof = [cfg['User']['primary_language'], cfg['User']['proficiency']]    
+
+    except FileNotFoundError: # this needs wrapped in a function and called instead of going here 
+        lang_prof = [None, None] # in startup.py, this removes default option from dropdown being a specific language
+    
+    
+    return lang_prof

@@ -5,23 +5,37 @@ a = Analysis(
     ['main.py'],
     pathex=['venv/Lib/site-packages'],
     binaries=[],
-    datas=[('venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
-    ('venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
-    ('venv/Lib/site-packages/pip', 'pip'),
-    ('venv/Lib/site-packages/pytesseract','pytesseract'),
-    ('templates', 'templates'),
-    ('index.html', '.' ),
-    ("C:/Program Files/Tesseract-OCR/tesseract.exe",'.'),
-    ('uploads/Screenshot.png','.'),
+    datas=[('templates', 'templates'), # html files other than index
+    ('index.html', '.' ), 
+    ("C:/Program Files/Tesseract-OCR/tesseract.exe",'.'), # this may need changed if compiled from a different machine
+    ('uploads/Screenshot.png','.'), # included so the program won't break if 'fetch from recent screenshot' button is clicked before anything else
     ],
-    hiddenimports=['pip','pip._internal','spacy','pytesseract'],
+    hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
     optimize=0,
+
 )
+
+# add modules here as they get missed in compile
+modules = [('venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
+    ('venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
+    ('venv/Lib/site-packages/pip', 'pip'),
+    ('venv/Lib/site-packages/pytesseract','pytesseract'),]
+
+a.datas += modules
+
+# add prompt csv here as they get added to project
+prompt_csvs = [('prompts/beginner_scaffolded_prompts.csv','.'),
+    ('prompts/intermediate_subtitle_prompts.csv', '.'),
+]
+
+a.datas += prompt_csvs
+
+
 pyz = PYZ(a.pure)
 
 exe = EXE(

@@ -21,8 +21,8 @@ def make_dirs():
     path = config.get_data_directory()
     subtitle_path = Path(os.path.join(path, 'subtitles'))
     subtitle_path.mkdir(parents=True, exist_ok=True)
-    # data_path = Path(os.path.join(path, 'data'))
-    # data_path.mkdir(parents=True, exist_ok=True)
+    prompt_path = Path(os.path.join(path, 'prompts'))
+    prompt_path.mkdir(parents=True, exist_ok=True)
 
 def install_and_load_nlp_lang(module_name): 
 
@@ -41,20 +41,21 @@ def install_and_load_nlp_lang(module_name):
     return spacy.load(model_path)
 
 def get_language_and_proficiency():
-    selected_values = {"language": None, "proficiency": None}
     
-    def update_second_dropdown(event):
-        options = ['No proficiency','Memorized proficiency','Elementary proficiency','Limited working proficiency','General professional proficiency','Advanced professional proficiency']
-
-        # Update the second dropdown with the new options
-        second_dropdown['values'] = options
-        second_dropdown.set("")  # Clear previous selection
+    try: lang, prof = config.get_config_default_language_and_proficiency()
+     
+    except Exception as e:
+        print(f"Couldn't find '{e}' portion of config")
+        lang, prof = 'Select Language', 'Select Proficiency' 
+    
+    selected_values = {"language": lang, "proficiency": prof}
 
     # Function to handle submission of both selections
     def submit_selection():
         selected_values['language'] = language_var.get()
-        selected_values['proficiency'] = second_var.get()
-        root.destroy()
+        selected_values['proficiency'] = proficiency_var.get()
+        print(f"Selected Language: {selected_values['language']}, Selected Proficiency: {selected_values['proficiency']}")
+        root.quit()
 
     # Create the main window
     root = tk.Tk()
@@ -66,31 +67,38 @@ def get_language_and_proficiency():
                       "German":["deu","de_core_news_sm" ], "Chinese Simplified":["chi_sim", "zh_core_web_sm"], 
                       "Chinese Traditional":["chi_tra", "zh_core_web_sm"] , "Japanese":["jpn", "ja_core_news_sm"], 
                       "Korean":["kor","ko_core_news_sm"], "Russian":['rus',"ru_core_news_sm"]}
+    proficiencies = ['No proficiency','Memorized proficiency','Elementary proficiency','Limited working proficiency','General professional proficiency','Advanced professional proficiency']
+
 
     languages = [lang for lang in language_codes.keys()]
-    # Variable to hold the selected language
-    # Variables to hold the selected values
-    language_var = tk.StringVar()
-    second_var = tk.StringVar()
+   
+
+    language_var = tk.StringVar(value=languages[0])     # Set to first language as default otherwise this breaks
+    proficiency_var = tk.StringVar(value=proficiencies[0])  # Set to first proficiency as default otherwise breaks
 
     # Create the first dropdown (combobox)
     language_combobox = ttk.Combobox(root, textvariable=language_var, values=languages)
-    language_combobox.set("Select a language")  # Set default text
-    language_combobox.bind("<<ComboboxSelected>>", update_second_dropdown)  # Bind event
+    language_combobox.set(lang)  # Set default text
+    # language_combobox.bind("<<ComboboxSelected>>", update_second_dropdown)  # Bind event
     language_combobox.pack(padx = 10, pady=10)
 
     # Create the second dropdown (combobox)
-    second_dropdown = ttk.Combobox(root, textvariable=second_var)
-    second_dropdown.set("Select a proficiency level")  # Set default text
+    second_dropdown = ttk.Combobox(root, textvariable=proficiency_var, values=proficiencies)
+    second_dropdown.set(prof)  # Set default text
     second_dropdown.pack(padx = 10, pady=10)
 
     # Create a submit button
     submit_button = tk.Button(root, text="Submit", command=submit_selection)
     submit_button.pack(pady=20)
 
+    
+
     # Start the Tkinter event loop
     root.mainloop()
-
+    
+    config.set_config_default_language_and_proficiency(selected_values['language'], selected_values['proficiency'])
+    print(f"{selected_values}")
+    root.destroy()
     return language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']
 
 #print(get_config())
