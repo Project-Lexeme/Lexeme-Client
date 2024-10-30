@@ -7,6 +7,12 @@ from tkinter import ttk
 from tkinter import simpledialog
 import LLMserver
 
+'''
+url: http://10.0.0.10:1234/V1
+api_key: aya-23-8b@f16
+model: aya-23-8b@f16
+'''
+
 # Define a global variable
 data_dir = None
 

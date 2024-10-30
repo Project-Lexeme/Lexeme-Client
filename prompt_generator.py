@@ -12,11 +12,14 @@ from logger import get_subtitles_csv
 def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
     if choice.endswith('.csv'):
         data = get_subtitles_csv(choice)
-        prompt = f"""The following is a list of line-break-separated subtitles from a movie. Please do not guess what specific movie this comes from. 
+        prompt = f"""The following is a list of line-break-separated subtitles from a movie. DO NOT GUESS what movie this comes from. 
         There may be multiple characters in the scene talking in these subtitles. 
-        You can ignore errant punctuation marks or individual characters without context.
-        What information can you get from this exchange? Please share a paragraph in only simplified Chinese about this situation.
-        If there are any useful idioms in the text, could you share a single sentence describing what they mean? 
+        You can ignore errant punctuation marks or individual words without context. 
+        There will also be errant subtitles, so don't focus too much on words that break with the context.
+        Please use HTML <p> formatting to make it legible.
+        What information can you get from this exchange? Please use only English for this answer.
+        If there are any useful nouns that an advanced Chinese learner may not know, 
+        could you share a single sentence describing what they mean, both in English and Chinese? 
         '{data}'
         """
         print(data)

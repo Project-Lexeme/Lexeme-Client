@@ -165,7 +165,7 @@ def start_app():
     startup.install_and_import('pytesseract')
     setup_pytesseract.setup_tessdata(language)
     print("PyTesseract set up!")
-    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=1) ## TODO: revisit preprocess, explore pytesseract config files
+    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
     set_recorder(recorder)
     print("ScreenRecorder is set up")
     webbrowser.open('http://127.0.0.1:5000/')
