@@ -7,7 +7,7 @@
 *.png
 
 # Ignore config file
-*.ini
+data/config.ini
 
 # Ignore tessdata directory
 tessdata/*
