@@ -9,20 +9,11 @@ from logger import get_subtitles_csv
 
 
 # TODO TODAY: generate_prompt_from_choice needs to pull from csvs for end users to customize
-def generate_prompt_from_choice(choice: str): # TODO: refine this bad boy to have some more nuance
+def generate_prompt_from_choice(choice: str): # TODO: create thread from user proficiency choice and type of intended lesson to point to the correct {proficiency}_subtitle_prompt_csv
     if choice.endswith('.csv'):
-        data = get_subtitles_csv(choice)
-        prompt = f"""The following is a list of line-break-separated subtitles from a movie. DO NOT GUESS what movie this comes from. 
-        There may be multiple characters in the scene talking in these subtitles. 
-        You can ignore errant punctuation marks or individual words without context. 
-        There will also be errant subtitles, so don't focus too much on words that break with the context.
-        Please use HTML <p> formatting to make it legible.
-        What information can you get from this exchange? Please use only English for this answer.
-        If there are any useful nouns that an advanced Chinese learner may not know, 
-        could you share a single sentence describing what they mean, both in English and Chinese? 
-        '{data}'
-        """
-        print(data)
+        #data = get_subtitles_csv(choice)
+        prompt = generate_prompt_from_list_of_subtitles('data/prompts/intermediate_subtitle_prompts.csv', f'data/subtitles/{choice}')
+        print(prompt)
         return prompt
 
     else:         
@@ -105,16 +96,27 @@ def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[s
     for target in target_parts_of_speech:
         target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
 
-def generate_prompt_from_list_of_subtitles(csv_filepath: str, prompt: str) -> str:
+def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'summary') -> str:
     '''
-    # TODO: think about whether these prompts should also come from a csv so that we can have variety
-
-    filepath - location of csv with recent subtitles
-    returns a formatted text string
-    '''
-    # TODO: take in a csv location and return a formatted text string
+    supported prompt_type is based on coumn in subtitle_prompts csv. currently just 'summary'
     
-    return ''
+    returns a formatted text string that is the prompt to send to the LLM
+    '''
+    prompt_df = pd.read_csv(prompt_csv_filepath)
+    if prompt_type == 'summary':
+        filtered_df = prompt_df[prompt_df['Type'] == 'Summary']
+
+    # else if prompt_type == 'grammar_lesson'
+        # filtered_df = df[df['Type'] == 'Grammar Lesson']
+
+    max_index = len(filtered_df)
+    empty_prompt = filtered_df.loc[random.randrange(0,max_index),'Prompt']
+    
+    subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
+    subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist())
+
+    formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
+    return formatted_prompt
 
     
 def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random'): 
