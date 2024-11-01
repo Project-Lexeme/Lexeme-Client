@@ -72,7 +72,7 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
                 logger.log_term(term, 'Number of touches')
     prompt = prompt_generator.generate_prompt_from_choice(choice)
 
-    llm_response = LLMserver.post_prompt_to_LLM(prompt)
+    llm_response = LLMserver.post_prompt_to_LLM(prompt, _language) # TODO: 
     return render_template('lesson.html', choice=choice, llm_response=llm_response)
 
 @app.route('/review-choices')
@@ -156,16 +156,16 @@ def start_app():
     startup.make_dirs()
     set_cfg(config.get_config())
     print("Config loaded successfully!")
-    language, nlp_lang, proficiency = startup.get_language_and_proficiency()
+    language, codes_and_proficiency =  startup.get_language_and_proficiency()
+    lang_code, nlp_lang, proficiency = codes_and_proficiency
     print(f"You chose {language} at a {proficiency} level!") # not currently doing anything with language/nlp_lang
-    set_language(language)
+    set_language(lang_code)
     set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
     print("SpaCy installed, imported, and loaded")
     print("Setting up PyTesseract now...")
-    startup.install_and_import('pytesseract')
-    setup_pytesseract.setup_tessdata(language)
+    setup_pytesseract.setup_tessdata(lang_code)
     print("PyTesseract set up!")
-    recorder = ScreenRecorder(language=language, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
+    recorder = ScreenRecorder(language=lang_code, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
     set_recorder(recorder)
     print("ScreenRecorder is set up")
     webbrowser.open('http://127.0.0.1:5000/')

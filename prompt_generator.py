@@ -12,7 +12,7 @@ from logger import get_subtitles_csv
 def generate_prompt_from_choice(choice: str): # TODO: create thread from user proficiency choice and type of intended lesson to point to the correct {proficiency}_subtitle_prompt_csv
     if choice.endswith('.csv'):
         #data = get_subtitles_csv(choice)
-        prompt = generate_prompt_from_list_of_subtitles('data/prompts/intermediate_subtitle_prompts.csv', f'data/subtitles/{choice}')
+        prompt = generate_prompt_from_list_of_subtitles(f'{config.get_data_directory()}/prompts/intermediate_subtitle_prompts.csv', f'{config.get_data_directory()}/subtitles/{choice}')
         print(prompt)
         return prompt
 

@@ -1,3 +1,4 @@
+import shutil
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
@@ -9,13 +10,6 @@ import os
 from pathlib import Path
 import sys
 
-# Function to update the second dropdown based on the selected language
-
-def install_and_import(package):
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package])
 
 def make_dirs():
     path = config.get_data_directory()
@@ -23,6 +17,19 @@ def make_dirs():
     subtitle_path.mkdir(parents=True, exist_ok=True)
     prompt_path = Path(os.path.join(path, 'prompts'))
     prompt_path.mkdir(parents=True, exist_ok=True)
+    populate_prompts()
+
+def populate_prompts():
+     if getattr(sys, 'frozen', False):
+        prompt_dir = os.path.join(sys._MEIPASS, 'data', 'prompts')
+        for f in os.listdir(prompt_dir):
+            if f.endswith('.csv'):
+                source_file = os.path.join(sys._MEIPASS, 'data', 'prompts', f)
+                target_file = os.path.join(config.get_data_directory(), 'prompts', f)
+            # Copy the .csv file to the target directory
+            shutil.copy(source_file, target_file)
+            print(f'Copied: {source_file} to {target_file}')
+    
 
 def install_and_load_nlp_lang(module_name): 
 
@@ -54,7 +61,6 @@ def get_language_and_proficiency():
     def submit_selection():
         selected_values['language'] = language_var.get()
         selected_values['proficiency'] = proficiency_var.get()
-        print(f"Selected Language: {selected_values['language']}, Selected Proficiency: {selected_values['proficiency']}")
         root.quit()
 
     # Create the main window
@@ -97,8 +103,7 @@ def get_language_and_proficiency():
     root.mainloop()
     
     config.set_config_default_language_and_proficiency(selected_values['language'], selected_values['proficiency'])
-    print(f"{selected_values}")
     root.destroy()
-    return language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']
+    return (selected_values['language'], [language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']])
 
 #print(get_config())
