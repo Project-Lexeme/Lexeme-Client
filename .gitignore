@@ -22,3 +22,5 @@ data
 
 # Ignore .pyc files
 *.pyc
+
+*DS_Store
