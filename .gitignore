@@ -18,7 +18,7 @@ venv
 # Ignore build, data, and dist files
 build
 dist
-data
+
 
 # Ignore .pyc files
 *.pyc

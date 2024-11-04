@@ -8,7 +8,8 @@ a = Analysis(
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
-        ("C:/Program Files/Tesseract-OCR/tesseract.exe", '.'),  # Adjust as needed
+        #("C:/Program Files/Tesseract-OCR/tesseract.exe", '.'),  # deprecated
+        ("../tesseract.exe",'.'),
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),

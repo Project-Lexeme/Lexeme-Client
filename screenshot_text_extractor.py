@@ -6,6 +6,7 @@ import numpy as np
 import os
 import sys
 
+# need to wrap this into a class to store global params, such whether the language requires spaces between characters 
 
 def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
     # returns string of the text detected in the image
@@ -30,7 +31,7 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
         for i, w in enumerate(d['conf']):
             print(f"{d['text'][i]} with confidence {d['conf'][i]}")
 
-    text = ''.join(d['text'])
+    text = ''.join([f'{t} ' for t in d['text']]) # add spaces between characters (needs to be implemented only in certain languages)
 
     
     if minimum_confidence != None:
@@ -50,7 +51,7 @@ def filter_low_confidence(data: dict, min_confidence: int) -> list:
         if data['conf'][i] > min_confidence:
             filtered_data.append(data['text'][i])
 
-    filtered_text = ''.join(filtered_data)
+    filtered_text = ''.join([f'{t} ' for t in filtered_data]) 
     return filtered_text
 
 def display_text_box_image(data: dict, img: np.array) -> None:
@@ -82,6 +83,7 @@ def preprocess_image(img: np.array) -> np.array: # TODO: work on this
     #     11,
     #     2
     # )
+
     
     edges = cv.Canny(blurred, threshold1=100, threshold2=200)
 

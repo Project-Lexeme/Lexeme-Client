@@ -12,9 +12,11 @@ import app
 TODO: look closer at how choices get passed back and forth 
 TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
 TODO: work on screen recorder OCR performance
+    genetic based OCR
 TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
 TODO: think about things to do with learner profile and log every subtitle into touched_terms as appropriate
-TODO: fix subtitle bug where all whitespace is stripped 
+
+
 
 '''
 
