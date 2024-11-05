@@ -1,3 +1,4 @@
+import random
 import pytesseract
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -81,24 +82,101 @@ def preprocess_image(img: np.array) -> np.array: # TODO: work on this
 
     # Apply Gaussian Blur to reduce noise
     blurred = cv.GaussianBlur(img, (3, 3), 0) #(5, 5)
-
-    # # Apply adaptive thresholding to enhance text visibility
-    # thresh = cv.adaptiveThreshold(
-    #     blurred,
-    #     255,
-    #     cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-    #     cv.THRESH_BINARY,
-    #     11,
-    #     2
-    # )
-
-    
     edges = cv.Canny(blurred, threshold1=100, threshold2=200)
 
     return edges
 
+# everything in triple quotes is the earliest version of the thread of comparing two screenshot preprocessings and taking the best to be the parent of the next generation
+
+''' 
+img = cv.imread(r'E:/ProjectLexeme/uploads/Screenshot.png')
+if len(img.shape) == 3:
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+noise_removal_dict = {None : [[]],
+                      cv.GaussianBlur : [[img], 
+                                         [(3,3), (5,5), (7,7), (9,9), (11,11)],
+                                         [0]], 
+                      cv.medianBlur: [[img], 
+                                      [3,5,7,9]],} 
+thresholding_dict = {None : [[]],
+                     cv.threshold: [[img], # returns tuple (___, thresh)
+                                    [100,120,140], 
+                                    [255], 
+                                    [cv.THRESH_BINARY, cv.THRESH_BINARY_INV, cv.THRESH_TRUNC, cv.THRESH_TOZERO, # thresh function
+                                     cv.THRESH_TOZERO_INV, cv.THRESH_BINARY + cv.THRESH_OTSU]],}
+edge_detection_dict = {None : [[]],
+                        cv.Canny: [[img],
+                                  [50,100,130], # low thresh
+                                  [150,180,210]], # high thresh
+                        cv.Sobel: [[img],
+                                   [cv.CV_64F], 
+                                   [1, 2], # dx
+                                   [0, 1, 2], # dy
+                                   [3, 5]] # ksize
+                                   } 
+
+def get_random_preprocessing(img, preprocessing_dict):
+    preprocessing_list = list(preprocessing_dict.keys())
+    preprocessing_algorithm_index = random.randrange(0, len(preprocessing_list)) # need to store index separately for genetic purposes
+    preprocessing_algorithm = preprocessing_list[preprocessing_algorithm_index] # algorithm is stored as a 
+    if preprocessing_algorithm == None:
+        return (img, None, [[]])
+    param_options = preprocessing_dict[preprocessing_algorithm] # params associates with given index, so
+    params = get_rand_params(param_options)
+    return (preprocessing_algorithm(*params), preprocessing_algorithm, params)
+    
+def get_rand_params(param_options: list):
+    params = []
+    for param_type in param_options:
+        if len(param_type) > 1:
+            param_index = random.randrange(0, len(param_type))
+            params.append(param_type[param_index]) # introduce randomness
+        else:
+            params.append(param_type[0])
+    return params    
 
 
+# define img up here to implicitly pass it in to these functions
+img, noise_algorithm, noise_params = get_random_preprocessing(img, noise_removal_dict)
+thresh_results = get_random_preprocessing(img, thresholding_dict)
+try: (_, img), thresh_algorithm, thresh_params = thresh_results
+except: img, thresh_algorithm, thresh_params = thresh_results
+img, edge_algorithm, edge_params = get_random_preprocessing(img, edge_detection_dict)
+print(edge_params)
+
+# compare with previous choices
+img2 = cv.imread(r'E:/ProjectLexeme/uploads/Screenshot.png')
+if len(img2.shape) == 3:
+        img2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+
+### set each 'img' arg in each set of params as new img2
+noise_params[0] = img2
+thresh_params[0] = img2
+edge_params[0] = img2
+###
+if noise_algorithm is not None:
+    img2 = noise_algorithm(*noise_params)
+if thresh_algorithm is not None:
+    _, img2 = thresh_algorithm(*thresh_params)
+if edge_algorithm is not None:
+    img2 = edge_algorithm(*edge_params)
+# cv.imshow("rand", img)
+
+img, noise_algorithm, noise_params = get_random_preprocessing(img, noise_removal_dict)
+thresh_results = get_random_preprocessing(img, thresholding_dict)
+try: (_, img), thresh_algorithm, thresh_params = thresh_results
+except: img, thresh_algorithm, thresh_params = thresh_results
+img, edge_algorithm, edge_params = get_random_preprocessing(img, edge_detection_dict)
+
+concatenated_image = np.hstack((img, img2))
+
+# Show the concatenated image in one window
+cv.imshow('Comparison', concatenated_image)
+
+cv.waitKey(0)
+cv.destroyAllWindows()
+'''
 # language = "chi_sim"
 # tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
 # pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
