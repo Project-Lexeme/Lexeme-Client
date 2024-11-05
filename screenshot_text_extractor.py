@@ -31,11 +31,13 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
         for i, w in enumerate(d['conf']):
             print(f"{d['text'][i]} with confidence {d['conf'][i]}")
 
-    text = ''.join([f'{t} ' for t in d['text']]) # add spaces between characters (needs to be implemented only in certain languages)
-
+    if language not in ['chi_sim','chi_tra','kor','jpn']: # checks for languages that don't add spaces between characters
+        text = ''.join([f'{t} ' for t in d['text']]) # add spaces between characters
+    else:
+        text = ''.join(d['text']) # no spaces
     
     if minimum_confidence != None:
-        text = filter_low_confidence(d, minimum_confidence)
+        text = filter_low_confidence(d, minimum_confidence, language)
 
     if display_text_boxes == True: 
         display_text_box_image(d, image)
@@ -43,15 +45,21 @@ def read_text_from_image(filepath: str, language: str, preprocessing=False, **kw
     print(text)
     return text
 
-def filter_low_confidence(data: dict, min_confidence: int) -> list:
+def filter_low_confidence(data: dict, min_confidence: int, language) -> list:
     # filters text below a given min_confidence (0-100, 80 being a decent threshold)
+    # TODO: instead of returning list of filtered text, just create new data dict and return that so the join doesn't have to happen twice. 
     filtered_data = []
 
     for i, c in enumerate(data['conf']):
         if data['conf'][i] > min_confidence:
             filtered_data.append(data['text'][i])
-
-    filtered_text = ''.join([f'{t} ' for t in filtered_data]) 
+    
+    if language not in ['chi_sim','chi_tra','kor','jpn']: # checks for languages that don't add spaces between characters
+        filtered_text = ''.join([f'{t} ' for t in filtered_data]) # add spaces between characters 
+    else:
+        filtered_text = ''.join(filtered_data) # no spaces
+    
+ 
     return filtered_text
 
 def display_text_box_image(data: dict, img: np.array) -> None:
