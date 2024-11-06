@@ -61,7 +61,7 @@ def draw_rectangle(root):
     return 
 
 class ScreenRecorder:
-    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps):
+    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing):
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
@@ -70,6 +70,7 @@ class ScreenRecorder:
         self.language = language
         self.use_preprocessing = use_preprocessing
         self.minimum_confidence = minimum_confidence
+        self.use_comparative_preprocessing = use_comparative_preprocessing
         self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'  # TODO: think about how to create folder for this
         self.config = config
         self.time_between_screencaps = time_between_screencaps
@@ -138,7 +139,10 @@ class ScreenRecorder:
             return False
         
     def log_screencap_subtitles(self):
-        text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        if self.use_comparative_preprocessing == True:
+            text = screenshot_text_extractor.comparative_read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config)
+        else:
+            text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
 
