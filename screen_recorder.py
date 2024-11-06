@@ -143,6 +143,7 @@ class ScreenRecorder:
             text = screenshot_text_extractor.comparative_read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config)
         else:
             text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
 

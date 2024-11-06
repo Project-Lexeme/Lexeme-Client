@@ -1,11 +1,3 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
-import os
-import screenshot_text_extractor, prompt_generator, startup, setup_pytesseract, config
-from screen_recorder import ScreenRecorder 
-import LLMserver
-import logger
-import webbrowser
-from pathlib import Path
 import app
 
 ''' 

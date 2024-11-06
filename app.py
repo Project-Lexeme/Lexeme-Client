@@ -66,7 +66,7 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
         #print(f"this is in get lesson{text}")
         for sentence in text:
             #print(f"this is the first sentence: {sentence}")
-            terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, 'NOUN', _nlp)
+            terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _nlp)
             for term in terms:
                 #print(f"this is the first term: {term}")
                 logger.log_term(term, 'Number of touches')
@@ -115,11 +115,6 @@ def upload_image(): #TODO refactor to simplify if possible
     # Save the file to the designated folder
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path)
-
-    # NOTIONAL 
-    # text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=language, preprocessing=True, minimum_confidence=70)
-    # logger.log_subtitle(text, 'subtitles.csv')
-    # # NOTIONAL
 
     return jsonify({'message': 'Image received and processed'}), 200
 

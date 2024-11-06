@@ -32,13 +32,13 @@ def generate_prompt_from_choice(choice: str): # TODO: create thread from user pr
         """
         return prompt
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: str, nlp: spacy.Language) -> list:
+def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list:
     filtered_sentence = filter_different_scripts(sentence, nlp)
     print(filtered_sentence)
     parts_of_speech = []
     doc = nlp(filtered_sentence)
     for token in doc:
-        if token.pos_ == part_of_speech:
+        if token.pos_ in part_of_speech:
             #TODO: get rid of nouns that just don't make damn sense
             parts_of_speech.append(token.text)
     return parts_of_speech

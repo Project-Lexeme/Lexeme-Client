@@ -16,6 +16,8 @@ if not getattr(sys, 'frozen', False):
 # TODO: comparative_read_text_from_image() needs to be thought about considerably
         it seems like the computational overhead for tesseract to extract text is sufficiently low that we can really expand how this thing 
         compares different preprocessed image scores
+# TODO: think about low-effort ways to compare performance on differently preprocessed images that is immune to no text on screen or other errant situations
+
 '''
 
 def check_img_tesseract_compatibility(img): # converts img if preprocessing turned it into not-tesseract friendly dtype/color
@@ -26,22 +28,22 @@ def check_img_tesseract_compatibility(img): # converts img if preprocessing turn
     if img.mode == 'F':
         img = img.convert('RGB')
     return img
+
 def comparative_read_text_from_image(filepath: str, language: str, display_comparison=False, **kwargs): 
     minimum_confidence = kwargs.get('minimum_confidence')
     print_confidence_levels = kwargs.get('print_confidence_levels')
     display_text_boxes = kwargs.get('display_text_boxes')
     config = kwargs.get("config")
 
-    img = cv.imread(filepath)
     global previous_parent_params
     global previous_parent_algorithms
 
+    img = cv.imread(filepath)
     parent_param_img, random_param_img, random_algorithms, random_params = comparative_preprocessing(img, previous_parent_algorithms, previous_parent_params, display_comparison)
     
     # below checks for some edge cases in preprocessing where the preprocessing changes the underlying img mode and it errors pytesseract.image_to_data
     random_param_img = check_img_tesseract_compatibility(random_param_img)    
     parent_param_img = check_img_tesseract_compatibility(parent_param_img)
-
 
     if config:
         parent_param_data = pytesseract.image_to_data(parent_param_img, output_type=pytesseract.Output.DICT, lang=language, config=config)
@@ -56,9 +58,10 @@ def comparative_read_text_from_image(filepath: str, language: str, display_compa
             print(f"p: {parent_param_data['text'][i]} with confidence {parent_param_data['conf'][i]}")
         for i, w in enumerate(random_param_data['conf']):
             print(f"r: {random_param_data['text'][i]} with confidence {random_param_data['conf'][i]}")
-    parent_param_conf_sum = sum([conf for conf in parent_param_data['conf'] if conf > 50])
+
+    parent_param_conf_sum = sum([conf for conf in parent_param_data['conf'] if conf > 50]) # TODO: think about this filter
     random_param_conf_sum = sum([conf for conf in random_param_data['conf'] if conf > 50])
-    #random_param_conf_sum = sum(random_param_data['conf'][random_param_data['conf'] > 50])
+
     if random_param_conf_sum > parent_param_conf_sum:
         previous_parent_algorithms = random_algorithms
         previous_parent_params = random_params
