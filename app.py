@@ -81,13 +81,19 @@ def get_review_choices():
     return jsonify(choices)
 
 @app.route('/get-subtitle-files')
-def get_subtitle_files(): #TODO: fix this to reflect changes in file saving function in logger
+def get_subtitle_files(): 
     file_extension = '.csv' 
     subtitle_directory = os.path.join(config.get_data_directory(), 'subtitles')
     files = [f for f in os.listdir(subtitle_directory) if os.path.isfile(os.path.join(subtitle_directory, f)) and f.endswith(file_extension)]
     print(os.listdir(subtitle_directory))
     print(files)
     return files
+
+@app.route('/get-learner-profile')
+def get_learner_profile():
+    learner_profile = logger.get_terms()
+    return render_template('learner_profile.html', csv_data=learner_profile)
+        
 
 
 @app.route('/choices', methods=['GET'])

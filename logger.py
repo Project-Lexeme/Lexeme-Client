@@ -36,11 +36,18 @@ def log_term(term: str, on: str):
     
     touched_terms.to_csv(f'{config.get_data_directory()}/learner_profile.csv', index=False)
 
-def get_terms(sort_by='weakest'):
+def get_terms(sort_by='weakest', qty=0):
+    '''
+    if qty == 0, returns all terms, else returns the number requested
+    '''
+
     terms_df = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv')
     if sort_by == 'weakest': ## TODO: add in actual support for sorting here
         terms = terms_df['Term'].to_list()
-    return terms
+    if qty == 0:
+        return terms
+    else:
+        return terms[:qty-1]
 
 def log_subtitle(subtitle: str, filepath: str, drop_duplicates=True):
     # TODO: add support for appending subtitles from a specific recording into a specific csv (please create new csv for each time this happens)
@@ -70,6 +77,7 @@ def get_subtitles_csv(filename: str) -> list:
         data = str(f.read()).split('\n')
         data.remove('')
     return data
+
 
 #log('老师', on='Number of touches)
 #print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))

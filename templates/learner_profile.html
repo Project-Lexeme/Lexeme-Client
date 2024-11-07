@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #333;
+        }
+        #csv-container {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            max-height: 400px;
+            overflow-y: scroll;
+            font-family: monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        h3 {
+            margin-top: 20px;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        function sendResponse(response) {
+            fetch('/submit-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ response: response })
+            })
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = '/';
+                } else {
+                    throw new Error('Error sending response');
+                }
+            })
+            .catch(error => console.error('Fetch error:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Lesson Page</h1>
+    <div id="lesson-content">
+        Loading lesson content...
+        <div id="choice-message"></div>
+    </div>
+
+    <script>
+        // Get the choice from the query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const choice = urlParams.get('choice');
+
+        // Display the choice in the lesson content area
+        const choiceMessage = document.getElementById('choice-message');
+        if (choice) {
+            choiceMessage.textContent = `You navigated to the lesson with choice: ${choice}`;
+        } else {
+            choiceMessage.textContent = 'No choice was provided.';
+        }
+    </script>
+
+    <h3>Learner profile:</h3>
+    <div id="csv-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                    <th>Column 3</th>
+                    <th>Column 4</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows from the CSV -->
+                {% for i in range(0, csv_data|length, 4) %}
+                    <tr>
+                        <td>{{ csv_data[i] if i < csv_data|length else '' }}</td>
+                        <td>{{ csv_data[i+1] if i+1 < csv_data|length else '' }}</td>
+                        <td>{{ csv_data[i+2] if i+2 < csv_data|length else '' }}</td>
+                        <td>{{ csv_data[i+3] if i+3 < csv_data|length else '' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
