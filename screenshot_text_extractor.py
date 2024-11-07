@@ -29,7 +29,7 @@ def check_img_tesseract_compatibility(img): # converts img if preprocessing turn
         img = img.convert('RGB')
     return img
 
-def comparative_read_text_from_image(filepath: str, language: str, display_comparison=False, **kwargs): 
+def comparative_read_text_from_image(filepath: str, language: str, display_comparison=True, **kwargs): 
     minimum_confidence = kwargs.get('minimum_confidence')
     print_confidence_levels = kwargs.get('print_confidence_levels')
     display_text_boxes = kwargs.get('display_text_boxes')
@@ -196,6 +196,20 @@ def comparative_preprocessing(img, previous_algorithms, previous_params, show_co
                                     [1, 2], # dx
                                     [0, 1, 2], # dy
                                     [3, 5]]} # ksize
+    laplacian_dict = {None : [[]],
+                      cv.Laplacian: [[random_param_img],
+                                    [cv.CV_64F],
+                                    [3, 5, 7, 9, 11], # ksize 
+                                    [1, 2, 3, 4, 5], # scale
+                                    [1.0, 2.0, 3.0], # delta
+                                    [cv.BORDER_DEFAULT, cv.BORDER_REPLICATE, cv.BORDER_REFLECT]], # borderType
+                      cv.convertScaleAbs: [[random_param_img],
+                                         [1.0, 1.5, 2.0], # alpha
+                                         [0, 5, 10]], # beta
+                      cv.threshold: [[random_param_img],
+                                   [80, 100, 120, 140], # threshold value
+                                   [255], # maxval
+                                   [cv.THRESH_BINARY, cv.THRESH_BINARY_INV, cv.THRESH_TRUNC]]} # threshold type
     
     # define img up here to implicitly pass it in to these functions
     random_param_img, noise_algorithm, noise_params = get_random_preprocessing(random_param_img, noise_removal_dict)
