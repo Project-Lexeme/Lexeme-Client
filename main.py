@@ -11,7 +11,8 @@ TODO: store dicts in data/dictionaries
     cedict_ts.u8
     https://github.com/Badestrand/russian-dictionary
     https://github.com/garfieldnate/kengdic/blob/master/kengdic.tsv
-    
+    https://en.wiktionary.org/wiki/User:Matthias_Buchmeier
+
 TODO: create common dictionary type 
 
 '''
