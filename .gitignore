@@ -9,6 +9,10 @@
 # Ignore config file
 data/config.ini
 
+# Ignore unstandardized dictionaries
+data/dictionaries/*.txt
+data/dictionaries/*.u8
+
 # Ignore tessdata directory
 tessdata/*
 
