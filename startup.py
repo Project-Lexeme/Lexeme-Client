@@ -48,6 +48,9 @@ def install_and_load_nlp_lang(module_name):
     return spacy.load(model_path)
 
 def get_language_and_proficiency():
+    #TODO: fix below bug
+    ## if no config found, this is not writing the selected lang,prof in the initial config. instead
+    ## it defaults to eng, no prof
     
     try: lang, prof = config.get_config_default_language_and_proficiency()
      
