@@ -63,12 +63,9 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
     choice = request.args.get('choice', 'No choice provided')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
-        #print(f"this is in get lesson{text}")
         for sentence in text:
-            #print(f"this is the first sentence: {sentence}")
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _nlp)
             for term in terms:
-                #print(f"this is the first term: {term}")
                 logger.log_term(term, 'Number of touches')
     prompt = prompt_generator.generate_prompt_from_choice(choice)
 

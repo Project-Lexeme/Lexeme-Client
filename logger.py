@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 import os
 import config
+import dictionary
 
 
 def check_for_learner_profile():
@@ -12,7 +13,7 @@ def check_for_learner_profile():
         with csv_file.open('w') as f:
             f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
-def log_term(term: str, on: str):
+def log_term(term: str, on: str, language: str):
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
     '''
@@ -20,15 +21,35 @@ def log_term(term: str, on: str):
 
     touched_terms = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv') # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
+    term_dictionary_contents = dictionary.get_term_dictionary_contents(term, language)
+    
 
     if len(indexer) == 0: # if term is not in list of terms
+        # # need to also concat definition and other language info
         to_concat = pd.DataFrame({'Term': [term], on: [1]}) # this is going to add 1 to whichever column you passed as 'on'
-        touched_terms = pd.concat([touched_terms,to_concat],ignore_index=True)
-        
-
-    elif len(indexer) == 1: # if term appears in list of terms once, as intened
+        to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])
+        # If term_dictionary_contents is not empty, create a DataFrame from it
+        if len(term_dictionary_contents) > 0:
+            touched_terms = pd.concat([touched_terms,to_concat],axis=0).reset_index(drop=True)  
+            
+    elif len(indexer) == 1: # if term appears in list of terms once, as intended
+        # need to also concat definition and other language info
         touched_terms.loc[touched_terms['Term'] == term, on] += 1
+        if len(term_dictionary_contents) > 0:
+            # Merge df1 with df2 on matching terms ('Term' in df1 and 'term' in df2)
+            merged = touched_terms.merge(term_dictionary_contents, left_on='Term', right_on='term', how='left', suffixes=('', '_from_df2'))
 
+            # Fill NaN values in df1 columns with values from df2 (matching on 'Term' and 'term')
+            for col in touched_terms.columns:
+                if col != 'Term':  # Exclude the 'Term' column itself from being filled
+                    # Check if the column exists in df2 (merged) before filling NaNs
+                    if f'{col}_from_df2' in merged.columns:
+                        merged[col] = merged[col].fillna(merged[f'{col}_from_df2'])
+
+            # Drop the extra columns from df2 that were merged (e.g., 'definition_from_df2')
+            merged = merged.drop(columns=[col for col in merged.columns if col.endswith('_from_df2')])
+            touched_terms = merged
+            
     else: # duplicate entries exist, combine them    
         summed = sum(touched_terms.loc[touched_terms['Term'] == term, on])
         touched_terms.drop_duplicates('Term', inplace=True)
@@ -79,5 +100,7 @@ def get_subtitles_csv(filename: str) -> list:
     return data
 
 
+
+#log_term('天','Number of touches', 'chi_sim')
 #log('老师', on='Number of touches)
 #print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))
