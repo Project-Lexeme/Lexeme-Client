@@ -48,10 +48,10 @@ def log_student_response_to_lesson():
     print(f'Response received: {response}')
     
     if response == 'yes':
-        logger.log_term(term, on='Number correct')
+        logger.log_term(term, on='Number correct', language=_language)
         return "Keep it up!"
     elif response == 'no':
-        logger.log_term(term, on="Number incorrect")
+        logger.log_term(term, on="Number incorrect", language=_language)
         return "I'll add it to the list of terms to review" # TODO: think about the list of terms to review  
     return jsonify({'status': 'success', 'received': response})
 
@@ -66,7 +66,7 @@ def get_lesson(): # need to divide the multiple choice up into another prompt
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _nlp)
             for term in terms:
-                logger.log_term(term, 'Number of touches')
+                logger.log_term(term, 'Number of touches', language=_language)
     prompt = prompt_generator.generate_prompt_from_choice(choice)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language) # TODO: 

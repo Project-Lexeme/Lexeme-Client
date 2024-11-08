@@ -41,7 +41,7 @@ def standardize_u8_dictionary(filepath: str) -> None:
     #     wr.writerow(entries)
     return
 
-def get_term_dictionary_contents(term: str, language: str):
+def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one item
     dictionary_csv_filepath = f'{config.get_data_directory()}\\dictionaries\\{language}_dictionary.csv'
     df = pd.read_csv(dictionary_csv_filepath)
     term_contents = df[df.iloc[:,0] == term]

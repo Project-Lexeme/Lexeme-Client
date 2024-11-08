@@ -13,7 +13,7 @@ def check_for_learner_profile():
         with csv_file.open('w') as f:
             f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
-def log_term(term: str, on: str, language: str):
+def log_term(term: str, on: str, language: str) -> None: 
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
     '''

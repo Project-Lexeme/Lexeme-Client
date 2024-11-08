@@ -9,6 +9,9 @@ learner_profile.csv
 # Ignore config file
 data/config.ini
 
+# Ignore subtitles files
+data/subtitles
+
 # Ignore unstandardized dictionaries
 data/dictionaries/*.txt
 data/dictionaries/*.u8
