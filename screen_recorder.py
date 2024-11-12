@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import simpledialog
-from tkinter import dialog
 import pygetwindow as gw
 import pyautogui
 import time
@@ -12,13 +11,12 @@ import screenshot_text_extractor
 import os
 
 
-def clean_filename(title):
-    # Replace invalid characters with underscores or remove them
+def clean_filename(title) -> str: # Replace invalid characters with underscores or remove them
     return re.sub(r'[<>:"/\\|?*. ]', '_', title)
 
 
 class DrawRectangleApp:
-    def __init__(self, root, left, top, width, height):
+    def __init__(self, root, left, top, width, height) -> None:
         self.root = root
         self.root.attributes("-topmost", True)  # Always on top
         self.root.attributes("-alpha", 0.5)     # Transparent background
@@ -34,14 +32,14 @@ class DrawRectangleApp:
         self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
         
-    def on_button_press(self, event):
+    def on_button_press(self, event) -> None:
         self.rect_start = (event.x, event.y)
         self.rect = self.canvas.create_rectangle(event.x, event.y, event.x, event.y, outline="blue", width=2)
 
-    def on_mouse_drag(self, event):
+    def on_mouse_drag(self, event) -> None:
         self.canvas.coords(self.rect, self.rect_start[0], self.rect_start[1], event.x, event.y)
     
-    def on_button_release(self, event):
+    def on_button_release(self, event) -> None:
         self.rect_end = (event.x, event.y)
         start_x, start_y, end_x, end_y = self.rect_start[0], self.rect_start[1], event.x, event.y
         if self.rect_start[0] > event.x: # handles if rectangle was drawn with origin NOT at top-left
@@ -57,13 +55,13 @@ class DrawRectangleApp:
         print(f"Rectangle coordinates per on_button_release: {self.rect_start}, {self.rect_end}")
 
 
-def draw_rectangle(root):
+def draw_rectangle(root) -> None:
     rect = DrawRectangleApp(root)
     root.mainloop()
     return 
 
 class ScreenRecorder:
-    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing):
+    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
@@ -77,7 +75,7 @@ class ScreenRecorder:
         self.config = config
         self.time_between_screencaps = time_between_screencaps
 
-    def get_rectangle(self):
+    def get_rectangle(self) -> tuple[int, int, int, int]:
         root = tk.Tk()
         window = gw.getWindowsWithTitle(self.window_title)[0]
         rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height) # TODO: ensure 'left' and 'top' are actually left and top, i.e. user started at top-left corner
@@ -86,7 +84,7 @@ class ScreenRecorder:
         
         return rect.coords
     
-    def capture_screen(self):
+    def capture_screen(self) -> None:
         while self.is_recording:
             try:
                 if self.window:
@@ -99,8 +97,8 @@ class ScreenRecorder:
             self.log_screencap_subtitles()
             time.sleep(self.time_between_screencaps)
 
-    def select_window(self):
-        def on_button_click(window_title):
+    def select_window(self) -> str:
+        def on_button_click(window_title) -> None:
             nonlocal selected_title
             selected_title = window_title
             root.destroy()  # Close the GUI after selection
@@ -119,9 +117,9 @@ class ScreenRecorder:
 
         root.mainloop()  # Start the GUI event loop
 
-        return selected_title  # Return the selected window title
+        return selected_title  # type: ignore # Return the selected window title
     
-    def start_recording(self):
+    def start_recording(self) -> bool:
         self.filename = self.prompt_for_filename()
         
         with self._recording_lock:
@@ -132,7 +130,7 @@ class ScreenRecorder:
                 return True
             return False
         
-    def stop_recording(self):
+    def stop_recording(self) -> bool:
         with self._recording_lock:
             if self.is_recording:
                 self.is_recording = False
@@ -142,7 +140,7 @@ class ScreenRecorder:
                 return True
             return False
         
-    def log_screencap_subtitles(self):
+    def log_screencap_subtitles(self) -> None:
         if self.use_comparative_preprocessing == True:
             text = screenshot_text_extractor.comparative_read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config, display_comparison=False)
         else:
@@ -151,7 +149,7 @@ class ScreenRecorder:
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
 
-    def prompt_for_filename(self):
+    def prompt_for_filename(self) -> str:
         # Create the main window (but don't display it)
         root = tk.Tk()
         root.withdraw()  # Hide the main window

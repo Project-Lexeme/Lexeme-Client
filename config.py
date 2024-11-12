@@ -16,7 +16,7 @@ model: aya-23-8b@f16
 # Define a global variable
 data_dir = None
 
-def get_data_directory():
+def get_data_directory() -> Path:
     global data_dir  # Declare that we are using the global variable
 
     if getattr(sys, 'frozen', False):
@@ -40,7 +40,7 @@ def get_data_directory():
     return data_dir
 
 
-def get_config(): # TODO
+def get_config() -> configparser.ConfigParser: # TODO
     cfg = configparser.ConfigParser()
     data_dir = get_data_directory()
     try: 
@@ -56,7 +56,7 @@ def get_config(): # TODO
 
     return cfg
 
-def init_config():
+def init_config() -> None:
     cfg = configparser.ConfigParser()
     def prompt_user_for_config():
         base_url = simpledialog.askstring("Input", "Enter the base URL:")
@@ -87,7 +87,7 @@ def init_config():
     LLMserver.set_api_key(api_key)
     LLMserver.set_model(model)
 
-def set_config_default_language_and_proficiency(lang: str, proficiency: str):
+def set_config_default_language_and_proficiency(lang: str, proficiency: str) -> None:
     cfg = configparser.ConfigParser()
     data_dir = get_data_directory()
     config_file_path = os.path.join(data_dir, 'config.ini')
@@ -109,7 +109,7 @@ def set_config_default_language_and_proficiency(lang: str, proficiency: str):
     except FileNotFoundError:
         init_config()
 
-def get_config_default_language_and_proficiency()-> list[str]:
+def get_config_default_language_and_proficiency()-> list[str] | list[None]:
     cfg = configparser.ConfigParser()
     data_dir = get_data_directory()
     try: 

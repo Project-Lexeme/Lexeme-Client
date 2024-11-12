@@ -1,15 +1,13 @@
 import re
 import spacy
-import io
 import csv
 import random
 import pandas as pd
 import config
-from logger import get_subtitles_csv
 
 
 # TODO TODAY: generate_prompt_from_choice needs to pull from csvs for end users to customize
-def generate_prompt_from_choice(choice: str): # TODO: create thread from user proficiency choice and type of intended lesson to point to the correct {proficiency}_subtitle_prompt_csv
+def generate_prompt_from_choice(choice: str) -> str: # TODO: create thread from user proficiency choice and type of intended lesson to point to the correct {proficiency}_subtitle_prompt_csv
     if choice.endswith('.csv'):
         #data = get_subtitles_csv(choice)
         prompt = generate_prompt_from_list_of_subtitles(f'{config.get_data_directory()}/prompts/intermediate_subtitle_prompts.csv', f'{config.get_data_directory()}/subtitles/{choice}')
@@ -25,10 +23,10 @@ def generate_prompt_from_choice(choice: str): # TODO: create thread from user pr
         """
         return prompt
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list:
-    filtered_sentence = filter_different_scripts(sentence, nlp)
+def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
+    filtered_sentence: str = filter_different_scripts(sentence, nlp)
     print(filtered_sentence)
-    parts_of_speech = []
+    parts_of_speech: list[str] = []
     doc = nlp(filtered_sentence)
     for token in doc:
         if token.pos_ in part_of_speech:
@@ -42,18 +40,15 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     '''
     lang = nlp.meta['lang'] # returns two-letter spacy lang code e.g. en for English, fr for French
     pattern_dict = {'en':'A-Za-zÀ-ÿ ', 'zh':'一-龯 ', 'ko':'가-힣 ', 'ru':'\u0400-\u04FF ', 'ja':'ァ-ヴぁ-ゔー '} # regex patterns that capture each target script INCLUDE A SPACE
-    print(lang)
     if lang in pattern_dict:
-        
         pattern = pattern_dict[lang]
     else:
-        print('Catch-all case')
         pattern = pattern_dict['en'] # this is a catch-all for Latin-based languages
     filtered_sentence = re.findall(fr'[{pattern}]', sentence)
     return ''.join(filtered_sentence)
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
-def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts_csv_filename: str) -> list:
+def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts_csv_filename: str) -> list[str]:
     scaffolded_prompts = load_scaffolded_prompts(scaffolded_prompts_csv_filename)
     list_of_prompts = []
     for p in scaffolded_prompts: 
@@ -61,7 +56,7 @@ def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts
         list_of_prompts.append(f_str)
     return list_of_prompts
 
-def load_chinese_samples_csv(file_name: str) -> list:
+def load_chinese_samples_csv(file_name: str) -> list[str]:
     with open(f"{file_name}", 'r', encoding='utf-8') as f:
         sample_sentences = csv.reader(f, delimiter='\n')
         list_of_sentences = []
@@ -69,7 +64,7 @@ def load_chinese_samples_csv(file_name: str) -> list:
             list_of_sentences.append(s)
     return list_of_sentences
 
-def load_scaffolded_prompts(file_name: str) -> list:
+def load_scaffolded_prompts(file_name: str) -> list[str]:
     with open(f"{file_name}", 'r', encoding='utf-8') as f:
         scaffolded_prompts = csv.reader(f, delimiter='\n')
         list_of_scaffolded_prompts = []
@@ -77,17 +72,17 @@ def load_scaffolded_prompts(file_name: str) -> list:
             list_of_scaffolded_prompts.append(s)
     return list_of_scaffolded_prompts
 
-def save_prompts(list_of_prompts: list): 
+def save_prompts(list_of_prompts: list) -> None: 
     df = pd.Series(list_of_prompts)
     df2 = pd.read_csv(f'{config.get_data_directory()}/prompts.csv').iloc[:,0]
-    concat_df = pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True)
+    concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
     concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
-def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language): # TODO: reconsider/implement this
+def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language) -> None: # TODO: reconsider/implement this
     target_vectors = []
-    doc = nlp(sentence)
-    for target in target_parts_of_speech:
-        target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
+    # doc = nlp(sentence)
+    # for target in target_parts_of_speech:
+    #     target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
 
 def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'summary') -> str:
     '''
@@ -112,7 +107,7 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     return formatted_prompt
 
     
-def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random'): 
+def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random') -> str: 
     '''
     returns a formatted string prompt with target part of speech
 
@@ -153,7 +148,7 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     # elif target_term=='vector':
     #     target_part_of_speech = find_greatest_vector_in_sentence(sentence, target_parts_of_speech, nlp)
 
-    prompts = format_prompts_from_term_and_scaffolded_prompt(target_part_of_speech, "beginner_scaffolded_prompts.csv")
+    prompts: list[str]= format_prompts_from_term_and_scaffolded_prompt(target_part_of_speech, "beginner_scaffolded_prompts.csv")
 
     if prompt=="random":
         max_length = len(prompts)-1

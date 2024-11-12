@@ -23,19 +23,19 @@ _nlp = None
 _cfg = None
 _language = None
 
-def set_recorder(recorder: ScreenRecorder):
+def set_recorder(recorder: ScreenRecorder) -> None:
     global _recorder
     _recorder = recorder
 
-def set_nlp(nlp: spacy.Language):
+def set_nlp(nlp: spacy.Language) -> None:
     global _nlp
     _nlp = nlp
 
-def set_cfg(cfg):
+def set_cfg(cfg) -> None:
     global _cfg
     _cfg = cfg
 
-def set_language(language):
+def set_language(language) -> None:
     global _language
     _language = language
 

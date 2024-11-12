@@ -3,18 +3,9 @@ import app
 ''' 
 TODO: look closer at how choices get passed back and forth 
 TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
-TODO: work on screen recorder OCR performance
-    genetic based OCR
+TODO: expand genetic based OCR
 TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
-TODO: learner_profile page should have hoverable popups for dictionary information
-TODO: store dicts in data/dictionaries
-    cedict_ts.u8
-    https://github.com/Badestrand/russian-dictionary
-    https://github.com/garfieldnate/kengdic/blob/master/kengdic.tsv
-    https://en.wiktionary.org/wiki/User:Matthias_Buchmeier
-
-TODO: create common dictionary type 
-
+TODO: add Language class that has properties for all the different things a language touches (e.g. self.nlp versus self.spacy for nlp.language and spacy.language respectively)
 '''
 
 '''

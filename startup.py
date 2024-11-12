@@ -1,17 +1,15 @@
 import shutil
 import tkinter as tk
 from tkinter import ttk
-from tkinter import simpledialog
-import pip
 import spacy
-from spacy.cli import download
+from spacy.cli.download import download
 import config
 import os
 from pathlib import Path
 import sys
 
 
-def make_dirs():
+def make_dirs() -> None:
     path = config.get_data_directory()
     subtitle_path = Path(os.path.join(path, 'subtitles'))
     subtitle_path.mkdir(parents=True, exist_ok=True)
@@ -19,7 +17,7 @@ def make_dirs():
     prompt_path.mkdir(parents=True, exist_ok=True)
     populate_prompts()
 
-def populate_prompts():
+def populate_prompts() -> None:
      if getattr(sys, 'frozen', False):
         prompt_dir = os.path.join(sys._MEIPASS, 'data', 'prompts')
         for f in os.listdir(prompt_dir):
@@ -47,7 +45,7 @@ def install_and_load_nlp_lang(module_name):
         model_path = module_name
     return spacy.load(model_path)
 
-def get_language_and_proficiency():
+def get_language_and_proficiency() -> tuple[str, list[str]]:
     #TODO: fix below bug
     ## if no config found, this is not writing the selected lang,prof in the initial config. instead
     ## it defaults to eng, no prof
@@ -61,7 +59,7 @@ def get_language_and_proficiency():
     selected_values = {"language": lang, "proficiency": prof}
 
     # Function to handle submission of both selections
-    def submit_selection():
+    def submit_selection() -> None:
         selected_values['language'] = language_var.get()
         selected_values['proficiency'] = proficiency_var.get()
         root.quit()
@@ -109,4 +107,6 @@ def get_language_and_proficiency():
     root.destroy()
     return (selected_values['language'], [language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']])
 
-#print(get_config())
+if __name__ == "__main__":
+    print("startup.py")
+    #print(get_config())

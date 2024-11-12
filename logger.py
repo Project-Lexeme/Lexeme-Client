@@ -93,7 +93,7 @@ def get_subtitles_csv(filename: str) -> list:
     return data
 
 
-
-#log_term('天','Number of touches', 'chi_sim')
-#log('老师', on='Number of touches)
-#print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))
+if __name__ == "__main__":
+    log_term('天','Number of touches', 'chi_sim')
+    log('老师', on='Number of touches)
+    print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))

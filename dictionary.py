@@ -1,7 +1,6 @@
 import pandas as pd
 import config
 import re
-import csv
 
 
 
@@ -49,6 +48,7 @@ def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TOD
     term_contents = df[df.iloc[:,0] == term]
     return term_contents
 
-#get_term_dictionary_contents('中文', 'chi_sim')
-#chinese_dict_filepath = f'{config.get_data_directory()}\\dictionaries\\cedict_ts.u8'
-#standardize_u8_dictionary(chinese_dict_filepath)
+if __name__ == "__main__":
+    get_term_dictionary_contents('中文', 'chi_sim')
+    #chinese_dict_filepath = f'{config.get_data_directory()}\\dictionaries\\cedict_ts.u8'
+    #standardize_u8_dictionary(chinese_dict_filepath)
