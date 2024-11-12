@@ -14,6 +14,7 @@ tessdata/*
 
 # Ignore venv directory
 venv
+.venv
 
 # Ignore build, data, and dist files
 build
