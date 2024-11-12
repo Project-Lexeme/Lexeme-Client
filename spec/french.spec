@@ -4,7 +4,8 @@
 a = Analysis(
     ['../main.py'], # because each .spec is in a subfolder, use relative paths to go back to project root dir
     pathex=['venv'], #/Lib/site-packages
-    binaries=[],
+    binaries=[('C:/Program Files/Tesseract-OCR/tesseract.exe', '.'),
+    ('C:/Program Files/Tesseract-OCR/*.dll', '.'),],
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 

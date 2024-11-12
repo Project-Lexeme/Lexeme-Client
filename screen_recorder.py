@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import simpledialog
+from tkinter import dialog
 import pygetwindow as gw
 import pyautogui
 import time
@@ -120,6 +122,8 @@ class ScreenRecorder:
         return selected_title  # Return the selected window title
     
     def start_recording(self):
+        self.filename = self.prompt_for_filename()
+        
         with self._recording_lock:
             if not self.is_recording:
                 self.is_recording = True
@@ -140,11 +144,20 @@ class ScreenRecorder:
         
     def log_screencap_subtitles(self):
         if self.use_comparative_preprocessing == True:
-            text = screenshot_text_extractor.comparative_read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config)
+            text = screenshot_text_extractor.comparative_read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config, display_comparison=False)
         else:
             text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
         
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
+
+    def prompt_for_filename(self):
+        # Create the main window (but don't display it)
+        root = tk.Tk()
+        root.withdraw()  # Hide the main window
+
+        filename = simpledialog.askstring("File Name", "Enter the file name:", initialvalue=self.filename)
+        # Return the filename (could be None if user cancels)
+        return filename + '.csv'
 
 #this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)

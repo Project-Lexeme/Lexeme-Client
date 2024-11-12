@@ -18,12 +18,18 @@
 </head>
 <body>
 
-
+<!-- Existing buttons -->
 <button id="fetch-from-screenshot-button">Fetch from Recent Screenshot</button>
 <button id="fetch-review-button">Get review terms</button>
 <button id="begin-recording-button">Begin recording screen</button>
 <button id="stop-recording-button">Stop recording screen</button>
 <button id="lesson-from-recent-subtitles-button">Get lesson from subtitles</button>
+
+<!-- New "View Touched Terms" button -->
+<button id="view-touched-terms-button" onclick="window.location.href='/get-learner-profile'">
+    View Touched Terms
+</button>
+
 <select id="dropdown"></select>
 <button id="submit-button" style="display: none;">Submit Choice</button>
 <div id="response"></div>
@@ -119,6 +125,7 @@
         })
         .catch(error => console.error('Error submitting choice:', error));
     });
+
     document.getElementById('begin-recording-button').addEventListener('click', function() {
         fetch('/begin-recording', {
             method: 'POST',
@@ -133,6 +140,7 @@
         })
         .catch(error => console.error('Error calling Flask function:', error));
     });
+
     document.getElementById('stop-recording-button').addEventListener('click', function() {
         fetch('/stop-recording', {
             method: 'POST',
@@ -147,7 +155,6 @@
         })
         .catch(error => console.error('Error calling Flask function:', error));
     });
-    
 
 </script>
 

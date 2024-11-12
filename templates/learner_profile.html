@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Terms</title>
+  <style>
+    /* Make the table stretch across the screen */
+    table {
+      width: 100%;  /* Make the table take up 100% of the available width */
+      border-collapse: collapse;  /* Remove space between table cells */
+    }
+
+    th, td {
+      padding: 8px 12px;  /* Add padding for readability */
+      text-align: left;  /* Align text to the left */
+      border: 1px solid #ddd;  /* Light grey border */
+      width: 20%;  /* Ensure each cell is of equal width */
+      cursor: pointer;  /* Pointer cursor on table cells */
+    }
+
+    h2 {
+      text-align: center;  /* Center the header text */
+      margin-bottom: 20px;  /* Space between the header and the table */
+    }
+
+    /* Tooltip styling */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;  /* Set a width for the tooltip */
+      background-color: #333;
+      color: #fff;
+      text-align: left;
+      border-radius: 5px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;  /* Position the tooltip above the term */
+      left: 50%;
+      margin-left: -100px;  /* Center the tooltip */
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    /* Show the tooltip when hovering over the term */
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Search bar styling */
+    #searchInput {
+      margin: 20px auto;
+      padding: 8px 12px;
+      width: 40%;
+      display: block;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    /* Highlighted cell style */
+    .highlighted {
+      background-color: #f4f4f4;  /* Light grey background for highlighted cell */
+      border: 2px solid #007bff;  /* Blue border for highlighted cell */
+    }
+
+    /* Button styling */
+    #lessonButton {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.5;  /* Initially disabled */
+    }
+
+    #lessonButton.enabled {
+      opacity: 1;  /* Button becomes fully visible when enabled */
+      cursor: pointer;
+    }
+
+    #lessonButton:disabled {
+      background-color: #ccc;  /* Disabled button color */
+      cursor: not-allowed;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Header for the page -->
+  <h2>Your Review Terms</h2>
+  
+  <!-- Search bar -->
+  <input type="text" id="searchInput" placeholder="Search for terms..." onkeyup="filterTable()">
+
+  <!-- Button to redirect to the lesson page -->
+  <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
+
+  
+
+  <!-- Table for displaying the terms -->
+  <table id="termsTable">
+    {% set terms = csv_data[1:] | map(attribute=0) | list %}
+    {% set num_terms = terms | length %}
+    {% set column_size = (num_terms // 4) + (1 if num_terms % 4 > 0 else 0) %}
+    
+    {% for row in range(column_size) %}
+      <tr class="termRow">
+        <!-- Column 1 -->
+        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row] if row < num_terms else '' }}')">
+          {{ terms[row] if row < num_terms else '' }}
+          <span class="tooltiptext">
+            {% if row < num_terms %}
+              <strong>Definition:</strong> {{ csv_data[row + 1][5] }} <br>
+              <strong>Pinyin:</strong> {{ csv_data[row + 1][6] }} <br>
+              <strong>Traditional:</strong> {{ csv_data[row + 1][7] }} <br>
+            {% endif %}
+          </span>
+        </td>
+
+        <!-- Column 2 -->
+        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + column_size] if row + column_size < num_terms else '' }}')">
+          {{ terms[row + column_size] if row + column_size < num_terms else '' }}
+          <span class="tooltiptext">
+            {% if row + column_size < num_terms %}
+              <strong>Definition:</strong> {{ csv_data[row + column_size + 1][5] }} <br>
+              <strong>Pinyin:</strong> {{ csv_data[row + column_size + 1][6] }} <br>
+              <strong>Traditional:</strong> {{ csv_data[row + column_size + 1][7] }} <br>
+            {% endif %}
+          </span>
+        </td>
+
+        <!-- Column 3 -->
+        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + 2 * column_size] if row + 2 * column_size < num_terms else '' }}')">
+          {{ terms[row + 2 * column_size] if row + 2 * column_size < num_terms else '' }}
+          <span class="tooltiptext">
+            {% if row + 2 * column_size < num_terms %}
+              <strong>Definition:</strong> {{ csv_data[row + 2 * column_size + 1][5] }} <br>
+              <strong>Pinyin:</strong> {{ csv_data[row + 2 * column_size + 1][6] }} <br>
+              <strong>Traditional:</strong> {{ csv_data[row + 2 * column_size + 1][7] }} <br>
+            {% endif %}
+          </span>
+        </td>
+
+        <!-- Column 4 -->
+        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + 3 * column_size] if row + 3 * column_size < num_terms else '' }}')">
+          {{ terms[row + 3 * column_size] if row + 3 * column_size < num_terms else '' }}
+          <span class="tooltiptext">
+            {% if row + 3 * column_size < num_terms %}
+              <strong>Definition:</strong> {{ csv_data[row + 3 * column_size + 1][5] }} <br>
+              <strong>Pinyin:</strong> {{ csv_data[row + 3 * column_size + 1][6] }} <br>
+              <strong>Traditional:</strong> {{ csv_data[row + 3 * column_size + 1][7] }} <br>
+            {% endif %}
+          </span>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  
+
+  <script>
+    // Store selected terms globally
+    let selectedTerms = [];
+
+    // Function to filter table rows based on search input
+    function filterTable() {
+      var input = document.getElementById("searchInput");
+      var filter = input.value.toLowerCase();
+      var table = document.getElementById("termsTable");
+      var rows = table.getElementsByClassName("termRow");
+
+      // Loop through each row
+      for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName("td");
+        var rowText = "";
+
+        // Concatenate all the text in the cells of the row to search across all columns
+        for (var j = 0; j < cells.length; j++) {
+          rowText += cells[j].textContent || cells[j].innerText;
+        }
+
+        // Check if the row contains the search query
+        if (rowText.toLowerCase().indexOf(filter) > -1) {
+          rows[i].style.display = "";  // Show row
+        } else {
+          rows[i].style.display = "none";  // Hide row
+        }
+      }
+    }
+
+    // Function to highlight the clicked term (toggle highlight for individual term)
+    function highlightTerm(cell, term) {
+      cell.classList.toggle("highlighted");
+
+      // Add or remove term from selectedTerms array
+      if (cell.classList.contains("highlighted")) {
+        selectedTerms.push(term);
+      } else {
+        const index = selectedTerms.indexOf(term);
+        if (index > -1) {
+          selectedTerms.splice(index, 1);
+        }
+      }
+
+      // Update button state
+      updateButtonState();
+    }
+
+    // Function to check if any term is selected and update button state
+    function updateButtonState() {
+      var button = document.getElementById("lessonButton");
+
+      // Enable button if at least one term is selected
+      if (selectedTerms.length > 0) {
+        button.classList.add("enabled");
+        button.disabled = false;
+      } else {
+        button.classList.remove("enabled");
+        button.disabled = true;
+      }
+    }
+
+    // Function to redirect to the lesson page with selected terms as a URL parameter
+    function redirectToLesson() {
+      // Encode the selected terms and redirect
+      const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
+      window.location.href = `/lesson?choice=${selectedTermsParam}`;
+    }
+  </script>
+
+</body>
+</html>
