@@ -88,7 +88,8 @@ def get_subtitle_files():
 
 @app.route('/get-learner-profile')
 def get_learner_profile():
-    learner_profile = logger.get_terms()
+    learner_profile = logger.get_terms(all=True)
+    print(learner_profile[:5])
     return render_template('learner_profile.html', csv_data=learner_profile)
         
 

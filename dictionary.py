@@ -14,6 +14,8 @@ def standardize_u8_dictionary(filepath: str) -> None:
     trad /s sim /s [pinyin] /definition/
     B型超聲 B型超声 [B xing2 chao1 sheng1] /type-B ultrasound/
     B格 B格 [bi1 ge2] /variant of 逼格[bi1 ge2]/
+
+    TODO: implement preference to not grab surnames instead of definition. surnames have capitalized pinyin e.g. 'Neng1' instead of 'neng1' in the dictionary
     '''
     
     entries = []

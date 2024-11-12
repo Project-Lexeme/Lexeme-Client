@@ -18,17 +18,10 @@ def generate_prompt_from_choice(choice: str): # TODO: create thread from user pr
 
     else:         
         # TODO: vary this prompt using the prompt generator functions
-        prompt = f"""Could you define what the term {choice} means.  
-        Please give me 1 example sentence in simplified Chinese, 
-        then give me a multiple choice question in simplified Chinese (without pinyin or English) 
-        asking to define {choice} with the answers (again, without pinyin or English) being all single sentence definitions of other terms. 
-        Please use realistic distractors but make the correct answer unambiguous. Please state which the correct answer is.
-        can you format the Questions with the term {choice}
-        giving me the correct answer below given the term {choice} the script under the answer column, and the correct answer has to be within the A to D answer pool
-        Finally, end the response by asking, "Did you get it right?" but with a slight variation. 
-        Can you also use an HTML paragraph formatting, one line after the next, line break after each paragraph?
-        can you use the format "答案是：[insert answer here]"
-        can you also add supplementary information to help the language user learn the language in a simplified manner, and give a hint to the user so they can get the correct answer.
+        prompt = f"""
+        The following is a list of vocabulary terms in my target language that I would like to study. {choice}. 
+        Could you write me a short description of each one in English with a sample sentence in Chinese? 
+        If you know any good cultural tidbits that are relevant to the term, share that too!
         """
         return prompt
 

@@ -21,10 +21,11 @@ def log_term(term: str, on: str, language: str) -> None:
 
     touched_terms = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv') # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
-    term_dictionary_contents = dictionary.get_term_dictionary_contents(term, language)
+    
     
 
     if len(indexer) == 0: # if term is not in list of terms
+        term_dictionary_contents = dictionary.get_term_dictionary_contents(term, language)
         # # need to also concat definition and other language info
         to_concat = pd.DataFrame({'Term': [term], on: [1]}) # this is going to add 1 to whichever column you passed as 'on'
         to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])
@@ -33,22 +34,8 @@ def log_term(term: str, on: str, language: str) -> None:
             touched_terms = pd.concat([touched_terms,to_concat],axis=0).reset_index(drop=True)  
             
     elif len(indexer) == 1: # if term appears in list of terms once, as intended
-        # need to also concat definition and other language info
+        # does not append term dictionary contents
         touched_terms.loc[touched_terms['Term'] == term, on] += 1
-        if len(term_dictionary_contents) > 0:
-            # Merge df1 with df2 on matching terms ('Term' in df1 and 'term' in df2)
-            merged = touched_terms.merge(term_dictionary_contents, left_on='Term', right_on='term', how='left', suffixes=('', '_from_df2'))
-
-            # Fill NaN values in df1 columns with values from df2 (matching on 'Term' and 'term')
-            for col in touched_terms.columns:
-                if col != 'Term':  # Exclude the 'Term' column itself from being filled
-                    # Check if the column exists in df2 (merged) before filling NaNs
-                    if f'{col}_from_df2' in merged.columns:
-                        merged[col] = merged[col].fillna(merged[f'{col}_from_df2'])
-
-            # Drop the extra columns from df2 that were merged (e.g., 'definition_from_df2')
-            merged = merged.drop(columns=[col for col in merged.columns if col.endswith('_from_df2')])
-            touched_terms = merged
             
     else: # duplicate entries exist, combine them    
         summed = sum(touched_terms.loc[touched_terms['Term'] == term, on])
@@ -57,14 +44,20 @@ def log_term(term: str, on: str, language: str) -> None:
     
     touched_terms.to_csv(f'{config.get_data_directory()}/learner_profile.csv', index=False)
 
-def get_terms(sort_by='weakest', qty=0):
+def get_terms(sort_by='weakest', qty=0, all=False):
     '''
     if qty == 0, returns all terms, else returns the number requested
     '''
 
     terms_df = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv')
-    if sort_by == 'weakest': ## TODO: add in actual support for sorting here
-        terms = terms_df['Term'].to_list()
+    if all == True:
+        terms = [terms_df.columns.tolist()] + terms_df.values.tolist()
+
+    else:
+        terms = terms_df['Term'].to_list()    
+
+    # if sort_by == 'weakest': ## TODO: add in actual support for sorting here
+    #     terms = terms_df['Term'].to_list()
     if qty == 0:
         return terms
     else:
