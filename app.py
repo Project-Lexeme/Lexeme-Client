@@ -92,7 +92,8 @@ def get_subtitle_files():
 @app.route('/get-learner-profile')
 def get_learner_profile():
     learner_profile = logger.get_terms(all=True)
-    return render_template('learner_profile.html', csv_data=learner_profile)
+    prompt_types = prompt_generator.get_prompt_types(isTerm=True)
+    return render_template('learner_profile.html', csv_data=learner_profile, prompt_types=prompt_types)
 
 
 @app.route('/choices', methods=['GET']) # DEPRECATED

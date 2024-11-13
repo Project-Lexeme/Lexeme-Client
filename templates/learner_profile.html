@@ -9,14 +9,19 @@
     table {
       width: 100%;  /* Make the table take up 100% of the available width */
       border-collapse: collapse;  /* Remove space between table cells */
+      background-color: #5a5a5a;
     }
+    body {
+            background-color: #444444;
+          }
 
     th, td {
       padding: 8px 12px;  /* Add padding for readability */
-      text-align: left;  /* Align text to the left */
+      text-align: center;  /* Align text to the left */
       border: 1px solid #ddd;  /* Light grey border */
       width: 20%;  /* Ensure each cell is of equal width */
       cursor: pointer;  /* Pointer cursor on table cells */
+      color: white;
     }
 
     h2 {
@@ -67,22 +72,26 @@
 
     /* Highlighted cell style */
     .highlighted {
-      background-color: #f4f4f4;  /* Light grey background for highlighted cell */
-      border: 2px solid #007bff;  /* Blue border for highlighted cell */
+      background-color: #2187fc;  /* Light grey background for highlighted cell */
+      /*border: 4px solid #007bff;  /* Blue border for highlighted cell */
     }
 
     /* Button styling */
-    #lessonButton {
+    #lessonButton { /* Initially disabled */
       display: block;
       margin: 20px auto;
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #28a745;
-      color: white;
       border: none;
       border-radius: 5px;
+      opacity: 0.5;  
+      font-family: 'Courier New', monospace;
+      background-color: #2187fc;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
       cursor: pointer;
-      opacity: 0.5;  /* Initially disabled */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     #lessonButton.enabled {
@@ -95,6 +104,12 @@
       cursor: not-allowed;
     }
 
+    label[for="prompt-type-dropdown"] {
+    font-size: 16px; /* Font size of the label */
+    color: white; /* Text color */
+    margin-right: 10px; /* Space between the label and the dropdown */
+  }
+
   </style>
 </head>
 <body>
@@ -105,10 +120,16 @@
   <!-- Search bar -->
   <input type="text" id="searchInput" placeholder="Search for terms..." onkeyup="filterTable()">
 
+  <!-- Dropdown for prompt types -->
+  <label for="prompt-type-dropdown">Select Lesson Type:</label>
+  <select id="prompt-type-dropdown">
+    {% for prompt_type in prompt_types %}
+      <option value="{{ prompt_type }}" {% if loop.first %} selected {% endif %}>{{ prompt_type }}</option>
+    {% endfor %}
+  </select>
+
   <!-- Button to redirect to the lesson page -->
   <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
-
-  
 
   <!-- Table for displaying the terms -->
   <table id="termsTable">
@@ -168,8 +189,6 @@
       </tr>
     {% endfor %}
   </table>
-
-  
 
   <script>
     // Store selected terms globally
@@ -237,9 +256,11 @@
     function redirectToLesson() {
       // Encode the selected terms and redirect
       const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
-      window.location.href = `/lesson?choice=${selectedTermsParam}`;
+      const promptType = document.getElementById("prompt-type-dropdown").value; // Get the selected prompt type
+      window.location.href = `/lesson?choice=${selectedTermsParam}&prompt_type=${encodeURIComponent(promptType)}`;
     }
   </script>
 
 </body>
 </html>
+
