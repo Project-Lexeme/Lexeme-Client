@@ -59,8 +59,8 @@ def log_student_response_to_lesson():
     
 
 @app.route('/lesson', methods=['GET'])
-def get_lesson(): # need to divide the multiple choice up into another prompt
-    choice = request.args.get('choice', 'No choice provided')
+def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
+    choice = request.args.get('choice', 'No choice provided') 
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         for sentence in text:

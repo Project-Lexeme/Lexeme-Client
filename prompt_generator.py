@@ -5,22 +5,19 @@ import random
 import pandas as pd
 import config
 
-
-# TODO TODAY: generate_prompt_from_choice needs to pull from csvs for end users to customize
-def generate_prompt_from_choice(choice: str) -> str: # TODO: create thread from user proficiency choice and type of intended lesson to point to the correct {proficiency}_subtitle_prompt_csv
+def generate_prompt_from_choice(choice: str) -> str: # TODO: find way to get type of lesson as a subchoice from flask
     if choice.endswith('.csv'):
-        #data = get_subtitles_csv(choice)
-        prompt = generate_prompt_from_list_of_subtitles(f'{config.get_data_directory()}/prompts/intermediate_subtitle_prompts.csv', f'{config.get_data_directory()}/subtitles/{choice}')
-        print(prompt)
+         # TODO: find means to getting prompt_type param in here
+        prompt_csv_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
+        subtitles_csv_filepath = f'{config.get_data_directory()}/subtitles/{choice}'
+        prompt = generate_prompt_from_list_of_subtitles(prompt_csv_filepath, subtitles_csv_filepath)
         return prompt
 
     else:         
-        # TODO: vary this prompt using the prompt generator functions
-        prompt = f"""
-        The following is a list of vocabulary terms in my target language that I would like to study. {choice}. 
-        Could you write me a short description of each one in English with a sample sentence in Chinese? 
-        If you know any good cultural tidbits that are relevant to the term, share that too!
-        """
+        # TODO: find means to getting prompt_type param in here
+        prompt_csv_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
+        prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath)
+        print(prompt)
         return prompt
 
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
@@ -48,13 +45,20 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     return ''.join(filtered_sentence)
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
-def format_prompts_from_term_and_scaffolded_prompt(term: str, scaffolded_prompts_csv_filename: str) -> list[str]:
-    scaffolded_prompts = load_scaffolded_prompts(scaffolded_prompts_csv_filename)
-    list_of_prompts = []
-    for p in scaffolded_prompts: 
-        f_str = p[0].format(term)
-        list_of_prompts.append(f_str)
-    return list_of_prompts
+def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_filename: str, prompt_type: str='Any') -> list[str]:
+    '''
+    prompt_type: first column unique values in scaffolded_prompts.csv
+        Any, Definition, Example, Idiom, Lesson, Culture, or Mistake
+
+    '''
+    scaffolded_prompts = pd.read_csv(prompts_csv_filename)
+    
+    if prompt_type != 'Any':
+        scaffolded_prompts = scaffolded_prompts[scaffolded_prompts['Type'] == prompt_type]
+    
+    random_index = random.randint(0, len(scaffolded_prompts) - 1)
+    formatted_prompt = scaffolded_prompts.iloc[random_index, 1].format(term) # 0 index is type, 1 is prompt
+    return formatted_prompt
 
 def load_chinese_samples_csv(file_name: str) -> list[str]:
     with open(f"{file_name}", 'r', encoding='utf-8') as f:
@@ -64,13 +68,11 @@ def load_chinese_samples_csv(file_name: str) -> list[str]:
             list_of_sentences.append(s)
     return list_of_sentences
 
-def load_scaffolded_prompts(file_name: str) -> list[str]:
-    with open(f"{file_name}", 'r', encoding='utf-8') as f:
-        scaffolded_prompts = csv.reader(f, delimiter='\n')
-        list_of_scaffolded_prompts = []
-        for s in scaffolded_prompts:
-            list_of_scaffolded_prompts.append(s)
-    return list_of_scaffolded_prompts
+def get_prompt_types(prompt_csv_filename: str) -> list[str]:
+    prompt_filepath = f'{config.get_data_directory()}/prompts/{prompt_csv_filename}'
+    prompt_df = pd.read_csv(prompt_filepath)
+    prompt_types = prompt_df.iloc[:, 0].unique()
+    return prompt_types
 
 def save_prompts(list_of_prompts: list) -> None: 
     df = pd.Series(list_of_prompts)
@@ -84,24 +86,23 @@ def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[s
     # for target in target_parts_of_speech:
     #     target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
 
-def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'summary') -> str:
+def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Summary') -> str:
     '''
-    supported prompt_type is based on coumn in subtitle_prompts csv. currently just 'summary'
+    prompt_type: Summary, Lesson, Quiz, Any
     
     returns a formatted text string that is the prompt to send to the LLM
     '''
     prompt_df = pd.read_csv(prompt_csv_filepath)
-    if prompt_type == 'summary':
-        filtered_df = prompt_df[prompt_df['Type'] == 'Summary']
-
-    # else if prompt_type == 'grammar_lesson'
-        # filtered_df = df[df['Type'] == 'Grammar Lesson']
+    if prompt_type == 'Any':
+        filtered_df = prompt_df
+    else:
+        filtered_df = prompt_df[prompt_df['Type'] == prompt_type]
 
     max_index = len(filtered_df)
-    empty_prompt = filtered_df.loc[random.randrange(0,max_index),'Prompt']
+    empty_prompt = filtered_df.loc[random.randrange(0,max_index),'Prompt'] # randomly pulls based on filtered_df
     
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
-    subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist())
+    subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
 
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
     return formatted_prompt
@@ -133,8 +134,6 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     assert len(find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)) > 0, "did not find any target parts of speech"
     target_parts_of_speech = find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)
     
-    print(f'Here are the {part_of_speech}s: {target_parts_of_speech}')
-    
     if target_term=="random":
         max_length = len(target_parts_of_speech)-1
         target_part_of_speech = target_parts_of_speech[random.randint(0, max_length)] # returns a random target part of speech
@@ -148,18 +147,17 @@ def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_spee
     # elif target_term=='vector':
     #     target_part_of_speech = find_greatest_vector_in_sentence(sentence, target_parts_of_speech, nlp)
 
-    prompts: list[str]= format_prompts_from_term_and_scaffolded_prompt(target_part_of_speech, "beginner_scaffolded_prompts.csv")
+    # prompts: list[str]= format_prompt_from_term_and_scaffolded_prompts(target_part_of_speech, "beginner_scaffolded_prompts.csv")
 
-    if prompt=="random":
-        max_length = len(prompts)-1
-        formatted_prompt = prompts[random.randint(0, max_length)] # returns a random target part of speech
+    # if prompt=="random":
+    #     max_length = len(prompts)-1
+    #     formatted_prompt = prompts[random.randint(0, max_length)] # returns a random target part of speech
 
-    elif type(prompt)==int:
-        formatted_prompt = prompts[prompt]
+    # elif type(prompt)==int:
+    #     formatted_prompt = prompts[prompt]
     
-    return formatted_prompt
+    return #formatted_prompt
 
-# sentence = 'Я вижу собаку, 고양이가 나무에 올라가요, 猫在树上, стол 자동차 un chat est sur la table, и это замечательно 你好，最近怎麼樣? Bonjour, comment ça va 어떻게 지내세요、こんにちは、お元気ですか要的是了，正在招人有找到了人SupAheod () 1010万'
-# langs = ['zh_core_web_sm', "fr_core_news_sm", "ja_core_news_sm", "ko_core_news_sm", "ru_core_news_sm"]
-# for l in langs: 
-#     print(find_parts_of_speech_in_sentence(sentence, 'NOUN', spacy.load(l)))
+
+if __name__ == '__main__':
+    generate_prompt_from_term_and_scaffolded_prompts('HEHEHE', f'data/prompts/term_prompts.csv')

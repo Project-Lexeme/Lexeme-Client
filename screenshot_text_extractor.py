@@ -1,10 +1,8 @@
 import random
 import pytesseract
 from PIL import Image
-import matplotlib.pyplot as plt
 import cv2 as cv
 import numpy as np
-import os
 import sys
 
 previous_parent_algorithms = [None, None, None]

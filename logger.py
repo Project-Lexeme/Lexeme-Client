@@ -4,7 +4,6 @@ import os
 import config
 import dictionary
 
-
 def check_for_learner_profile():
     csv_file = Path(f'{config.get_data_directory()}/learner_profile.csv')
     if not csv_file.is_file():  # Check if the file exists
@@ -22,8 +21,6 @@ def log_term(term: str, on: str, language: str) -> None:
     touched_terms = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv') # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
     
-    
-
     if len(indexer) == 0: # if term is not in list of terms
         term_dictionary_contents = dictionary.get_term_dictionary_contents(term, language)
         # # need to also concat definition and other language info
@@ -95,5 +92,4 @@ def get_subtitles_csv(filename: str) -> list:
 
 if __name__ == "__main__":
     log_term('天','Number of touches', 'chi_sim')
-    log('老师', on='Number of touches)
     print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))

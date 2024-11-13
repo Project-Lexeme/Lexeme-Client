@@ -6,6 +6,9 @@ TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
 TODO: expand genetic based OCR
 TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
 TODO: add Language class that has properties for all the different things a language touches (e.g. self.nlp versus self.spacy for nlp.language and spacy.language respectively)
+TODO: add feedback mechanism for prompts - user should be able to select 'yes' or 'no' that they enjoyed the prompt output
+        - instead of completely randomly pulling from prompts, use probability distribution based on resulting prompt score ^ 
+
 '''
 
 '''
@@ -20,8 +23,12 @@ Pedagogical notes:
 '''
 
 '''
-to compile:
-python -m PyInstaller main.spec main.py
+to compile all:
+    ./compile_all_languages.bat
+
+to compile individual language:
+    python -m PyInstaller spec/{language}.spec main.py
+
 '''
 
 if __name__ == '__main__':
