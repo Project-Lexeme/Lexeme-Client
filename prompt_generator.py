@@ -11,18 +11,18 @@ def generate_prompt_from_choice(choice: str) -> str: # TODO: find way to get typ
         prompt_csv_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
         subtitles_csv_filepath = f'{config.get_data_directory()}/subtitles/{choice}'
         prompt = generate_prompt_from_list_of_subtitles(prompt_csv_filepath, subtitles_csv_filepath)
+        print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
     else:         
         # TODO: find means to getting prompt_type param in here
         prompt_csv_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
         prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath)
-        print(prompt)
+        print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
     filtered_sentence: str = filter_different_scripts(sentence, nlp)
-    print(filtered_sentence)
     parts_of_speech: list[str] = []
     doc = nlp(filtered_sentence)
     for token in doc:
@@ -80,11 +80,8 @@ def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save histo
     concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
     concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
-def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language) -> None: # TODO: reconsider/implement this
-    target_vectors = []
-    # doc = nlp(sentence)
-    # for target in target_parts_of_speech:
-    #     target_vectors.append() ## need to first find where each target_part of speech belongs int eh whole sentence to refer to it by index.
+# def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language) -> None: # TODO: reconsider/implement this
+#     target_vectors = []
 
 def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Summary') -> str:
     '''
@@ -97,13 +94,10 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
         filtered_df = prompt_df
     else:
         filtered_df = prompt_df[prompt_df['Type'] == prompt_type]
-
     max_index = len(filtered_df)
     empty_prompt = filtered_df.loc[random.randrange(0,max_index),'Prompt'] # randomly pulls based on filtered_df
-    
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
-
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
     return formatted_prompt
 
