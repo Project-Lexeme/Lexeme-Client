@@ -23,7 +23,7 @@
             background-color: #787878;
             padding: 200px;
             border-radius: 10px;
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
             width: 80%;
             max-width: 600px;
             position: relative;
@@ -139,28 +139,29 @@
         </div>
         <div id="generate-lesson-options" style="display: none;">
             <div class="lesson-buttons">
-                <button id="fetch-review-button">GET REVIEW TERMS</button>
                 <button id="lesson-from-recent-subtitles-button">GET LESSON FROM SUBTITLES</button>
-                <button id="view-touched-terms-button" onclick="window.location.href='/get-learner-profile'">View Touched Terms</button>
+                <button id="view-touched-terms-button" onclick="window.location.href='/get-learner-profile'">GET LESSON FROM VOCABULARY</button>
             </div>
             <button id="back-button-lesson" class="back-button">BACK</button>
         </div>
-
+        <div id="lesson-prompt-options" style="display: none;">
+            <h2>I WANT TO GENERATE <span id="selected-choice"></span> BASED ON <span id="selected-prompt-type"></span>.</h2>
+            <div>
+                <select id="dropdown"></select>
+                <select id="second-dropdown"></select>
+                <button id="submit-button">SUBMIT CHOICE</button>
+            </div>
+        </div>
         <div id="record-content-options" style="display: none;">
             <button id="take-screenshot-button">TAKE SCREENSHOT</button>
             <button id="toggle-recording-button" class="green-button">BEGIN RECORDING SCREEN</button>
             <button id="adjust-bounding-box-button">ADJUST BOUNDING BOX</button>
             <button id="back-button-record" class="back-button">BACK</button>
         </div>
-
-
     </div>
-    <select id="dropdown"></select>
-    <select id="second-dropdown" style="display: none;"></select>
-    <button id="submit-button" style="display: none;">Submit Choice</button>
     <div id="response"></div>
 </div>
-</div>
+
 
 <script>
     // Show the welcome screen
@@ -195,9 +196,6 @@
     });
 
 
-    // Fetch choices and display dropdown
-    function fetchChoices(endpoint, callback) {
-        fetch(endpoint)
     // Function to handle 'Get Review Terms' button click
     document.getElementById('fetch-review-button').addEventListener('click', function() {
         fetch('/review-choices')
@@ -221,18 +219,16 @@
 
                 // Show the first dropdown
                 dropdown.style.display = 'block';
-                
+
                 // Now, populate the second dropdown with prompt_types
                 populateSecondDropdown(data.prompt_types);
-                
+
                 // Show the submit button
                 document.getElementById('submit-button').style.display = 'inline';
             })
             .catch(error => console.error('Error fetching review choices:', error));
     });
-    };
 
-    // Function to handle 'Get Lesson from Subtitles' button click
     document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function() {
         fetch('/get-subtitle-files')
             .then(response => {
@@ -253,28 +249,23 @@
                     dropdown.appendChild(option);
                 });
                 dropdown.style.display = 'block'; // Show dropdown
+
                 populateSecondDropdown(data.prompt_types);
-                document.getElementById('submit-button').style.display = 'inline'; // Show submit button
-                callback();
+
+                // Show the lesson prompt options
+                document.getElementById('generate-lesson-options').style.display = 'none';
+                document.getElementById('lesson-prompt-options').style.display = 'block';
+
+                // Update the selected choice and prompt type displays
+                document.getElementById('selected-choice').textContent = dropdown.value;
+                document.getElementById('selected-prompt-type').textContent = 'Select a prompt type';
             })
             .catch(error => console.error('Error fetching choices:', error));
     });
 
-    document.getElementById('fetch-review-button').addEventListener('click', () => {
-        fetchChoices('/review-choices', () => {
-            document.getElementById('generate-lesson-options').style.display = 'none';
-        });
-    });
-
-    document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', () => {
-        fetchChoices('/get-subtitle-files', () => {
-            document.getElementById('generate-lesson-options').style.display = 'none';
-        });
-    });
-
     // Function to populate the second dropdown with prompt_types
     function populateSecondDropdown(prompt_types) {
-        const secondDropdown = document.getElementById('second-dropdown'); // Assuming the second dropdown has the id 'second-dropdown'
+        const secondDropdown = document.getElementById('second-dropdown');
         secondDropdown.innerHTML = ''; // Clear previous options
 
         // Add a default "Select" option
