@@ -5,19 +5,19 @@ import random
 import pandas as pd
 import config
 
-def generate_prompt_from_choice(choice: str) -> str: # TODO: find way to get type of lesson as a subchoice from flask
+def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
     if choice.endswith('.csv'):
-         # TODO: find means to getting prompt_type param in here
         prompt_csv_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
         subtitles_csv_filepath = f'{config.get_data_directory()}/subtitles/{choice}'
-        prompt = generate_prompt_from_list_of_subtitles(prompt_csv_filepath, subtitles_csv_filepath)
+        print(f'subtitle csv filepath: {subtitles_csv_filepath}')
+        prompt = generate_prompt_from_list_of_subtitles(prompt_csv_filepath, subtitles_csv_filepath, prompt_type)
         print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
     else:         
         # TODO: find means to getting prompt_type param in here
         prompt_csv_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
-        prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath)
+        prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath, prompt_type)
         print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
@@ -68,10 +68,13 @@ def load_chinese_samples_csv(file_name: str) -> list[str]:
             list_of_sentences.append(s)
     return list_of_sentences
 
-def get_prompt_types(prompt_csv_filename: str) -> list[str]:
-    prompt_filepath = f'{config.get_data_directory()}/prompts/{prompt_csv_filename}'
+def get_prompt_types(isTerm: bool) -> list[str]:
+    if isTerm:
+        prompt_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
+    else:
+        prompt_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
     prompt_df = pd.read_csv(prompt_filepath)
-    prompt_types = prompt_df.iloc[:, 0].unique()
+    prompt_types = prompt_df.iloc[:, 0].unique().tolist()
     return prompt_types
 
 def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save historical prompts? may be useless
@@ -95,7 +98,7 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     else:
         filtered_df = prompt_df[prompt_df['Type'] == prompt_type]
     max_index = len(filtered_df)
-    empty_prompt = filtered_df.loc[random.randrange(0,max_index),'Prompt'] # randomly pulls based on filtered_df
+    empty_prompt = filtered_df.iloc[random.randrange(0,max_index), 1] # randomly pulls based on filtered_df
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')

@@ -5,6 +5,7 @@ learner_profile.csv
 
 # Ignore __pycache__
 __pycache__/
+*.pyc
 
 # Ignore screencaps
 *.png
