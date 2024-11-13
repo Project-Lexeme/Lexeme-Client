@@ -60,7 +60,7 @@ def log_student_response_to_lesson():
 
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
-    choice = request.args.get('choice', 'No choice provided') 
+    choice = request.args.get('choice', 'No choice provided')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         for sentence in text:
@@ -78,7 +78,7 @@ def get_review_choices():
     return jsonify(choices)
 
 @app.route('/get-subtitle-files')
-def get_subtitle_files(): 
+def get_subtitle_files():
     file_extension = '.csv' 
     subtitle_directory = os.path.join(config.get_data_directory(), 'subtitles')
     files = [f for f in os.listdir(subtitle_directory) if os.path.isfile(os.path.join(subtitle_directory, f)) and f.endswith(file_extension)]
@@ -91,7 +91,7 @@ def get_learner_profile():
     learner_profile = logger.get_terms(all=True)
     print(learner_profile[:5])
     return render_template('learner_profile.html', csv_data=learner_profile)
-        
+
 
 
 @app.route('/choices', methods=['GET'])
@@ -123,7 +123,16 @@ def upload_image(): #TODO refactor to simplify if possible
     return jsonify({'message': 'Image received and processed'}), 200
 
 @app.route('/begin-recording', methods=['POST'])
-def begin_recording(): 
+def begin_recording():
+    if _recorder is None:
+        # Set up the screen recorder
+        language, codes_and_proficiency =  startup.get_language_and_proficiency()
+        lang_code, nlp_lang, proficiency = codes_and_proficiency
+        set_language(lang_code)
+        set_recorder(ScreenRecorder(language=lang_code, use_preprocessing=False, use_comparative_preprocessing=True, minimum_confidence=70, config=r'', time_between_screencaps=.8))
+        print("ScreenRecorder is set up")
+        set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
+        setup_pytesseract.setup_tessdata(lang_code)
     if _recorder.start_recording():
         return jsonify({"status":"success", "message":"Recording started"})
     return jsonify({"status":"error", "message":"Recording already started"})
@@ -155,17 +164,17 @@ def start_app():
     startup.make_dirs()
     set_cfg(config.get_config())
     print("Config loaded successfully!")
-    language, codes_and_proficiency =  startup.get_language_and_proficiency()
-    lang_code, nlp_lang, proficiency = codes_and_proficiency
-    print(f"You chose {language} at a {proficiency} level!") # not currently doing anything with language/nlp_lang
-    set_language(lang_code)
-    set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
+    #language, codes_and_proficiency =  startup.get_language_and_proficiency()
+    #lang_code, nlp_lang, proficiency = codes_and_proficiency
+    #print(f"You chose {language} at a {proficiency} level!") # not currently doing anything with language/nlp_lang
+    #set_language(lang_code)
+    #set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
     print("SpaCy installed, imported, and loaded")
     print("Setting up PyTesseract now...")
-    setup_pytesseract.setup_tessdata(lang_code)
+    #setup_pytesseract.setup_tessdata(lang_code)
     print("PyTesseract set up!")
-    recorder = ScreenRecorder(language=lang_code, use_comparative_preprocessing=True, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
-    set_recorder(recorder)
-    print("ScreenRecorder is set up")
+    #recorder = ScreenRecorder(language=lang_code, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
+    #set_recorder(recorder)
+    #print("ScreenRecorder is set up")
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
