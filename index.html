@@ -153,8 +153,10 @@
             <button id="back-button-record" class="back-button">BACK</button>
         </div>
 
+
     </div>
     <select id="dropdown"></select>
+    <select id="second-dropdown" style="display: none;"></select>
     <button id="submit-button" style="display: none;">Submit Choice</button>
     <div id="response"></div>
 </div>
@@ -196,27 +198,67 @@
     // Fetch choices and display dropdown
     function fetchChoices(endpoint, callback) {
         fetch(endpoint)
+    // Function to handle 'Get Review Terms' button click
+    document.getElementById('fetch-review-button').addEventListener('click', function() {
+        fetch('/review-choices')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return response.json();
+                return response.json(); // Get both choices and prompt_types
             })
             .then(data => {
                 const dropdown = document.getElementById('dropdown');
                 dropdown.innerHTML = ''; // Clear previous options
-                data.forEach(choice => {
+
+                // Populate the first dropdown with choices
+                data.choices.forEach(choice => {
+                    const option = document.createElement('option');
+                    option.value = choice;
+                    option.textContent = choice;
+                    dropdown.appendChild(option);
+                });
+
+                // Show the first dropdown
+                dropdown.style.display = 'block';
+                
+                // Now, populate the second dropdown with prompt_types
+                populateSecondDropdown(data.prompt_types);
+                
+                // Show the submit button
+                document.getElementById('submit-button').style.display = 'inline';
+            })
+            .catch(error => console.error('Error fetching review choices:', error));
+    });
+    };
+
+    // Function to handle 'Get Lesson from Subtitles' button click
+    document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function() {
+        fetch('/get-subtitle-files')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Get both files and prompt_types
+            })
+            .then(data => {
+                const dropdown = document.getElementById('dropdown');
+                dropdown.innerHTML = ''; // Clear previous options
+
+                // Populate the first dropdown with files
+                data.choices.forEach(choice => {
                     const option = document.createElement('option');
                     option.value = choice;
                     option.textContent = choice;
                     dropdown.appendChild(option);
                 });
                 dropdown.style.display = 'block'; // Show dropdown
+                populateSecondDropdown(data.prompt_types);
                 document.getElementById('submit-button').style.display = 'inline'; // Show submit button
                 callback();
             })
             .catch(error => console.error('Error fetching choices:', error));
-    }
+    });
 
     document.getElementById('fetch-review-button').addEventListener('click', () => {
         fetchChoices('/review-choices', () => {
@@ -230,25 +272,54 @@
         });
     });
 
+    // Function to populate the second dropdown with prompt_types
+    function populateSecondDropdown(prompt_types) {
+        const secondDropdown = document.getElementById('second-dropdown'); // Assuming the second dropdown has the id 'second-dropdown'
+        secondDropdown.innerHTML = ''; // Clear previous options
+
+        // Add a default "Select" option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select a prompt type';
+        secondDropdown.appendChild(defaultOption);
+
+        // Populate the second dropdown with prompt_types
+        prompt_types.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            secondDropdown.appendChild(option);
+        });
+
+        // Show the second dropdown
+        secondDropdown.style.display = 'block';
+    }
+
+     // Function to handle form submission when the submit button is clicked
     document.getElementById('submit-button').addEventListener('click', function() {
         const dropdown = document.getElementById('dropdown');
-        const selectedChoice = dropdown.value;
+        const selectedChoice = dropdown.value; // Get the selected choice from the first dropdown
 
+        const secondDropdown = document.getElementById('second-dropdown');
+        const selectedPromptType = secondDropdown.value; // Get the selected choice from the second dropdown
+
+        // Submit the selected choices as JSON
         fetch('/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ choice: selectedChoice })
-        })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').textContent = data.message; // Update the response div
-
-                // Redirect to /lesson after displaying the message
-                window.location.href = `/lesson?choice=${encodeURIComponent(selectedChoice)}`; // Redirects to the /lesson page
+            body: JSON.stringify({ 
+                choice: selectedChoice,
+                prompt_type: selectedPromptType
             })
-            .catch(error => console.error('Error submitting choice:', error));
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('response').textContent = data.message; // Show the response message
+            window.location.href = `/lesson?choice=${encodeURIComponent(selectedChoice)}&prompt_type=${encodeURIComponent(selectedPromptType)}`;
+        })
+        .catch(error => console.error('Error submitting choice:', error));
     });
 
     // Handle recording buttons

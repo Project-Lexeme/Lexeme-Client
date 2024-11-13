@@ -61,44 +61,44 @@ def log_student_response_to_lesson():
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
     choice = request.args.get('choice', 'No choice provided')
+    prompt_type = request.args.get('prompt_type', 'Any')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _nlp)
             for term in terms:
                 logger.log_term(term, 'Number of touches', language=_language)
-    prompt = prompt_generator.generate_prompt_from_choice(choice)
+    print(prompt_type)
+    prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language) # TODO: 
     return render_template('lesson.html', choice=choice, llm_response=llm_response)
 
 @app.route('/review-choices')
 def get_review_choices():
-    choices = logger.get_terms()    
-    return jsonify(choices)
+    choices = logger.get_terms() 
+    prompt_types = prompt_generator.get_prompt_types(isTerm=True)   
+    return jsonify({"choices": choices, "prompt_types": prompt_types})
 
 @app.route('/get-subtitle-files')
 def get_subtitle_files():
     file_extension = '.csv' 
     subtitle_directory = os.path.join(config.get_data_directory(), 'subtitles')
-    files = [f for f in os.listdir(subtitle_directory) if os.path.isfile(os.path.join(subtitle_directory, f)) and f.endswith(file_extension)]
-    print(os.listdir(subtitle_directory))
-    print(files)
-    return files
+    choices = [f for f in os.listdir(subtitle_directory) if os.path.isfile(os.path.join(subtitle_directory, f)) and f.endswith(file_extension)]
+    prompt_types = prompt_generator.get_prompt_types(isTerm=False)
+    print(f'choices: {choices}, prompt_types: {prompt_types}')
+    return jsonify({"choices": choices, "prompt_types": prompt_types})
 
 @app.route('/get-learner-profile')
 def get_learner_profile():
     learner_profile = logger.get_terms(all=True)
-    print(learner_profile[:5])
     return render_template('learner_profile.html', csv_data=learner_profile)
 
 
-
-@app.route('/choices', methods=['GET'])
+@app.route('/choices', methods=['GET']) # DEPRECATED
 def get_choices(part_of_speech='NOUN'):
     text = screenshot_text_extractor.read_text_from_image(filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=_language, preprocessing=False, minimum_confidence=50)
     choices = prompt_generator.find_parts_of_speech_in_sentence(text, part_of_speech, _nlp) # TO DO: Make this legit later - be able to pass in POS as arg
-    
     return jsonify(choices)
 
 @app.route('/upload', methods=['POST'])
