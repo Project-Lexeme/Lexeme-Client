@@ -8,7 +8,7 @@ __pycache__/
 *.pyc
 
 # Ignore screencaps
-*.png
+uploads/*.png
 
 # Ignore config file
 data/config.ini
