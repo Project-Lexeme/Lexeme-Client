@@ -3,6 +3,9 @@ learner_profile.csv
 !*_prompts.csv
 !learner_profile_sample.csv
 
+# Ignore __pycache__
+__pycache__/
+
 # Ignore screencaps
 *.png
 
