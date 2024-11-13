@@ -74,7 +74,7 @@ def get_prompt_types(prompt_csv_filename: str) -> list[str]:
     prompt_types = prompt_df.iloc[:, 0].unique()
     return prompt_types
 
-def save_prompts(list_of_prompts: list) -> None: 
+def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save historical prompts? may be useless
     df = pd.Series(list_of_prompts)
     df2 = pd.read_csv(f'{config.get_data_directory()}/prompts.csv').iloc[:,0]
     concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
@@ -106,58 +106,6 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
 
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
     return formatted_prompt
-
-    
-def generate_prompt_from_sentence_and_part_of_speech(sentence: str, part_of_speech, nlp: spacy.Language, target_term='random', prompt='random') -> str: 
-    '''
-    returns a formatted string prompt with target part of speech
-
-    args:
-        sentence - string in target language
-        
-        part_of_speech -    ADJ: adjective, ADP: adposition, ADV: adverb, AUX: auxiliary, CCONJ: coordinating conjunction, DET: determiner
-                            INTJ: interjection, NOUN: noun, NUM: numeral, PART: particle, PRON: pronoun, PROPN: proper noun, PUNCT: punctuation
-                            SCONJ: subordinating conjunction, SYM: symbol, VERB: verb, X: other
-        
-        nlp - spacy.Language, specifically the one you're using in the program - this is passed in as arg so that it can be loaded in server script and not reloaded everytime a prompt is generated
-        
-        target_term -       'random' returns random
-                            'first'
-                            'last'
-                            'vector' is PLANNED to compare whole sentence versus individual token vector to find the most impactful target_term in the sentence
-        
-        prompt -            'random' returns random
-                            int-type returns corresponding index location of scaffolded prompts
-    '''
-
-
-    assert len(find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)) > 0, "did not find any target parts of speech"
-    target_parts_of_speech = find_parts_of_speech_in_sentence(sentence, part_of_speech, nlp)
-    
-    if target_term=="random":
-        max_length = len(target_parts_of_speech)-1
-        target_part_of_speech = target_parts_of_speech[random.randint(0, max_length)] # returns a random target part of speech
-
-    elif target_term=='first':
-        target_part_of_speech = target_parts_of_speech[0]
-
-    elif target_term=='last':
-        target_part_of_speech = target_parts_of_speech[-1]
-
-    # elif target_term=='vector':
-    #     target_part_of_speech = find_greatest_vector_in_sentence(sentence, target_parts_of_speech, nlp)
-
-    # prompts: list[str]= format_prompt_from_term_and_scaffolded_prompts(target_part_of_speech, "beginner_scaffolded_prompts.csv")
-
-    # if prompt=="random":
-    #     max_length = len(prompts)-1
-    #     formatted_prompt = prompts[random.randint(0, max_length)] # returns a random target part of speech
-
-    # elif type(prompt)==int:
-    #     formatted_prompt = prompts[prompt]
-    
-    return #formatted_prompt
-
 
 if __name__ == '__main__':
     generate_prompt_from_term_and_scaffolded_prompts('HEHEHE', f'data/prompts/term_prompts.csv')
