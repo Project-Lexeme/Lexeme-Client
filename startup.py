@@ -60,9 +60,9 @@ def get_language_and_proficiency():
     # Create the main window
     root = ctk.CTk()
     root.title("Language and Level Selector")
-    root.geometry(f"{300}x300")
+    root.geometry(f"{400}x300")
 
-    options_font = customtkinter.CTkFont("Courier New", size = 18 , weight = "bold")
+    options_font = customtkinter.CTkFont("Courier New", size = 18 )
 
     # Language and proficiency options
     language_codes = {"English": ["eng", "en_core_web_sm"], "Spanish": ["spa", 'es_core_news_sm'],
@@ -80,17 +80,17 @@ def get_language_and_proficiency():
     proficiency_var = ctk.StringVar(value=proficiencies[0])
 
     # Create the first dropdown (combobox)
-    language_combobox = ctk.CTkComboBox(root, font=options_font, variable=language_var, values=languages)
+    language_combobox = ctk.CTkComboBox(root, font=options_font, variable=language_var, values=languages, width=300)
     language_combobox.set(lang)  # Set default language
     language_combobox.pack(padx=10, pady=20)
 
     # Create the second dropdown (combobox)
-    proficiency_combobox = ctk.CTkComboBox(root, font=options_font, variable=proficiency_var, values=proficiencies)
+    proficiency_combobox = ctk.CTkComboBox(root, font=options_font, variable=proficiency_var, values=proficiencies, width=300)
     proficiency_combobox.set(prof)  # Set default proficiency
     proficiency_combobox.pack(padx=10, pady=20)
 
     # Create a submit button
-    submit_button = ctk.CTkButton(root, text="Submit", command=submit_selection)
+    submit_button = ctk.CTkButton(root, text="Submit", font=options_font, command=submit_selection)
     submit_button.pack(pady=20)
 
     # Start the Tkinter event loop
