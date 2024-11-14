@@ -4,7 +4,7 @@ import re
 
 
 
-def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None:
+def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # Ding format from https://en.wiktionary.org/wiki/User:Matthias_Buchmeier/download
     entries = []
     re_string = r'(\S*) \{([\S ]*)\} \[?([\S ]*)?\]? ?:: (.*)'
     with open(filepath,'r', encoding='utf-8') as f:

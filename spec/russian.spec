@@ -16,7 +16,7 @@ a = Analysis(
         ('../venv/Lib/site-packages/pip', 'pip'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
-        ＃ TODO: add dictionaries
+        ('../data/dictionaries/ru_en_dictionary.csv', 'data/prompts/.'),
     ],
     hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
