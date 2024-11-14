@@ -43,23 +43,32 @@ def install_and_load_nlp_lang(module_name):
         model_path = module_name
     return spacy.load(model_path)
 
+import customtkinter as ctk
+
 def get_language_and_proficiency() -> tuple[str, list[str]]:
-    #TODO: fix below bug
-    ## if no config found, this is not writing the selected lang,prof in the initial config. instead
-    ## it defaults to eng, no prof
-
-    try: lang, prof = config.get_config_default_language_and_proficiency()
-
+    # Try to fetch configuration or set defaults
+    try:
+        lang, prof = config.get_config_default_language_and_proficiency()
     except Exception as e:
         print(f"Couldn't find '{e}' portion of config")
         lang, prof = 'Select Language', 'Select Proficiency'
 
+    # Store selected values (initially defaults)
     selected_values = {"language": lang, "proficiency": prof}
 
     # Function to handle submission of both selections
     def submit_selection() -> None:
-        selected_values['language'] = language_var.get()
-        selected_values['proficiency'] = proficiency_var.get()
+        # Update the selected values with current dropdown selections (using combobox's .get())
+        selected_values['language'] = language_combobox.get()
+        selected_values['proficiency'] = proficiency_combobox.get()
+
+        # Debug: print the selected values just before quitting
+        print(f"Submit selected: {selected_values['language']}, {selected_values['proficiency']}")
+
+        # Check the actual combobox values before quitting (debugging direct .get())
+        print(f"Combobox check: Language - {language_combobox.get()}, Proficiency - {proficiency_combobox.get()}")
+
+        # Exit the loop once submission is done
         root.quit()
 
     # Create the main window
@@ -67,43 +76,62 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
     root.title("Language and Level Selector")
     root.geometry(f"{400}x300")
 
-    options_font = customtkinter.CTkFont("Courier New", size = 18 )
+    options_font = ctk.CTkFont("Courier New", size=18)
 
     # Language and proficiency options
-    language_codes = {"English": ["eng", "en_core_web_sm"], "Spanish": ["spa", 'es_core_news_sm'],
-                      "French": ["fra", "fr_core_news_sm"], "German": ["deu", "de_core_news_sm"],
-                      "Chinese Simplified": ["chi_sim", "zh_core_web_sm"],
-                      "Chinese Traditional": ["chi_tra", "zh_core_web_sm"], "Japanese": ["jpn", "ja_core_news_sm"],
-                      "Korean": ["kor", "ko_core_news_sm"], "Russian": ['rus', "ru_core_news_sm"]}
+    language_codes = {
+        "English": ["eng", "en_core_web_sm"],
+        "Spanish": ["spa", 'es_core_news_sm'],
+        "French": ["fra", "fr_core_news_sm"],
+        "German": ["deu", "de_core_news_sm"],
+        "Chinese Simplified": ["chi_sim", "zh_core_web_sm"],
+        "Chinese Traditional": ["chi_tra", "zh_core_web_sm"],
+        "Japanese": ["jpn", "ja_core_news_sm"],
+        "Korean": ["kor", "ko_core_news_sm"],
+        "Russian": ['rus', "ru_core_news_sm"]
+    }
     proficiencies = ['No proficiency', 'Memorized proficiency', 'Elementary proficiency',
                      'Limited working proficiency', 'General professional proficiency',
                      'Advanced professional proficiency']
 
     languages = [lang for lang in language_codes.keys()]
 
-    language_var = ctk.StringVar(value=languages[0])
-    proficiency_var = ctk.StringVar(value=proficiencies[0])
+    # Create variables bound to the dropdowns
+    language_var = ctk.StringVar(value=lang)  # Set initial value based on config or default
+    proficiency_var = ctk.StringVar(value=prof)  # Set initial value based on config or default
 
-    # Create the first dropdown (combobox)
+    # Create the first dropdown (combobox) for language
     language_combobox = ctk.CTkComboBox(root, font=options_font, variable=language_var, values=languages, width=300)
-    language_combobox.set(lang)  # Set default language
     language_combobox.pack(padx=10, pady=20)
 
-    # Create the second dropdown (combobox)
+    # Create the second dropdown (combobox) for proficiency
     proficiency_combobox = ctk.CTkComboBox(root, font=options_font, variable=proficiency_var, values=proficiencies, width=300)
-    proficiency_combobox.set(prof)  # Set default proficiency
     proficiency_combobox.pack(padx=10, pady=20)
 
     # Create a submit button
     submit_button = ctk.CTkButton(root, text="Submit", font=options_font, command=submit_selection)
     submit_button.pack(pady=20)
 
+    # Debug: print the initial values before starting the main loop
+    print(f"Initial selected: {selected_values['language']}, {selected_values['proficiency']}")
+
     # Start the Tkinter event loop
     root.mainloop()
 
-    config.set_config_default_language_and_proficiency(selected_values['language'], selected_values['proficiency'])
+    # Debug: print the selected values after quitting the event loop
+    print(f"Final selected: {selected_values['language']}, {selected_values['proficiency']}")
+
     root.destroy()
-    return (selected_values['language'], [language_codes[selected_values['language']][0], language_codes[selected_values['language']][1], selected_values['proficiency']])
+
+    # Once the loop ends, update the config with the selected values
+    config.set_config_default_language_and_proficiency(selected_values['language'], selected_values['proficiency'])
+    
+    # Return the selected language and proficiency
+    return (selected_values['language'],
+            [language_codes[selected_values['language']][0],
+             language_codes[selected_values['language']][1],
+             selected_values['proficiency']])
+
 
 if __name__ == "__main__":
     print("startup.py")

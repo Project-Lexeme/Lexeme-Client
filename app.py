@@ -125,6 +125,7 @@ def upload_image(): #TODO refactor to simplify if possible
 
 @app.route('/begin-recording', methods=['POST'])
 def begin_recording():
+    print("begin_recording flask function called")
     if _recorder is None:
         # Set up the screen recorder
         language, codes_and_proficiency =  startup.get_language_and_proficiency()
@@ -165,14 +166,14 @@ def start_app():
     startup.make_dirs()
     set_cfg(config.get_config())
     print("Config loaded successfully!")
-    #language, codes_and_proficiency =  startup.get_language_and_proficiency()
-    #lang_code, nlp_lang, proficiency = codes_and_proficiency
+    language, codes_and_proficiency =  startup.get_language_and_proficiency()
+    lang_code, nlp_lang, proficiency = codes_and_proficiency
     #print(f"You chose {language} at a {proficiency} level!") # not currently doing anything with language/nlp_lang
-    #set_language(lang_code)
-    #set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
+    set_language(lang_code)
+    set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
     print("SpaCy installed, imported, and loaded")
     print("Setting up PyTesseract now...")
-    #setup_pytesseract.setup_tessdata(lang_code)
+    setup_pytesseract.setup_tessdata(lang_code)
     print("PyTesseract set up!")
     #recorder = ScreenRecorder(language=lang_code, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
     #set_recorder(recorder)

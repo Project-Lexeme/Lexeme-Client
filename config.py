@@ -39,7 +39,7 @@ def get_data_directory() -> Path:
     return data_dir
 
 
-def get_config() -> configparser.ConfigParser: # TODO
+def get_config() -> configparser.ConfigParser:
     cfg = configparser.ConfigParser()
     data_dir = get_data_directory()
     try: 
@@ -49,7 +49,7 @@ def get_config() -> configparser.ConfigParser: # TODO
             LLMserver.set_api_key(cfg["Server"]["api_key"])
             LLMserver.set_model(cfg['Server']['model'])
 
-    except FileNotFoundError: # this needs wrapped in a function and called instead of going here 
+    except FileNotFoundError:  
         init_config()
         
 
