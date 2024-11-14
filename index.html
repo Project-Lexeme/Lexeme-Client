@@ -196,39 +196,6 @@
     });
 
 
-    // Function to handle 'Get Review Terms' button click
-    document.getElementById('fetch-review-button').addEventListener('click', function() {
-        fetch('/review-choices')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json(); // Get both choices and prompt_types
-            })
-            .then(data => {
-                const dropdown = document.getElementById('dropdown');
-                dropdown.innerHTML = ''; // Clear previous options
-
-                // Populate the first dropdown with choices
-                data.choices.forEach(choice => {
-                    const option = document.createElement('option');
-                    option.value = choice;
-                    option.textContent = choice;
-                    dropdown.appendChild(option);
-                });
-
-                // Show the first dropdown
-                dropdown.style.display = 'block';
-
-                // Now, populate the second dropdown with prompt_types
-                populateSecondDropdown(data.prompt_types);
-
-                // Show the submit button
-                document.getElementById('submit-button').style.display = 'inline';
-            })
-            .catch(error => console.error('Error fetching review choices:', error));
-    });
-
     document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function() {
         fetch('/get-subtitle-files')
             .then(response => {

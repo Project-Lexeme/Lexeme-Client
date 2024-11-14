@@ -4,6 +4,8 @@ from pathlib import Path
 import sys
 import tkinter as tk
 from tkinter import simpledialog
+from typing import Union
+
 import LLMserver
 
 '''
@@ -108,7 +110,7 @@ def set_config_default_language_and_proficiency(lang: str, proficiency: str) -> 
     except FileNotFoundError:
         init_config()
 
-def get_config_default_language_and_proficiency()-> list[str] | list[None]:
+def get_config_default_language_and_proficiency()-> Union[list[str], list[None]]:
     cfg = configparser.ConfigParser()
     data_dir = get_data_directory()
     try: 

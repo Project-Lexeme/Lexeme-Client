@@ -156,6 +156,7 @@ class ScreenRecorder:
 
         filename = simpledialog.askstring("File Name", "Enter the file name:", initialvalue=self.filename)
         # Return the filename (could be None if user cancels)
+        root.destroy()
         return filename + '.csv'
 
 #this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)
