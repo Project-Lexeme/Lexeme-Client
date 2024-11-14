@@ -125,6 +125,35 @@
         .back-button:hover {
             background-color: #5a6268; /* Darker gray on hover */
         }
+        /* New styles for the "Get Lesson from Subtitles" section */
+        #lesson-prompt-options {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 90%;
+        }
+
+        #lesson-prompt-options h2 {
+            font-size: 24px;
+            margin-top: 100px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #lesson-prompt-options select {
+            margin: 0 10px;
+        }
+
+        #lesson-prompt-options button {
+            margin-top: 20px;
+            width: 200px; /* Set a fixed width for the buttons */
+            display: block; /* Display the buttons as block elements */
+            margin-left: auto;
+            margin-right: auto; /* Center the buttons horizontally */
+        }
     </style>
 </head>
 <body>
@@ -145,12 +174,11 @@
             <button id="back-button-lesson" class="back-button">BACK</button>
         </div>
         <div id="lesson-prompt-options" style="display: none;">
-            <h2>I WANT TO GENERATE <span id="selected-choice"></span> BASED ON <span id="selected-prompt-type"></span>.</h2>
+            <h2>GENERATE A <select id="second-dropdown"></select> BASED ON <select id="dropdown"></select>.</h2>
             <div>
-                <select id="dropdown"></select>
-                <select id="second-dropdown"></select>
                 <button id="submit-button">SUBMIT CHOICE</button>
             </div>
+            <button id="back-button-prompt" class="back-button">BACK</button>
         </div>
         <div id="record-content-options" style="display: none;">
             <button id="take-screenshot-button">TAKE SCREENSHOT</button>
@@ -222,11 +250,7 @@
                 // Show the lesson prompt options
                 document.getElementById('generate-lesson-options').style.display = 'none';
                 document.getElementById('lesson-prompt-options').style.display = 'block';
-
-                // Update the selected choice and prompt type displays
-                document.getElementById('selected-choice').textContent = dropdown.value;
-                document.getElementById('selected-prompt-type').textContent = 'Select a prompt type';
-            })
+                })
             .catch(error => console.error('Error fetching choices:', error));
     });
 
@@ -278,6 +302,12 @@
             window.location.href = `/lesson?choice=${encodeURIComponent(selectedChoice)}&prompt_type=${encodeURIComponent(selectedPromptType)}`;
         })
         .catch(error => console.error('Error submitting choice:', error));
+    });
+
+    // Add event listener for the new "Back" button in the "Get Lesson from Subtitles" section
+    document.getElementById('back-button-prompt').addEventListener('click', function() {
+        document.getElementById('lesson-prompt-options').style.display = 'none';
+        document.getElementById('generate-lesson-options').style.display = 'flex';
     });
 
     // Handle recording buttons
