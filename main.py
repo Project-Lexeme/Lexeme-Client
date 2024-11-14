@@ -27,7 +27,8 @@ to compile all:
     ./compile_all_languages.bat
 
 to compile individual language:
-    python -m PyInstaller spec/{language}.spec main.py
+    python -m PyInstaller spec/{language}.spec main.py 
+    --noconfirm to skip output overwrite warning
 
 '''
 

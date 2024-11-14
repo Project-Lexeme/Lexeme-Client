@@ -9,15 +9,15 @@ a = Analysis(
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
-        #("C:/Program Files/Tesseract-OCR/tesseract.exe", '.'),  # deprecated
         ("../tesseract.exe",'.'),
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pip', 'pip'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
-        ('../data/prompts/beginner_scaffolded_prompts.csv', 'data/prompts/.'),
-        ('../data/prompts/intermediate_subtitle_prompts.csv', 'data/prompts/.'),
+        ('../data/prompts/.', 'data/prompts/.'),
+        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/prompts/.'),
+        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/prompts/.'),
     ],
     hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
@@ -52,6 +52,7 @@ exe = EXE(
     entitlements_file=None,
     icon=['../Lexemus.ico'],
 )
+
 coll = COLLECT(exe,
                 a.binaries,
                 a.zipfiles,

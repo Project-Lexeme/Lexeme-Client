@@ -9,15 +9,14 @@ a = Analysis(
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
-        #("C:/Program Files/Tesseract-OCR/tesseract.exe", '.'),  # deprecated
         ("../tesseract.exe",'.'),
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/ru_core_news_sm', 'spacy/data/ru_core_news_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pip', 'pip'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
-        ('../data/prompts/beginner_scaffolded_prompts.csv', 'data/prompts/.'),
-        ('../data/prompts/intermediate_subtitle_prompts.csv', 'data/prompts/.'),
+        ('../data/prompts/.', 'data/prompts/.'),
+        ＃ TODO: add dictionaries
     ],
     hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
@@ -26,7 +25,6 @@ a = Analysis(
     excludes=[],
     noarchive=False,
     optimize=0,
-
 )
 
 
