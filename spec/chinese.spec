@@ -9,15 +9,15 @@ a = Analysis(
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
-        ("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'tesseract_installer.exe'), # placeholder for windows only 
+        ("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'./tesseract_installer.exe'), # placeholder for windows only 
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pip', 'pip'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
-        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/prompts/.'),
-        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/prompts/.'),
+        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/dictionaries/.'),
+        ('../data/dictionaries/chi_tra_dictionary.csv', 'data/dictionaries/.'),
     ],
     hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
     hookspath=[],

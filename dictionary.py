@@ -13,10 +13,14 @@ def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # 
                 term, POS, notes, definition = re.match(re_string, line).groups() # type: ignore
                 entries.append([term, definition, POS, notes])
 
-    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{lang_code.replace('-','_')}_dictionary.csv" # have to switch hyphen for underscore
+    lang_codes_dict = {'de-en':'deu',  'es-en':'spa', 'fr-en':'fra', 'ru-en':'rus'}
+    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{lang_codes_dict[lang_code]}_dictionary.csv" # have to switch hyphen for underscore
     df = pd.DataFrame(entries)
     
     df.columns = ['term','definition','POS','notes']
+
+
+     # TODO: implement better lang_codes
     df.to_csv(lang_dict_save_filepath, index=False)
     return
 
@@ -60,6 +64,6 @@ def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TOD
 
 if __name__ == "__main__":
     langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
-    for lang in langs:
+    for i, lang in enumerate(langs):
         dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
         standardize_wiktionary_dictionary(dict_filepath, lang)
