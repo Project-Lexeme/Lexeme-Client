@@ -4,9 +4,22 @@ import re
 
 
 
-def standardize_wiktionary_dictionary(filepath: str) -> None:
+def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None:
+    entries = []
+    re_string = r'(\S*) \{([\S ]*)\} \[?([\S ]*)?\]? ?:: (.*)'
+    with open(filepath,'r', encoding='utf-8') as f:
+        for line in f:
+            if re.match(re_string, line):
+                term, POS, notes, definition = re.match(re_string, line).groups() # type: ignore
+                entries.append([term, definition, POS, notes])
+
+    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{lang_code.replace('-','_')}_dictionary.csv" # have to switch hyphen for underscore
+    df = pd.DataFrame(entries)
     
+    df.columns = ['term','definition','POS','notes']
+    df.to_csv(lang_dict_save_filepath, index=False)
     return
+
 
 def standardize_u8_dictionary(filepath: str) -> None:
     '''
@@ -37,18 +50,16 @@ def standardize_u8_dictionary(filepath: str) -> None:
     df.columns = ['term','definition','pinyin','sim']
     
     df.to_csv(chi_tra_save_filepath, index=False)
-    # with open(save_filepath, 'w', newline='', encoding='utf-8') as f:
-    #     wr = csv.writer(f, quoting=csv.QUOTE_ALL)
-    #     wr.writerow(entries)
     return
 
-def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one item
+def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one (correct) item
     dictionary_csv_filepath = f'{config.get_data_directory()}\\dictionaries\\{language}_dictionary.csv'
     df = pd.read_csv(dictionary_csv_filepath)
     term_contents = df[df.iloc[:,0] == term]
     return term_contents
 
 if __name__ == "__main__":
-    get_term_dictionary_contents('中文', 'chi_sim')
-    #chinese_dict_filepath = f'{config.get_data_directory()}\\dictionaries\\cedict_ts.u8'
-    #standardize_u8_dictionary(chinese_dict_filepath)
+    langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
+    for lang in langs:
+        dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
+        standardize_wiktionary_dictionary(dict_filepath, lang)
