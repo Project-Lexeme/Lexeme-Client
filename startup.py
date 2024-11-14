@@ -1,5 +1,4 @@
 import shutil
-import customtkinter
 import customtkinter as ctk
 import spacy
 from spacy.cli import download
@@ -43,8 +42,6 @@ def install_and_load_nlp_lang(module_name):
         model_path = module_name
     return spacy.load(model_path)
 
-import customtkinter as ctk
-
 def get_language_and_proficiency() -> tuple[str, list[str]]:
     # Try to fetch configuration or set defaults
     try:
@@ -58,17 +55,8 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
 
     # Function to handle submission of both selections
     def submit_selection() -> None:
-        # Update the selected values with current dropdown selections (using combobox's .get())
         selected_values['language'] = language_combobox.get()
         selected_values['proficiency'] = proficiency_combobox.get()
-
-        # Debug: print the selected values just before quitting
-        print(f"Submit selected: {selected_values['language']}, {selected_values['proficiency']}")
-
-        # Check the actual combobox values before quitting (debugging direct .get())
-        print(f"Combobox check: Language - {language_combobox.get()}, Proficiency - {proficiency_combobox.get()}")
-
-        # Exit the loop once submission is done
         root.quit()
 
     # Create the main window
@@ -112,15 +100,8 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
     submit_button = ctk.CTkButton(root, text="Submit", font=options_font, command=submit_selection)
     submit_button.pack(pady=20)
 
-    # Debug: print the initial values before starting the main loop
-    print(f"Initial selected: {selected_values['language']}, {selected_values['proficiency']}")
-
     # Start the Tkinter event loop
     root.mainloop()
-
-    # Debug: print the selected values after quitting the event loop
-    print(f"Final selected: {selected_values['language']}, {selected_values['proficiency']}")
-
     root.destroy()
 
     # Once the loop ends, update the config with the selected values
