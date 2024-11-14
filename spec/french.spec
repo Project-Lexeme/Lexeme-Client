@@ -9,7 +9,7 @@ a = Analysis(
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
-        ("../tesseract.exe",'.'),
+        ("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'tesseract_installer.exe'),
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/fr_core_news_sm', 'spacy/data/fr_core_news_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),

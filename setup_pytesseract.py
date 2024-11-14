@@ -3,14 +3,52 @@ import sys
 import pytesseract
 import requests
 import config
+import tempfile
+import subprocess
 
-# TODO: wrap all this in a new script
-if getattr(sys, 'frozen', False):
-    # If running as a bundled executable
-    tesseract_cmd = os.path.join(sys._MEIPASS, 'tesseract')
-else:
-    # If running in a normal Windows Python environment
-    tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
+def set_tesseract_cmd():
+    if not check_tesseract_installation():
+        install_tesseract()
+
+    if os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64':
+        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # 64-bit
+    elif os.environ['PROCESSOR_ARCHITECTURE'] == 'x86':
+        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe" # 32-bit
+    else: # TODO: handle other OS's here 
+        return 'Unknown'
+    
+    return
+
+def check_tesseract_installation():
+    # Define the default path for Tesseract installation
+    tesseract_path_64 = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    tesseract_path_32 = r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
+    
+    # Check if Tesseract is installed in the default paths
+    if os.path.exists(tesseract_path_64) or os.path.exists(tesseract_path_32):
+        print("Tesseract is already installed.")
+        return True
+    else:
+        print("Tesseract is not installed.")
+        return False
+
+def install_tesseract():
+    # Get the path to the temporary directory where the installer .exe is located
+    temp_dir = tempfile.gettempdir()
+    
+    # Define the path to the installer .exe
+    installer_path = os.path.join(temp_dir, "tesseract_installer.exe")  # Make sure this matches your installer name
+
+    # Check if the installer exists
+    if os.path.exists(installer_path):
+        print(f"Launching installer from {installer_path}...")
+        
+        # Run the installer and wait for it to finish
+        subprocess.run(installer_path, check=True)  # check=True will ensure the script waits until the installer finishes
+        print("Tesseract installation completed.")
+    else:
+        print(f"Installer not found in {temp_dir}. Make sure the installer is present.")
+        sys.exit(1)  # Exit if the installer is missing
 
 
 def setup_tessdata(language):
@@ -45,4 +83,4 @@ def download_language_data(language, tessdata_path): # TODO call this in main
         print(f"Failed to download {language}.traineddata. Status code: {response.status_code}")
         sys.exit(1)
 
-pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+

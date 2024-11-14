@@ -172,7 +172,9 @@ def start_app():
     set_language(lang_code)
     set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
     print("SpaCy installed, imported, and loaded")
-    print("Setting up PyTesseract now...")
+    print("Setting up PyTesseract now... Checking for installation")
+    setup_pytesseract.set_tesseract_cmd()
+    print("Checking for language data for your language...")
     setup_pytesseract.setup_tessdata(lang_code)
     print("PyTesseract set up!")
     #recorder = ScreenRecorder(language=lang_code, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
