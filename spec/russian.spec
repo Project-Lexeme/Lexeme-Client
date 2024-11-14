@@ -4,8 +4,8 @@
 a = Analysis(
     ['../main.py'],
     pathex=['venv'], #/Lib/site-packages
-    binaries=[('C:/Program Files/Tesseract-OCR/tesseract.exe', '.'),
-    ('C:/Program Files/Tesseract-OCR/*.dll', '.'),],
+    binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'tesseract_installer.exe'),
+    ],
     datas=[
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
