@@ -154,7 +154,7 @@ class ScreenRecorder:
         root = tk.Tk()
         root.withdraw()  # Hide the main window
 
-        filename = simpledialog.askstring("File Name", "Enter the file name:", initialvalue=self.filename)
+        filename = simpledialog.askstring("File Name", "Enter the file name:", initialvalue=self.filename).replace('.csv', '') # remove .csv from end of file if user uses the same filename
         # Return the filename (could be None if user cancels)
         root.destroy()
         return filename + '.csv'

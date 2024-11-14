@@ -4,7 +4,8 @@ learner_profile.csv
 !learner_profile_sample.csv
 
 # Ignore __pycache__
-__pycache__/
+__pycache__
+__pycache__/*.pyc
 *.pyc
 
 # Ignore screencaps
@@ -31,8 +32,5 @@ venv
 build
 dist
 
-
-# Ignore .pyc files
-*.pyc
-
+# Ignore DS_Store files
 *DS_Store
