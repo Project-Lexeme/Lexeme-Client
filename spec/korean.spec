@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 a = Analysis( # type: ignore
-    ['../main.py'], # because each .spec is in a subfolder, use relative paths to go back to project root dir
+    ['../main.py'],
     pathex=['venv'], #/Lib/site-packages
     binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'../tesseract_installer.exe'),
     ],
@@ -9,12 +9,11 @@ a = Analysis( # type: ignore
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
         ('../uploads/Screenshot.png', '.'),
-        ('../venv/Lib/site-packages/zh_core_web_sm', 'spacy/data/zh_core_web_sm'),
+        ('../venv/Lib/site-packages/ko_core_news_sm', 'spacy/data/ko_core_news_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
-        ('../data/dictionaries/chi_sim_dictionary.csv', 'data/dictionaries/.'),
-        ('../data/dictionaries/chi_tra_dictionary.csv', 'data/dictionaries/.'),
+        ('../data/dictionaries/kor_dictionary.csv', 'data/dictionaries/.'),
     ],
     hiddenimports=['spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
@@ -33,7 +32,7 @@ exe = EXE( # type: ignore
     a.binaries,
     a.datas,
     [],
-    name='Project Lexeme - Chinese',
+    name='Project Lexeme - Korean',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -55,5 +54,5 @@ coll = COLLECT(exe, # type: ignore
                 a.datas,
                 strip=False,
                 upx=True,
-                name='Project Lexeme - Chinese',  # Same name as above
+                name='Project Lexeme - Korean',  # Same name as above
                 )
