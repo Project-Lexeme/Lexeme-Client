@@ -25,7 +25,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
             width: 80%;
-            max-width: 600px;
+            max-width: 800px;
             position: relative;
             overflow: auto;
         }
@@ -192,13 +192,25 @@
 
 
 <script>
-    // Show the welcome screen
+    // Check localStorage to see if the welcome screen has been shown before
+    const hasSeenWelcomeScreen = localStorage.getItem('hasSeenWelcomeScreen');
+
     const welcomeScreen = document.getElementById('welcome-screen');
     const mainScreen = document.getElementById('main-screen');
-    setTimeout(() => {
+
+    if (!hasSeenWelcomeScreen) {
+        // Show the welcome screen if the user hasn't seen it
+        setTimeout(() => {
+            welcomeScreen.style.display = 'none';
+            mainScreen.style.display = 'block';
+            // Set localStorage flag to true after showing the animation
+            localStorage.setItem('hasSeenWelcomeScreen', 'true');
+        }, 4000); // Adjust the time based on your animation
+    } else {
+        // Skip the welcome screen if the user has already seen it
         welcomeScreen.style.display = 'none';
         mainScreen.style.display = 'block';
-    }, 4000);
+    }
 
     // Event listeners for the initial options
     document.getElementById('generate-lesson-button').addEventListener('click', () => {
@@ -222,7 +234,6 @@
         document.getElementById('record-content-options').style.display = 'none';
         document.getElementById('initial-options').style.display = 'flex'; // Show initial options
     });
-
 
     document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function() {
         fetch('/get-subtitle-files')

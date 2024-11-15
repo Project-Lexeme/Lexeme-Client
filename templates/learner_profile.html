@@ -4,32 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Review Terms</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@700&display=spawn" rel="stylesheet">
   <style>
-    /* Make the table stretch across the screen */
-    table {
-      width: 100%;  /* Make the table take up 100% of the available width */
-      border-collapse: collapse;  /* Remove space between table cells */
-      background-color: #5a5a5a;
-    }
     body {
-            background-color: #444444;
-          }
+      font-family: 'Roboto', sans-serif;
+      background-color: #444444;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    th, td {
-      padding: 8px 12px;  /* Add padding for readability */
-      text-align: center;  /* Align text to the left */
-      border: 1px solid #ddd;  /* Light grey border */
-      width: 20%;  /* Ensure each cell is of equal width */
-      cursor: pointer;  /* Pointer cursor on table cells */
-      color: white;
+    #container {
+      margin-top: 50px;
+      background-color: #787878;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+      width: 80%;
+      max-width: 1400px;
+      position: relative;
+      overflow: auto;
     }
 
     h2 {
-      text-align: center;  /* Center the header text */
-      margin-bottom: 20px;  /* Space between the header and the table */
+      font-size: 24px;
+      font-family: 'Courier New', monospace;
+      margin: 0 0 20px;
     }
 
-    /* Tooltip styling */
+    .term-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .term-cell {
+      flex: 1 1 25%;
+      padding: 8px 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      color: white;
+    }
+
     .tooltip {
       position: relative;
       display: inline-block;
@@ -38,7 +61,7 @@
 
     .tooltip .tooltiptext {
       visibility: hidden;
-      width: 200px;  /* Set a width for the tooltip */
+      width: 200px;
       background-color: #333;
       color: #fff;
       text-align: left;
@@ -46,20 +69,18 @@
       padding: 10px;
       position: absolute;
       z-index: 1;
-      bottom: 125%;  /* Position the tooltip above the term */
+      bottom: 125%;
       left: 50%;
-      margin-left: -100px;  /* Center the tooltip */
+      margin-left: -100px;
       opacity: 0;
       transition: opacity 0.3s;
     }
 
-    /* Show the tooltip when hovering over the term */
     .tooltip:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
     }
 
-    /* Search bar styling */
     #searchInput {
       margin: 20px auto;
       padding: 8px 12px;
@@ -70,23 +91,17 @@
       border-radius: 5px;
     }
 
-    /* Highlighted cell style */
     .highlighted {
-      background-color: #2187fc;  /* Light grey background for highlighted cell */
-      /*border: 4px solid #007bff;  /* Blue border for highlighted cell */
+      background-color: #155bad;
     }
 
-    /* Button styling */
-    #lessonButton { /* Initially disabled */
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      opacity: 0.5;  
+    button, select {
       font-family: 'Courier New', monospace;
-      background-color: #2187fc;
+      padding: 10px 20px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: #155bad;
       color: white;
       font-size: 16px;
       transition: all 0.3s ease;
@@ -94,103 +109,72 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
+    button:hover {
+      background-color: #44475a;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-button {
+      background-color: #6c757d;
+    }
+
+    .back-button:hover {
+      background-color: #5a6268;
+    }
+
+    #lessonButton {
+      opacity: 0.5;
+    }
+
     #lessonButton.enabled {
-      opacity: 1;  /* Button becomes fully visible when enabled */
+      opacity: 1;
       cursor: pointer;
     }
 
     #lessonButton:disabled {
-      background-color: #ccc;  /* Disabled button color */
+      background-color: #ccc;
       cursor: not-allowed;
     }
 
     label[for="prompt-type-dropdown"] {
-    font-size: 16px; /* Font size of the label */
-    color: white; /* Text color */
-    margin-right: 10px; /* Space between the label and the dropdown */
-  }
-
+      font-size: 16px;
+      color: white;
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
-
-  <!-- Header for the page -->
+<div id="container">
   <h2>Your Review Terms</h2>
-  
-  <!-- Search bar -->
   <input type="text" id="searchInput" placeholder="Search for terms..." onkeyup="filterTable()">
-
-  <!-- Dropdown for prompt types -->
   <label for="prompt-type-dropdown">Select Lesson Type:</label>
   <select id="prompt-type-dropdown">
     {% for prompt_type in prompt_types %}
-      <option value="{{ prompt_type }}" {% if loop.first %} selected {% endif %}>{{ prompt_type }}</option>
+    <option value="{{ prompt_type }}" {% if loop.first %} selected {% endif %}>{{ prompt_type }}</option>
     {% endfor %}
   </select>
-
-  <!-- Button to redirect to the lesson page -->
-  <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
-
-  <!-- Table for displaying the terms -->
-  <table id="termsTable">
+  <div>
+    <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
+    <button onclick="window.location.href='/';" class="back-button">Back</button>
+  </div>
+  <div class="term-row">
     {% set terms = csv_data[1:] | map(attribute=0) | list %}
     {% set num_terms = terms | length %}
-    {% set column_size = (num_terms // 4) + (1 if num_terms % 4 > 0 else 0) %}
-    
-    {% for row in range(column_size) %}
-      <tr class="termRow">
-        <!-- Column 1 -->
-        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row] if row < num_terms else '' }}')">
-          {{ terms[row] if row < num_terms else '' }}
-          <span class="tooltiptext">
-            {% if row < num_terms %}
-              <strong>Definition:</strong> {{ csv_data[row + 1][4] }} <br>
-              <strong>Pinyin:</strong> {{ csv_data[row + 1][5] }} <br>
-              <strong>Traditional:</strong> {{ csv_data[row + 1][6] }} <br>
-            {% endif %}
+    {% for i in range(num_terms) %}
+    <div class="term-cell tooltip" onclick="highlightTerm(this, '{{ terms[i] }}')">
+      {{ terms[i] }}
+      <span class="tooltiptext">
+            <strong>Definition:</strong> {{ csv_data[i + 1][4] }} <br>
+            <strong>Pinyin:</strong> {{ csv_data[i + 1][5] }} <br>
+            <strong>Traditional:</strong> {{ csv_data[i + 1][6] }} <br>
           </span>
-        </td>
-
-        <!-- Column 2 -->
-        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + column_size] if row + column_size < num_terms else '' }}')">
-          {{ terms[row + column_size] if row + column_size < num_terms else '' }}
-          <span class="tooltiptext">
-            {% if row + column_size < num_terms %}
-              <strong>Definition:</strong> {{ csv_data[row + column_size + 1][4] }} <br>
-              <strong>Pinyin:</strong> {{ csv_data[row + column_size + 1][5] }} <br>
-              <strong>Traditional:</strong> {{ csv_data[row + column_size + 1][6] }} <br>
-            {% endif %}
-          </span>
-        </td>
-
-        <!-- Column 3 -->
-        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + 2 * column_size] if row + 2 * column_size < num_terms else '' }}')">
-          {{ terms[row + 2 * column_size] if row + 2 * column_size < num_terms else '' }}
-          <span class="tooltiptext">
-            {% if row + 2 * column_size < num_terms %}
-              <strong>Definition:</strong> {{ csv_data[row + 2 * column_size + 1][4] }} <br>
-              <strong>Pinyin:</strong> {{ csv_data[row + 2 * column_size + 1][5] }} <br>
-              <strong>Traditional:</strong> {{ csv_data[row + 2 * column_size + 1][6] }} <br>
-            {% endif %}
-          </span>
-        </td>
-
-        <!-- Column 4 -->
-        <td class="tooltip" onclick="highlightTerm(this, '{{ terms[row + 3 * column_size] if row + 3 * column_size < num_terms else '' }}')">
-          {{ terms[row + 3 * column_size] if row + 3 * column_size < num_terms else '' }}
-          <span class="tooltiptext">
-            {% if row + 3 * column_size < num_terms %}
-              <strong>Definition:</strong> {{ csv_data[row + 3 * column_size + 1][4] }} <br>
-              <strong>Pinyin:</strong> {{ csv_data[row + 3 * column_size + 1][5] }} <br>
-              <strong>Traditional:</strong> {{ csv_data[row + 3 * column_size + 1][6] }} <br>
-            {% endif %}
-          </span>
-        </td>
-      </tr>
+    </div>
     {% endfor %}
-  </table>
+  </div>
+</div>
 
   <script>
+    // TODO: UPDATE THE TOOL TOP TEXT ABOVE TO WORK FROM THE CSV, NOT BE HARDCODED
     // Store selected terms globally
     let selectedTerms = [];
 

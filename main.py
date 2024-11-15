@@ -9,7 +9,7 @@ TODO: add Language class that has properties for all the different things a lang
 TODO: add feedback mechanism for prompts - user should be able to select 'yes' or 'no' that they enjoyed the prompt output
         - instead of completely randomly pulling from prompts, use probability distribution based on resulting prompt score ^ 
 TODO: make learner_profile.html hoverable tooltips more dynamic so that other languages are supported
-
+UI TODO: UPDATE THE TOOL TOP TEXT ABOVE TO WORK FROM THE CSV, NOT BE HARDCODED
         
 '''
 

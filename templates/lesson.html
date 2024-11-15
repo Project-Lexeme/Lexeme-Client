@@ -4,17 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson Page</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Roboto', sans-serif;
+            background-color: #444444;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #container {
+            margin-top: 50px;
+            background-color: #787878;
             padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 1400px;
+            position: relative;
+            overflow: auto;
         }
         h1 {
-            color: #333;
+            font-size: 36px;
+            font-family: 'Courier New', monospace;
+            margin: 0 0 20px;
+        }
+        #lesson-content {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #choice-message {
+            color: #50fa7b;
+        }
+        #llm-response {
+            white-space: pre-wrap;
+        }
+        button {
+            font-family: 'Courier New', monospace;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: #2187fc;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #44475a;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .back-button {
+            background-color: #6c757d; /* Gray color */
+        }
+        .back-button:hover {
+            background-color: #5a6268; /* Darker gray on hover */
         }
     </style>
     <script>
@@ -24,35 +77,33 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ response: response , choice: choice})
+                body: JSON.stringify({ response: response, choice: choice })
             })
-            .then(res => {
-                if (res.ok) {
-                    window.location.href = '/'; 
-                    //return res.json(); // Optional: handle server response
-                    
-                } else {
-                    throw new Error('Error sending response');
-                }
-            })
-            .catch(error => console.error('Fetch error:', error));
+                .then(res => {
+                    if (res.ok) {
+                        window.location.href = '/';
+                    } else {
+                        throw new Error('Error sending response');
+                    }
+                })
+                .catch(error => console.error('Fetch error:', error));
+        }
+        function goBack() {
+            window.location.href = '/';
         }
     </script>
 </head>
 <body>
+<div id="container">
     <h1>Lesson Page</h1>
     <div id="lesson-content">
         Loading lesson content...
         <div id="choice-message"></div>
         <div id="llm-response">{{ llm_response | safe }}</div> <!-- Rendered from Flask -->
     </div>
-
     <script>
-        // Get the choice from the query parameters
         const urlParams = new URLSearchParams(window.location.search);
         const choice = urlParams.get('choice');
-
-        // Display the choice in the lesson content area
         const choiceMessage = document.getElementById('choice-message');
         if (choice) {
             choiceMessage.textContent = `You navigated to the lesson with choice: ${choice}`;
@@ -60,10 +111,11 @@
             choiceMessage.textContent = 'No choice was provided.';
         }
     </script>
-    
-    <h3>Please respond:</h3>
-    <button onclick="sendResponse('yes')">Yes</button>
-    <button onclick="sendResponse('no')">No</button>
-
+    <div>
+        <button onclick="sendResponse('yes')">Yes</button>
+        <button onclick="sendResponse('no')">No</button>
+        <button onclick="goBack()" class="back-button">Back</button>
+    </div>
+</div>
 </body>
 </html>
