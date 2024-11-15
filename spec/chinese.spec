@@ -4,7 +4,7 @@
 a = Analysis(
     ['../main.py'], # because each .spec is in a subfolder, use relative paths to go back to project root dir
     pathex=['venv'], #/Lib/site-packages
-    binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'tesseract_installer.exe'),
+    binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'../tesseract_installer.exe'),
     ],
     datas=[
         ('../templates', 'templates'),  # html files other than index
