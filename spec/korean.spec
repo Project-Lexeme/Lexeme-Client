@@ -3,9 +3,9 @@
 a = Analysis( # type: ignore
     ['../main.py'],
     pathex=['venv'], #/Lib/site-packages
-    binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'../tesseract_installer.exe'),
-    ],
+    binaries=[],
     datas=[
+        ("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'./tesseract_installer'),
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
         ('../uploads/Screenshot.png', '.'),
