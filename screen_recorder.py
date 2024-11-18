@@ -144,7 +144,7 @@ class ScreenRecorder:
     def log_screencap_subtitles(self) -> None:
         if self.use_comparative_preprocessing:
             text = screenshot_text_extractor.comparative_read_text_from_image(
-                filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config, number_of_preprocessors=4, display_comparison=False)
+                filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config, number_of_preprocessors=3, display_comparison=False)
         else:
             text = screenshot_text_extractor.read_text_from_image(
                 filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
