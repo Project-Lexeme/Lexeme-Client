@@ -11,11 +11,8 @@ if not getattr(sys, 'frozen', False):
     pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 '''
-# TODO: comparative_read_text_from_image() needs to be thought about considerably
-        it seems like the computational overhead for tesseract to extract text is sufficiently low that we can really expand how this thing 
-        compares different preprocessed image scores
-# TODO: think about low-effort ways to compare performance on differently preprocessed images that is immune to no text on screen or other errant situations
-
+# TODO: need to modify comparative preprocessing to check for how many preprocessors are going to be used and better randomize using this info
+    e.g. if there are 3 preprocessors total, one should be parent algo/parent params, one should be parent algo/random params, one should be random algo/random params
 '''
 
 def check_img_tesseract_compatibility(img): # converts img if preprocessing turned it into not-tesseract friendly dtype/color
@@ -55,16 +52,14 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
             for i, w in enumerate(param_data['conf']):
                 print(f"p: {param_data['text'][i]} with confidence {param_data['conf'][i]}")
 
-        param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50]) # TODO: think about this filter
+        param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
         param_conf_sums.append(param_conf_sum)
         param_datas.append(param_data)
 
-    max_index = np.argmax(param_conf_sums)
-    print(max_index)
+    max_index = get_best_output_index(param_datas, minimum_confidence)
 
     _, previous_parent_algorithms, previous_parent_params = preprocessed_images[max_index]
     selected_data = param_datas[int(max_index)]
-    #print(f"parent param conf sum: {parent_param_conf_sum}, random param conf sum: {random_param_conf_sum}, changed previous parent params to new random params")
     
     if language not in ['chi_sim','chi_tra','kor','jpn']: # checks for languages that don't add spaces between characters
         text = ''.join([f'{t} ' for t in selected_data['text']]) # add spaces between characters
@@ -79,6 +74,31 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
 
     print(text)
     return text
+
+def get_best_output_index(data_list, minimum_confidence):
+    best_index = 0
+    best_avg_confidence = -1
+
+    for idx, data in enumerate(data_list):
+        # Extract the confidence and text values
+        conf_values = data['conf']
+        
+        # Count valid tokens (where confidence is not '-1')
+        valid_tokens_count = sum(1 for conf in conf_values if conf > minimum_confidence)
+        #print(f'index {idx} has {valid_tokens_count} valid tokens')
+        # Only consider dictionaries with at least 5 valid tokens
+        if valid_tokens_count >= 3:
+            # Calculate the average confidence for all tokens (including low-confidence ones)
+            confidences = [int(conf) for conf in conf_values if conf != '-1']  # Only include valid confidences
+            avg_confidence = sum(confidences) / len(confidences)
+            #print(f'index {idx} has avg confidence of {avg_confidence}')
+            
+            # Update best index if current output has a higher average confidence
+            if avg_confidence > best_avg_confidence:
+                best_index = idx
+                best_avg_confidence = avg_confidence
+    #print(best_index)
+    return best_index
 
 
 def read_text_from_image(filepath: str, language: str, preprocessing=False, **kwargs) -> str: 
@@ -271,4 +291,4 @@ if __name__ == '__main__':
     language = "chi_sim"
     tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
     pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
-    comparative_read_text_from_image(filepath=f"E:/ProjectLexeme/uploads/Screenshot.png", language=language, display_comparison=False)
+    comparative_read_text_from_image(filepath=f"E:/ProjectLexeme/uploads/Screenshot.png", language=language, minimum_confidence=.7 ,number_of_preprocessors=4, display_comparison=True)
