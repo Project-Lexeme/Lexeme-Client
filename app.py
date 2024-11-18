@@ -1,7 +1,6 @@
 import webbrowser
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
-
 import spacy
 from screen_recorder import ScreenRecorder
 import screenshot_text_extractor, prompt_generator, config
@@ -21,7 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 _recorder = None
 _nlp = None
 _cfg = None
-_language = None
+_language = None # TODO: use Language class to make the handling of language info cleaner
 
 def set_recorder(recorder: ScreenRecorder) -> None:
     global _recorder

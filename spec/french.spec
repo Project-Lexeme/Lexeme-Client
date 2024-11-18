@@ -1,23 +1,21 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
-a = Analysis(
+a = Analysis( # type: ignore
     ['../main.py'], # because each .spec is in a subfolder, use relative paths to go back to project root dir
     pathex=['venv'], #/Lib/site-packages
-    binaries=[("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'tesseract_installer.exe'),
-    ],
+    binaries=[],
     datas=[
+        ("C:/Users/afggo/Downloads/tesseract-ocr-w64-setup-5.4.0.20240606.exe",'./tesseract_installer'),
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
         ('../uploads/Screenshot.png', '.'),
         ('../venv/Lib/site-packages/fr_core_news_sm', 'spacy/data/fr_core_news_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
-        ('../venv/Lib/site-packages/pip', 'pip'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
-        ('../data/dictionaries/fr_en_dictionary.csv', 'data/dictionaries/.'),
+        ('../data/dictionaries/fra_dictionary.csv', 'data/dictionaries/.'),
     ],
-    hiddenimports=['pip','pip._internal','spacy','pytesseract'], # redundant but hey it works
+    hiddenimports=['spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -26,10 +24,9 @@ a = Analysis(
     optimize=0,
 )
 
+pyz = PYZ(a.pure) # type: ignore
 
-pyz = PYZ(a.pure)
-
-exe = EXE(
+exe = EXE( # type: ignore
     pyz,
     a.scripts,
     a.binaries,
@@ -51,7 +48,7 @@ exe = EXE(
     icon=['../Lexemus.ico'],
 )
 
-coll = COLLECT(exe,
+coll = COLLECT(exe, # type: ignore
                 a.binaries,
                 a.zipfiles,
                 a.datas,

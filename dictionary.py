@@ -2,7 +2,12 @@ import pandas as pd
 import config
 import re
 
+'''
+Notes on dictionaries:
+1. Sources are various open-source dictionaries, with a special thanks to Matthias Buchmeier for compiling significant Ding-formatted OS dictionaries from Wiktionary
+2. formatted dictionaries are saved with formatted Tesseract-OCR lang codes, e.g. chi_sim_dictionary.csv 
 
+'''
 
 def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # Ding format from https://en.wiktionary.org/wiki/User:Matthias_Buchmeier/download
     entries = []
@@ -13,17 +18,38 @@ def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # 
                 term, POS, notes, definition = re.match(re_string, line).groups() # type: ignore
                 entries.append([term, definition, POS, notes])
 
-    lang_codes_dict = {'de-en':'deu',  'es-en':'spa', 'fr-en':'fra', 'ru-en':'rus'}
+    lang_codes_dict = {'de-en':'deu',  'es-en':'spa', 'fr-en':'fra', 'ru-en':'rus'} # found in startup.py - these are Tesseract-OCR codes
     lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{lang_codes_dict[lang_code]}_dictionary.csv" # have to switch hyphen for underscore
     df = pd.DataFrame(entries)
     
     df.columns = ['term','definition','POS','notes']
-
-
-     # TODO: implement better lang_codes
     df.to_csv(lang_dict_save_filepath, index=False)
     return
 
+def standardize_korean_dictionary(filepath: str) -> None: # TODO: find better korean dictionary
+    '''
+     화학 반응 	 chemical reaction ; reaction 	 chemistry 
+     신비한 (sin-bi-han) 	 cryptic ; cryptical ; deep ; inscrutable ; mysterious ; mystifying 	 descriptive_adjectives 
+     '''
+    
+    entries = []
+    re_string = r' ([\S; \-]*) ?\t ?([\S; \-]*) ?\t ?([\S_ ]*)'
+    with open(filepath,'r', encoding='utf-8') as f:
+        for line in f:
+            if re.match(re_string, line):
+                term, definition, notes = re.match(re_string, line).groups() # type: ignore
+                entries.append([term, definition, notes])
+
+    korean_lang_code = 'kor'
+    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{korean_lang_code}_dictionary.csv" # have to switch hyphen for underscore
+    df = pd.DataFrame(entries)
+    print(entries)
+    print(df.shape)
+    
+    df.columns = ['term','definition','notes']
+
+    df.to_csv(lang_dict_save_filepath, index=False)
+    return
 
 def standardize_u8_dictionary(filepath: str) -> None:
     '''
@@ -63,7 +89,9 @@ def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TOD
     return term_contents
 
 if __name__ == "__main__":
-    langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
-    for i, lang in enumerate(langs):
-        dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
-        standardize_wiktionary_dictionary(dict_filepath, lang)
+    filepath = f'{config.get_data_directory()}/dictionaries/korean.txt'
+    standardize_korean_dictionary(filepath)
+    # langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
+    # for i, lang in enumerate(langs):
+    #     dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
+    #     standardize_wiktionary_dictionary(dict_filepath, lang)
