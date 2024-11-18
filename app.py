@@ -130,7 +130,7 @@ def begin_recording():
         language, codes_and_proficiency =  startup.get_language_and_proficiency()
         lang_code, nlp_lang, proficiency = codes_and_proficiency
         set_language(lang_code)
-        set_recorder(ScreenRecorder(language=lang_code, use_preprocessing=False, use_comparative_preprocessing=True, minimum_confidence=70, config=r'', time_between_screencaps=.8))
+        set_recorder(ScreenRecorder(language=lang_code, use_preprocessing=False, use_comparative_preprocessing=True, minimum_confidence=70, config=r'', time_between_screencaps=.6))
         print("ScreenRecorder is set up")
         set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
         setup_pytesseract.setup_tessdata(lang_code)

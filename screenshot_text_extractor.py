@@ -27,50 +27,45 @@ def check_img_tesseract_compatibility(img): # converts img if preprocessing turn
         img = img.convert('RGB')
     return img
 
-def comparative_read_text_from_image(filepath: str, language: str, display_comparison=False, **kwargs): 
+def comparative_read_text_from_image(filepath: str, language: str, number_of_preprocessors=3, display_comparison=False, **kwargs): 
     minimum_confidence = kwargs.get('minimum_confidence')
     print_confidence_levels = kwargs.get('print_confidence_levels')
     display_text_boxes = kwargs.get('display_text_boxes')
-    config = kwargs.get("config")
+    tesseract_config = kwargs.get("config")
 
     global previous_parent_params
     global previous_parent_algorithms
 
     img = cv.imread(filepath)
-    parent_param_img, random_param_img, random_algorithms, random_params = comparative_preprocessing(img, previous_parent_algorithms, previous_parent_params, display_comparison)
+    preprocessed_images = comparative_preprocessing(img, previous_parent_algorithms, previous_parent_params, number_of_preprocessors, display_comparison)
     
     # below checks for some edge cases in preprocessing where the preprocessing changes the underlying img mode and it errors pytesseract.image_to_data
-    random_param_img = check_img_tesseract_compatibility(random_param_img)    
-    parent_param_img = check_img_tesseract_compatibility(parent_param_img)
+    param_conf_sums = []
+    param_datas = []
+    for i, _ in enumerate(preprocessed_images):
+        img = preprocessed_images[i][0]
+        img = check_img_tesseract_compatibility(img)    
+    
+        if tesseract_config:
+            param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language, config=tesseract_config)
+        else:
+            param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language)
 
-    if config:
-        parent_param_data = pytesseract.image_to_data(parent_param_img, output_type=pytesseract.Output.DICT, lang=language, config=config)
-        random_param_data = pytesseract.image_to_data(random_param_img, output_type=pytesseract.Output.DICT, lang=language, config=config)
+        if print_confidence_levels:
+            for i, w in enumerate(param_data['conf']):
+                print(f"p: {param_data['text'][i]} with confidence {param_data['conf'][i]}")
 
-    else:
-        parent_param_data = pytesseract.image_to_data(parent_param_img, output_type=pytesseract.Output.DICT, lang=language)
-        random_param_data = pytesseract.image_to_data(random_param_img, output_type=pytesseract.Output.DICT, lang=language)
+        param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50]) # TODO: think about this filter
+        param_conf_sums.append(param_conf_sum)
+        param_datas.append(param_data)
 
-    if print_confidence_levels:
-        for i, w in enumerate(parent_param_data['conf']):
-            print(f"p: {parent_param_data['text'][i]} with confidence {parent_param_data['conf'][i]}")
-        for i, w in enumerate(random_param_data['conf']):
-            print(f"r: {random_param_data['text'][i]} with confidence {random_param_data['conf'][i]}")
+    max_index = np.argmax(param_conf_sums)
+    print(max_index)
 
-    parent_param_conf_sum = sum([conf for conf in parent_param_data['conf'] if conf > 50]) # TODO: think about this filter
-    random_param_conf_sum = sum([conf for conf in random_param_data['conf'] if conf > 50])
-
-    if random_param_conf_sum > parent_param_conf_sum:
-        previous_parent_algorithms = random_algorithms
-        previous_parent_params = random_params
-        selected_data = random_param_data
-        print(f"parent param conf sum: {parent_param_conf_sum}, random param conf sum: {random_param_conf_sum}, changed previous parent params to new random params")
-    else:
-        selected_data = parent_param_data
-        print(f"parent param conf sum: {parent_param_conf_sum}, random param conf sum: {random_param_conf_sum}, kept previous parent params")
-    # print(f"r: {''.join(random_param_data['text'])}")
-    # print(f"p: {''.join(parent_param_data['text'])}")
-
+    _, previous_parent_algorithms, previous_parent_params = preprocessed_images[max_index]
+    selected_data = param_datas[int(max_index)]
+    #print(f"parent param conf sum: {parent_param_conf_sum}, random param conf sum: {random_param_conf_sum}, changed previous parent params to new random params")
+    
     if language not in ['chi_sim','chi_tra','kor','jpn']: # checks for languages that don't add spaces between characters
         text = ''.join([f'{t} ' for t in selected_data['text']]) # add spaces between characters
     else:
@@ -167,46 +162,11 @@ def preprocess_image(img: np.array) -> np.array: # TODO: work on this
 
 # everything in triple quotes is the earliest version of the thread of comparing two screenshot preprocessings and taking the best to be the parent of the next generation
 
-def comparative_preprocessing(img, previous_algorithms, previous_params, show_comparison=False):
-    parent_param_img = img # duplicate img upfront
-    random_param_img = img 
-    if len(random_param_img.shape) == 3:
-        random_param_img = cv.cvtColor(random_param_img, cv.COLOR_BGR2GRAY)
-                                    
-    noise_removal_dict = {None : [[]],
-                        cv.GaussianBlur : [[random_param_img], 
-                                            [(3,3), (5,5), (7,7), (9,9), (11,11)],
-                                            [0]], 
-                        cv.medianBlur: [[random_param_img], 
-                                        [3,5,7,9]],} 
-    thresholding_dict = {None : [[]],
-                        cv.threshold: [[random_param_img], # returns tuple (___, thresh)
-                                        [100,120,140], 
-                                        [255], 
-                                        [cv.THRESH_BINARY, cv.THRESH_BINARY_INV, cv.THRESH_TRUNC, cv.THRESH_TOZERO, # thresh function
-                                        cv.THRESH_TOZERO_INV, cv.THRESH_BINARY + cv.THRESH_OTSU]],}
-    edge_detection_dict = {None : [[]],
-                            cv.Canny: [[random_param_img],
-                                    [50,100,130], # low thresh
-                                    [150,180,210]], # high thresh
-                            cv.Sobel: [[random_param_img],
-                                    [cv.CV_64F], 
-                                    [1, 2], # dx
-                                    [0, 1, 2], # dy
-                                    [3, 5]]} # ksize
-    
-    # define img up here to implicitly pass it in to these functions
-    random_param_img, noise_algorithm, noise_params = get_random_preprocessing(random_param_img, noise_removal_dict)
-    thresh_results = get_random_preprocessing(random_param_img, thresholding_dict)
-    try: (_, random_param_img), thresh_algorithm, thresh_params = thresh_results # done via try/except because thresh algo returning 'None' gives error when assigned to (_, random_param_img)
-    except: random_param_img, thresh_algorithm, thresh_params = thresh_results
-    random_param_img, edge_algorithm, edge_params = get_random_preprocessing(random_param_img, edge_detection_dict)
-    
-    random_algorithms = [noise_algorithm,thresh_algorithm, edge_algorithm]
+def comparative_preprocessing(img, previous_algorithms, previous_params, number_of_preprocessors, show_comparison=False):
+    parent_param_img = img
+    preprocessors = []
 
-    random_params = [noise_params, thresh_params, edge_params] # this is returned
-    # compare with previous choices
-    
+    ### new img using parent params
     if len(parent_param_img.shape) == 3:
             parent_param_img = cv.cvtColor(parent_param_img, cv.COLOR_BGR2GRAY)
 
@@ -215,22 +175,75 @@ def comparative_preprocessing(img, previous_algorithms, previous_params, show_co
     previous_params[1][0] = parent_param_img
     previous_params[2][0] = parent_param_img
     
-    if previous_algorithms[0] is not None:
+    # runs parent_param_img through each algorithm if they exist
+    if previous_algorithms[0] is not None: 
         parent_param_img = previous_algorithms[0](*previous_params[0])
     if previous_algorithms[1] is not None:
         _, parent_param_img = previous_algorithms[1](*previous_params[1])
     if previous_algorithms[2] is not None:
         parent_param_img = previous_algorithms[2](*previous_params[2])
 
+    parent_preprocessor_tuple = (parent_param_img, previous_algorithms, previous_params)
+    preprocessors.insert(0,parent_preprocessor_tuple) # first index is parent set
+    
+    
+    if number_of_preprocessors < 2:
+        return preprocessors
+    
+    ### new img using random params
+    for n in range(number_of_preprocessors - 1): # n - 1 because the first preprocessor is always going to be the parent
+        random_param_img = img 
+        if len(random_param_img.shape) == 3:
+            random_param_img = cv.cvtColor(random_param_img, cv.COLOR_BGR2GRAY)
+                                        
+        noise_removal_dict = {None : [[]],
+                            cv.GaussianBlur : [[random_param_img], 
+                                                [(3,3), (5,5), (7,7), (9,9), (11,11)],
+                                                [0]], 
+                            cv.medianBlur: [[random_param_img], 
+                                            [3,5,7,9]],} 
+        thresholding_dict = {None : [[]],
+                            cv.threshold: [[random_param_img], # returns tuple (___, thresh)
+                                            [100,120,140], 
+                                            [255], 
+                                            [cv.THRESH_BINARY, cv.THRESH_BINARY_INV, cv.THRESH_TRUNC, cv.THRESH_TOZERO, # thresh function
+                                            cv.THRESH_TOZERO_INV, cv.THRESH_BINARY + cv.THRESH_OTSU]],}
+        edge_detection_dict = {None : [[]],
+                                cv.Canny: [[random_param_img],
+                                        [50,100,130], # low thresh
+                                        [150,180,210]], # high thresh
+                                cv.Sobel: [[random_param_img],
+                                        [cv.CV_64F], 
+                                        [1, 2], # dx
+                                        [0, 1, 2], # dy
+                                        [3, 5]]} # ksize
 
+        # define img up here to implicitly pass it in to these functions
+        random_param_img, noise_algorithm, noise_params = get_random_preprocessing(random_param_img, noise_removal_dict)
+        thresh_results = get_random_preprocessing(random_param_img, thresholding_dict)
+        try: (_, random_param_img), thresh_algorithm, thresh_params = thresh_results # done via try/except because thresh algo returning 'None' gives error when assigned to (_, random_param_img)
+        except: random_param_img, thresh_algorithm, thresh_params = thresh_results
+        random_param_img, edge_algorithm, edge_params = get_random_preprocessing(random_param_img, edge_detection_dict)
+
+        random_algorithms = [noise_algorithm,thresh_algorithm, edge_algorithm]
+
+        random_params = [noise_params, thresh_params, edge_params] # this is returned
+        random_preprocessor_tuple = (random_param_img, random_algorithms, random_params)
+        
+        preprocessors.append(random_preprocessor_tuple)
+    # compare with previous choices
+    
+   
+    
     if show_comparison == True:
-        concatenated_image = np.hstack((random_param_img, parent_param_img))
+        imgs = [p[0] for p in preprocessors]
+        concatenated_image = np.vstack(imgs)
         # Show the concatenated image in one window
         cv.imshow('Comparison', concatenated_image)
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-    return parent_param_img, random_param_img, random_algorithms, random_params
+    return preprocessors # list of tuples (img, algo, params)
 
 
 def get_random_preprocessing(img, preprocessing_dict):
@@ -254,8 +267,8 @@ def get_rand_params(param_options: list):
     return params    
 
 
-
-#language = "chi_sim"
-# tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
-# pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
-#comparative_read_text_from_image(filepath=f"E:/ProjectLexeme/uploads/Screenshot.png", language=language, display_comparison=True)
+if __name__ == '__main__':
+    language = "chi_sim"
+    tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
+    pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+    comparative_read_text_from_image(filepath=f"E:/ProjectLexeme/uploads/Screenshot.png", language=language, display_comparison=False)
