@@ -61,14 +61,14 @@ def draw_rectangle(root) -> None:
 
 
 class ScreenRecorder:
-    def __init__(self, language, use_preprocessing, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
+    def __init__(self, language, preprocessors, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
         self.window_title = self.select_window()
         self.window = self.get_rectangle()
         self.language = language
-        self.use_preprocessing = use_preprocessing
+        self.preprocessors = preprocessors
         self.minimum_confidence = minimum_confidence
         self.use_comparative_preprocessing = use_comparative_preprocessing
         self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
@@ -142,12 +142,9 @@ class ScreenRecorder:
             return False
 
     def log_screencap_subtitles(self) -> None:
-        if self.use_comparative_preprocessing:
-            text = screenshot_text_extractor.comparative_read_text_from_image(
-                filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, config=self.config, number_of_preprocessors=3, display_comparison=False)
-        else:
-            text = screenshot_text_extractor.read_text_from_image(
-                filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, preprocessing=self.use_preprocessing, minimum_confidence=self.minimum_confidence, config=self.config)
+        text = screenshot_text_extractor.comparative_read_text_from_image(
+            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, 
+            config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
