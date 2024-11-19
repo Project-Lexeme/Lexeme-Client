@@ -8,6 +8,8 @@ import LLMserver
 import logger
 import setup_pytesseract
 import startup
+import pyautogui
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -143,6 +145,31 @@ def stop_recording():
     if _recorder.stop_recording():
         return jsonify({"status":"success", "message":"Recording stopped"})
     return jsonify({"status":"error", "message":"No recording in progress"})
+
+@app.route('/take-screenshot', methods=['POST'])
+def take_screenshot():
+    try:
+        # Create a screenshots directory if it doesn't exist
+        screenshot_dir = 'screenshots'
+        os.makedirs(screenshot_dir, exist_ok=True)
+
+        # Generate a unique filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{screenshot_dir}/screenshot_{timestamp}.png"
+
+        # Take screenshot
+        screenshot = pyautogui.screenshot()
+        screenshot.save(filename)
+
+        return jsonify({
+            'message': f'Screenshot saved as {filename}',
+            'status': 'success'
+        })
+    except Exception as e:
+        return jsonify({
+            'message': f'Error taking screenshot: {str(e)}',
+            'status': 'error'
+        })
    
 @app.route('/submit', methods=['POST'])
 def submit_choice():
