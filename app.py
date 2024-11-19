@@ -156,6 +156,14 @@ def submit_choice():
 def get_uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/prompt-feedback')
+def get_prompt_feedback():
+    feedback = request.args.get('feedback', '0')
+    prompt_type = request.args.get('prompt-type', 'No prompt type provided') # this is currently not available to the lesson page
+    prompt_index = request.args.get('prompt-index', 'No prompt index provided') # this is currently not available to the lesson page
+    # logger.log_feedback(feedback, prompt_type, prompt_index)
+    #return to homepage
+
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
