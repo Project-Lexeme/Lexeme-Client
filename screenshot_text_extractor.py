@@ -4,7 +4,8 @@ from PIL import Image
 import cv2 as cv
 import numpy as np
 import sys
-import os 
+import multiprocessing
+import time
 
 previous_parent_algorithms = [None, None, None]
 previous_parent_params = [[[]],[[]],[[]]]
@@ -37,22 +38,10 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     img = cv.imread(filepath)
     preprocessed_images = preprocessing.comparative_preprocessing(img, previous_parent_algorithms, previous_parent_params, number_of_preprocessors, display_comparison)
     
-    # below checks for some edge cases in preprocessing where the preprocessing changes the underlying img mode and it errors pytesseract.image_to_data
     param_conf_sums = []
     param_datas = []
     for i, _ in enumerate(preprocessed_images):
-        img = preprocessed_images[i][0]
-        img = check_img_tesseract_compatibility(img)    
-    
-        if tesseract_config:
-            param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language, config=tesseract_config)
-        else:
-            param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language)
-
-        if print_confidence_levels:
-            for i, w in enumerate(param_data['conf']):
-                print(f"p: {param_data['text'][i]} with confidence {param_data['conf'][i]}")
-
+        param_data = read_text_from_img(preprocessed_images[i], tesseract_config,language,print_confidence_levels)
         param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
         param_conf_sums.append(param_conf_sum)
         param_datas.append(param_data)
@@ -75,6 +64,20 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
 
     print(text)
     return text
+
+def read_text_from_img(preprocessed_image, tesseract_config, language, print_confidence_levels):
+    img = preprocessed_image[0]
+    img = check_img_tesseract_compatibility(img)    
+
+    if tesseract_config:
+        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language, config=tesseract_config)
+    else:
+        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language)
+
+    if print_confidence_levels:
+        for i, w in enumerate(param_data['conf']):
+            print(f"p: {param_data['text'][i]} with confidence {param_data['conf'][i]}")
+    return param_data
 
 def get_best_output_index(data_list, minimum_confidence):
     best_index = 0
@@ -133,7 +136,11 @@ if __name__ == '__main__':
     language = "chi_sim"
     tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Adjust as needed
     pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
-
+    config = r'--psm 6'
     #os.environ['TESSDATA_PREFIX'] = r'./tessdata'  # in case of debugging weirdness
     #os.environ['TESSDATA'] = r'./tessdata'
-    comparative_read_text_from_image(filepath=f"./uploads/Screenshot.png", language=language, minimum_confidence=.7 ,number_of_preprocessors=3, display_comparison=True)
+
+    start_time = time.time()
+    comparative_read_text_from_image(filepath=f"./uploads/Screenshot.png", language=language, minimum_confidence=.7 ,number_of_preprocessors=3, display_comparison=False, config=config)
+    end_time = time.time()
+    print(f'Time elapsed: {end_time-start_time:.4f}')
