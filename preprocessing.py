@@ -12,20 +12,14 @@ def comparative_preprocessing(img, previous_algorithms, previous_params, number_
     previous_params[1][0] = img
     previous_params[2][0] = img
 
-    img = apply_algorithms(img, previous_algorithms,previous_params)
-    parent_preprocessor_tuple = (img, previous_algorithms, previous_params)
+    parent_processor_img = apply_algorithms(img, previous_algorithms,previous_params)
+    parent_preprocessor_tuple = (parent_processor_img, previous_algorithms, previous_params)
     preprocessors.insert(0,parent_preprocessor_tuple) # first index is parent set
     
     if number_of_preprocessors < 2:
-        return preprocessors
-    elif number_of_preprocessors == 2:
-        preprocessors.append(assign_random_preprocessing(img))
         return preprocessors 
-    else:
-        # case for parent algorithms, random params
-        preprocessors.append(assign_random_preprocessing(img, previous_algorithms))
-        # case for random algorithms, random params
-        for _ in range(number_of_preprocessors - 2): # n - 2 because the first preprocessor is parent, second is parent algo / random params
+    else: # see previous commit for implementation of where n > 3 preprocessors makes 2nd preprocessor parent algo / random params instead of random / random
+        for _ in range(number_of_preprocessors - 1): # n - 1 because the first preprocessor is parent
             random_preprocessor_tuple = assign_random_preprocessing(img)
             preprocessors.append(random_preprocessor_tuple)
     
@@ -34,15 +28,14 @@ def comparative_preprocessing(img, previous_algorithms, previous_params, number_
 
     return preprocessors # list of tuples (img, algo, params)
 
-def assign_random_preprocessing(img, previous_algorithms=None):
-    random_param_img = convert_to_grayscale(img)                                     
+def assign_random_preprocessing(random_param_img, previous_algorithms=None):                                  
     noise_removal_dict = {None : [[]],
                         cv.GaussianBlur : [[random_param_img], 
                                             [(3,3), (5,5), (7,7), (9,9), (11,11)],
                                             [0]], 
                         cv.medianBlur: [[random_param_img], 
                                         [3,5,7,9]],} 
-    thresholding_dict = {None : [[]],
+    thresholding_dict = {None : [[]], 
                         cv.threshold: [[random_param_img], # returns tuple (___, thresh)
                                         [100,120,140], 
                                         [255], 
@@ -60,9 +53,10 @@ def assign_random_preprocessing(img, previous_algorithms=None):
     if previous_algorithms is not None:
         random_algorithms = previous_algorithms
         noise_params = get_rand_params(noise_removal_dict[random_algorithms[0]])
-        thresh_params = get_rand_params(thresholding_dict[random_algorithms[1]])
+        try: (_, thresh_params) = get_rand_params(thresholding_dict[random_algorithms[1]])
+        except: thresh_params = get_rand_params(thresholding_dict[random_algorithms[1]])
         edge_params = get_rand_params(edge_detection_dict[random_algorithms[2]])
-    else:
+    else: # TODO: Fix thresh returns
         # define img up here to implicitly pass it in to these functions
         random_param_img, noise_algorithm, noise_params = get_random_preprocessing(random_param_img, noise_removal_dict)
         thresh_results = get_random_preprocessing(random_param_img, thresholding_dict)
@@ -110,8 +104,10 @@ def show_preprocessing_comparison(preprocessors) -> None:
 
 def apply_algorithms(img, algorithms, params):
     for algorithm, param_set in zip(algorithms, params):
-        if algorithm is not None:
-            img = algorithm(*param_set)
+        if algorithm is not None and algorithm != cv.threshold:
+            img = algorithm(*param_set) # in the case of threshold, this was packing (ret, img) 
+        elif algorithm == cv.threshold:
+            _, img = algorithm(*param_set)
     return img
 
 def get_random_preprocessing(img, preprocessing_dict):

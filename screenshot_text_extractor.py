@@ -62,7 +62,9 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     if display_text_boxes == True: 
         display_text_box_image(selected_data, img)
 
-    print(text)
+    print(f'Text: {text}, performant preprocessor: {max_index}')
+    print(preprocessed_images[max_index][1])
+    
     return text
 
 def read_text_from_img(preprocessed_image, tesseract_config, language, print_confidence_levels):
@@ -141,6 +143,7 @@ if __name__ == '__main__':
     #os.environ['TESSDATA'] = r'./tessdata'
 
     start_time = time.time()
-    comparative_read_text_from_image(filepath=f"./uploads/Screenshot.png", language=language, minimum_confidence=.7 ,number_of_preprocessors=3, display_comparison=False, config=config)
+    for _ in range(10):
+        comparative_read_text_from_image(filepath=f"./uploads/Screenshot.png", language=language, minimum_confidence=.7 ,number_of_preprocessors=3, display_comparison=False, config=config)
     end_time = time.time()
     print(f'Time elapsed: {end_time-start_time:.4f}')
