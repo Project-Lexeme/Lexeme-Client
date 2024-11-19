@@ -41,11 +41,12 @@
     .term-row {
       display: flex;
       justify-content: center;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
       flex-wrap: wrap;
     }
 
     .term-cell {
-      flex: 1 1 25%;
+      flex: 1 1 15%;
       padding: 8px 12px;
       text-align: center;
       border: 1px solid #ddd;
@@ -164,86 +165,81 @@
     <div class="term-cell tooltip" onclick="highlightTerm(this, '{{ terms[i] }}')">
       {{ terms[i] }}
       <span class="tooltiptext">
-            <strong>Definition:</strong> {{ csv_data[i + 1][4] }} <br>
-            <strong>Pinyin:</strong> {{ csv_data[i + 1][5] }} <br>
-            <strong>Traditional:</strong> {{ csv_data[i + 1][6] }} <br>
+            <strong>{{csv_data[0][4] | capitalize}}: </strong> {{ csv_data[i + 1][4] }} <br>
+            <strong>{{csv_data[0][5] | capitalize}}: </strong> {{ csv_data[i + 1][5] }} <br>
+            <strong>{{csv_data[0][6] | capitalize}}: </strong> {{ csv_data[i + 1][6] }} <br>
+        {% if csv_data[0][7] and csv_data[i + 1][7] %}
+            <strong>{{csv_data[0][7] | capitalize}}: </strong> {{ csv_data[i + 1][7] }} <br>
+        {% endif %}
           </span>
     </div>
     {% endfor %}
   </div>
 </div>
 
-  <script>
-    // TODO: UPDATE THE TOOL TOP TEXT ABOVE TO WORK FROM THE CSV, NOT BE HARDCODED
-    // Store selected terms globally
-    let selectedTerms = [];
+<script>
+  // Store selected terms globally
+  let selectedTerms = [];
 
-    // Function to filter table rows based on search input
-    function filterTable() {
-      var input = document.getElementById("searchInput");
-      var filter = input.value.toLowerCase();
-      var table = document.getElementById("termsTable");
-      var rows = table.getElementsByClassName("termRow");
+  // Function to filter table rows based on search input
+  function filterTable() {
+    var input = document.getElementById("searchInput");
+    var filter = input.value.toLowerCase();
+    var termCells = document.getElementsByClassName("term-cell");
 
-      // Loop through each row
-      for (var i = 0; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName("td");
-        var rowText = "";
+    // Loop through each term cell
+    for (var i = 0; i < termCells.length; i++) {
+      var termText = termCells[i].textContent.toLowerCase();
 
-        // Concatenate all the text in the cells of the row to search across all columns
-        for (var j = 0; j < cells.length; j++) {
-          rowText += cells[j].textContent || cells[j].innerText;
-        }
-
-        // Check if the row contains the search query
-        if (rowText.toLowerCase().indexOf(filter) > -1) {
-          rows[i].style.display = "";  // Show row
-        } else {
-          rows[i].style.display = "none";  // Hide row
-        }
-      }
-    }
-
-    // Function to highlight the clicked term (toggle highlight for individual term)
-    function highlightTerm(cell, term) {
-      cell.classList.toggle("highlighted");
-
-      // Add or remove term from selectedTerms array
-      if (cell.classList.contains("highlighted")) {
-        selectedTerms.push(term);
+      // Check if the term contains the search query
+      if (termText.includes(filter)) {
+        termCells[i].style.display = "";  // Show term
       } else {
-        const index = selectedTerms.indexOf(term);
-        if (index > -1) {
-          selectedTerms.splice(index, 1);
-        }
+        termCells[i].style.display = "none";  // Hide term
       }
-
-      // Update button state
-      updateButtonState();
     }
+  }
 
-    // Function to check if any term is selected and update button state
-    function updateButtonState() {
-      var button = document.getElementById("lessonButton");
+  // Function to highlight the clicked term (toggle highlight for individual term)
+  function highlightTerm(cell, term) {
+    cell.classList.toggle("highlighted");
 
-      // Enable button if at least one term is selected
-      if (selectedTerms.length > 0) {
-        button.classList.add("enabled");
-        button.disabled = false;
-      } else {
-        button.classList.remove("enabled");
-        button.disabled = true;
+    // Add or remove term from selectedTerms array
+    if (cell.classList.contains("highlighted")) {
+      selectedTerms.push(term);
+    } else {
+      const index = selectedTerms.indexOf(term);
+      if (index > -1) {
+        selectedTerms.splice(index, 1);
       }
     }
 
-    // Function to redirect to the lesson page with selected terms as a URL parameter
-    function redirectToLesson() {
-      // Encode the selected terms and redirect
-      const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
-      const promptType = document.getElementById("prompt-type-dropdown").value; // Get the selected prompt type
-      window.location.href = `/lesson?choice=${selectedTermsParam}&prompt_type=${encodeURIComponent(promptType)}`;
+    // Update button state
+    updateButtonState();
+  }
+
+  // Function to check if any term is selected and update button state
+  function updateButtonState() {
+    var button = document.getElementById("lessonButton");
+
+    // Enable button if at least one term is selected
+    if (selectedTerms.length > 0) {
+      button.classList.add("enabled");
+      button.disabled = false;
+    } else {
+      button.classList.remove("enabled");
+      button.disabled = true;
     }
-  </script>
+  }
+
+  // Function to redirect to the lesson page with selected terms as a URL parameter
+  function redirectToLesson() {
+    // Encode the selected terms and redirect
+    const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
+    const promptType = document.getElementById("prompt-type-dropdown").value; // Get the selected prompt type
+    window.location.href = `/lesson?choice=${selectedTermsParam}&prompt_type=${encodeURIComponent(promptType)}`;
+  }
+</script>
 
 </body>
 </html>
