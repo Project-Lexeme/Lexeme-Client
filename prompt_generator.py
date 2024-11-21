@@ -17,7 +17,6 @@ def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
         return prompt
 
     else:         
-        # TODO: find means to getting prompt_type param in here
         prompt_csv_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
         prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath, prompt_type)
         print(f'You just asked the LLM the following: {prompt}')
@@ -47,7 +46,7 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     return ''.join(filtered_sentence)
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
-def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_filename: str, prompt_type: str='Any') -> list[str]:
+def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_filename: str, prompt_type: str='Any Type') -> list[str]:
     '''
     prompt_type: first column unique values in scaffolded_prompts.csv
         Any, Definition, Example, Idiom, Lesson, Culture, or Mistake
@@ -103,13 +102,13 @@ def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save histo
     concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
     concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
-def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Summary') -> str:
+def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Any Type') -> str:
     '''
     prompt_type: Summary, Lesson, Quiz, Any. Will likely add more. 
     returns a formatted text string that is the prompt to send to the LLM
     '''
     prompt_df = pd.read_csv(prompt_csv_filepath)
-    if prompt_type == 'Any':
+    if prompt_type == 'Any Type':
         filtered_df = prompt_df
     else:
         filtered_df = prompt_df[prompt_df['Type'] == prompt_type]

@@ -414,6 +414,20 @@
                 document.getElementById('response').textContent = 'Failed to take screenshot';
             });
     });
+
+    document.getElementById('adjust-bounding-box-button').addEventListener('click', function() {
+        fetch('/adjust-bounding-box', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').textContent = data.message;
+            })
+            .catch(error => {
+                console.error('Error taking screenshot:', error);
+                document.getElementById('response').textContent = 'Failed to adjust bounding box';
+            });
+    });
 </script>
 </body>
 </html>

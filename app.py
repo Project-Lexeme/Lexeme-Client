@@ -105,6 +105,11 @@ def get_choices(part_of_speech='NOUN'):
     choices = prompt_generator.find_parts_of_speech_in_sentence(text, part_of_speech, _nlp) # TO DO: Make this legit later - be able to pass in POS as arg
     return jsonify(choices)
 
+@app.route('/adjust-bounding-box', methods=['POST'])
+def adjust_bounding_box():
+    _recorder.window = _recorder.get_rectangle()
+    return jsonify({'status': 'success'})
+
 @app.route('/upload', methods=['POST'])
 def upload_image(): #TODO refactor to simplify if possible
     if 'image' not in request.files:
