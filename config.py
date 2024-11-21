@@ -120,8 +120,7 @@ def get_config_default_language_and_proficiency()-> Union[list[str], list[None]]
 
     except FileNotFoundError: # this needs wrapped in a function and called instead of going here 
         lang_prof = [None, None] # in startup.py, this removes default option from dropdown being a specific language
-    
-    
+
     return lang_prof
 
 if __name__ == '__main__':
