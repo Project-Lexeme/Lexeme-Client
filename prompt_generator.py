@@ -5,6 +5,7 @@ import random
 import pandas as pd
 import config
 import app
+import numpy as np
 
 def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
     if choice.endswith('.csv'):
@@ -57,11 +58,27 @@ def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_file
     if prompt_type != 'Any':
         empty_prompts = empty_prompts[empty_prompts['Type'] == prompt_type]
     
-    random_index = random.randint(0, len(empty_prompts) - 1)
-    empty_prompt = empty_prompts.iloc[random_index, 1]
+    selected_index = select_index_from_score_probability(empty_prompts) 
+    empty_prompt = empty_prompts.iloc[selected_index, 1]
     app.set_most_recent_prompt(prompts_csv_filename, empty_prompt)
     formatted_prompt = empty_prompt.format(term) # 0 index is type, 1 is prompt
     return formatted_prompt
+
+def select_index_from_score_probability(empty_prompts):
+    '''
+    pass in empty_prompts pd.DataFrame, probabilistically select one based on score and return its index. 
+    Model is: probabilities = ( (Scores * variance(scores)) + ((-1 * min(Scores * variance(scores))) + 1) ) / sum(above scaled Scores)
+    '''
+    scores = np.array(empty_prompts.loc[:,'Score']).astype(float) # this works returning a pd.series
+    variance = np.var(scores)
+    scores *= variance
+    min = np.min(scores)
+    shift = (-1 * min) + 1
+    scores += shift
+    sum_scores = np.sum(scores)
+    scores /= sum_scores
+    selected_index = random.choices(np.arange(scores.size), weights=scores, k=1)  
+    return selected_index[0]
 
 def load_chinese_samples_csv(file_name: str) -> list[str]:
     with open(f"{file_name}", 'r', encoding='utf-8') as f:
@@ -86,9 +103,6 @@ def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save histo
     concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
     concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
 
-# def find_greatest_vector_in_sentence(sentence:str, target_parts_of_speech:list[str], nlp: spacy.Language) -> None: # TODO: reconsider/implement this
-#     target_vectors = []
-
 def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Summary') -> str:
     '''
     prompt_type: Summary, Lesson, Quiz, Any. Will likely add more. 
@@ -99,8 +113,10 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
         filtered_df = prompt_df
     else:
         filtered_df = prompt_df[prompt_df['Type'] == prompt_type]
-    max_index = len(filtered_df)
-    empty_prompt = filtered_df.iloc[random.randrange(0,max_index), 1] # randomly pulls based on filtered_df
+    
+    selected_index = select_index_from_score_probability(filtered_df)
+    empty_prompt = filtered_df.iloc[selected_index, 1] 
+
     app.set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
@@ -108,4 +124,4 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     return formatted_prompt
 
 if __name__ == '__main__':
-    generate_prompt_from_term_and_scaffolded_prompts('HEHEHE', f'data/prompts/term_prompts.csv')
+    select_index_from_score_probability(pd.read_csv('./data/prompts/subtitle_prompts.csv'))

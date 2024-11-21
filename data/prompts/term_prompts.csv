@@ -1,5 +1,5 @@
 Type,Prompt,Score
-Definition,Can you describe in English what the terms in the following list of comma-separated terms in my target language mean and give 2 basic sentence examples in my target language? Terms: {},0
+Definition,Can you describe in English what the terms in the following list of comma-separated terms in my target language mean and give 2 basic sentence examples in my target language? Terms: {},1
 Definition,Can you identify synonyms or antonyms of the terms in the following list of comma-separated terms in my target language and their uses? Please answer in both English and my target language? Please include example sentences in my target language. Terms: {},1
 Example,How are the terms in the following list of comma-separated terms in my target language commonly used in everyday conversation? Please answer in both English and my target language? Can you provide example sentences in my target language? Terms: {},0
 Example,In what contexts are the terms in the following list of comma-separated terms in my target language typically employed? Please answer in both English and my target language? Please provide example sentences in my target language. Terms: {},0
