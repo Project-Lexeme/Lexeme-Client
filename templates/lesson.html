@@ -72,16 +72,20 @@
     </style>
     <script>
         function sendResponse(response) {
-            fetch('/submit-response', {
+            // Map "yes" to 1 and "no" to -1
+            const responseValue = (response === 'yes') ? 1 : -1;
+
+            // Send the response as a JSON object
+            fetch('/prompt-feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ response: response, choice: choice })
+                body: JSON.stringify({ response: responseValue })
             })
                 .then(res => {
                     if (res.ok) {
-                        window.location.href = '/';
+                        window.location.href = '/';  // Redirect after successful response
                     } else {
                         throw new Error('Error sending response');
                     }

@@ -44,15 +44,7 @@ def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
     global _most_recent_prompt
     _most_recent_prompt = (prompt_csv_filepath, empty_prompt)
 
-@app.route('/prompt-feedback')
-def get_prompt_feedback():
-    feedback = request.args.get('feedback', '0')
-    prompt_type = request.args.get('prompt-type', 'No prompt type provided') # this is currently not available to the lesson page
-    prompt_index = request.args.get('prompt-index', 'No prompt index provided') # this is currently not available to the lesson page
-    # logger.log_feedback(feedback, prompt_type, prompt_index)
-    #return to homepage
-
-@app.route('/submit-response', methods=['POST']) # TODO:
+@app.route('/prompt-feedback', methods=['POST']) # TODO:
 def get_prompt_feedback():
     data = request.get_json()
     prompt = _most_recent_prompt
@@ -61,8 +53,8 @@ def get_prompt_feedback():
     print(f'Response received: {response}')
     
     logger.log_prompt_feedback(prompt[0], prompt[1], response)
-    set_most_recent_prompt( (None, None) ) # clear the most recent prompt
-     
+    set_most_recent_prompt(None, None) # clear the most recent prompt
+
     return jsonify({'status': 'success', 'received': response})
 
     # print(answer)

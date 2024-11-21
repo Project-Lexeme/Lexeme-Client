@@ -95,8 +95,8 @@ def log_prompt_feedback(prompts_filepath, empty_prompt:str, feedback: int): # tr
     '''
     try:
         prompt_df = pd.read_csv(prompts_filepath)
-        prompt_df[prompt_df['Prompt']==empty_prompt]['Score'] += feedback
-        prompt_df.to_csv(prompts_filepath)
+        prompt_df.loc[prompt_df['Prompt']==empty_prompt, 'Score'] += feedback 
+        prompt_df.to_csv(prompts_filepath, index=False)
     except:
         print(f'Error adding prompt score')
     return
