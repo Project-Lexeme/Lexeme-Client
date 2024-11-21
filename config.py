@@ -53,7 +53,6 @@ def get_config() -> configparser.ConfigParser:
 
     except FileNotFoundError:  
         init_config()
-        
 
     return cfg
 
@@ -74,6 +73,7 @@ def init_config() -> None:
 
     # Write the new config to the file
     cfg['General'] = {'debug': True, 'log_level': 'info'}
+    cfg['SettingsOCR'] = {'num_of_preprocessors':3, 'tesseract_configuration':'--psm 7','time_between_screenshots':0.8}
     cfg['Server'] = {
         'base_url': base_url,
         'api_key': api_key,
@@ -123,3 +123,7 @@ def get_config_default_language_and_proficiency()-> Union[list[str], list[None]]
     
     
     return lang_prof
+
+if __name__ == '__main__':
+    get_data_directory()
+    get_config()
