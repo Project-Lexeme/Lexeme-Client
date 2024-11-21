@@ -4,6 +4,7 @@ import csv
 import random
 import pandas as pd
 import config
+import app
 
 def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
     if choice.endswith('.csv'):
@@ -51,13 +52,15 @@ def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_file
         Any, Definition, Example, Idiom, Lesson, Culture, or Mistake
 
     '''
-    scaffolded_prompts = pd.read_csv(prompts_csv_filename)
+    empty_prompts = pd.read_csv(prompts_csv_filename)
     
     if prompt_type != 'Any':
-        scaffolded_prompts = scaffolded_prompts[scaffolded_prompts['Type'] == prompt_type]
+        empty_prompts = empty_prompts[empty_prompts['Type'] == prompt_type]
     
-    random_index = random.randint(0, len(scaffolded_prompts) - 1)
-    formatted_prompt = scaffolded_prompts.iloc[random_index, 1].format(term) # 0 index is type, 1 is prompt
+    random_index = random.randint(0, len(empty_prompts) - 1)
+    empty_prompt = empty_prompts.iloc[random_index, 1]
+    app.set_most_recent_prompt(prompts_csv_filename, empty_prompt)
+    formatted_prompt = empty_prompt.format(term) # 0 index is type, 1 is prompt
     return formatted_prompt
 
 def load_chinese_samples_csv(file_name: str) -> list[str]:
@@ -88,8 +91,7 @@ def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save histo
 
 def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Summary') -> str:
     '''
-    prompt_type: Summary, Lesson, Quiz, Any
-    
+    prompt_type: Summary, Lesson, Quiz, Any. Will likely add more. 
     returns a formatted text string that is the prompt to send to the LLM
     '''
     prompt_df = pd.read_csv(prompt_csv_filepath)
@@ -99,6 +101,7 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
         filtered_df = prompt_df[prompt_df['Type'] == prompt_type]
     max_index = len(filtered_df)
     empty_prompt = filtered_df.iloc[random.randrange(0,max_index), 1] # randomly pulls based on filtered_df
+    app.set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')

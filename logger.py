@@ -89,6 +89,18 @@ def get_subtitles_csv(filename: str) -> list:
         data.remove('')
     return data
 
+def log_prompt_feedback(prompts_filepath, empty_prompt:str, feedback: int): # try/except so that passing in empty_prompt doesn't cause any funny business
+    '''
+    takes in prompt csv filename, empty_prompt, and feedback as {-1, 1} and increments/decrements prompt score
+    '''
+    try:
+        prompt_df = pd.read_csv(prompts_filepath)
+        prompt_df[prompt_df['Prompt']==empty_prompt]['Score'] += feedback
+        prompt_df.to_csv(prompts_filepath)
+    except:
+        print(f'Error adding prompt score')
+    return
+
 
 if __name__ == "__main__":
     log_term('天','Number of touches', 'chi_sim')

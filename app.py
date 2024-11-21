@@ -21,6 +21,8 @@ _recorder = None
 _nlp = None
 _cfg = None
 _language = None # TODO: use Language class to make the handling of language info cleaner
+_most_recent_prompt = (None, None) # tuple containining (prompt_csv_filepath, empty_prompt)
+
 
 def set_recorder(recorder: ScreenRecorder) -> None:
     global _recorder
@@ -38,20 +40,29 @@ def set_language(language) -> None:
     global _language
     _language = language
 
-@app.route('/submit-response', methods=['POST']) # need to inherit choice from URL
-def log_student_response_to_lesson():
+def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
+    global _most_recent_prompt
+    _most_recent_prompt = (prompt_csv_filepath, empty_prompt)
+
+@app.route('/prompt-feedback')
+def get_prompt_feedback():
+    feedback = request.args.get('feedback', '0')
+    prompt_type = request.args.get('prompt-type', 'No prompt type provided') # this is currently not available to the lesson page
+    prompt_index = request.args.get('prompt-index', 'No prompt index provided') # this is currently not available to the lesson page
+    # logger.log_feedback(feedback, prompt_type, prompt_index)
+    #return to homepage
+
+@app.route('/submit-response', methods=['POST']) # TODO:
+def get_prompt_feedback():
     data = request.get_json()
-    term = data.get('choice')
+    prompt = _most_recent_prompt
     response = data.get('response')
     # Process the response here, e.g., update database or perform logic
     print(f'Response received: {response}')
     
-    if response == 'yes':
-        logger.log_term(term, on='Number correct', language=_language)
-        return "Keep it up!"
-    elif response == 'no':
-        logger.log_term(term, on="Number incorrect", language=_language)
-        return "I'll add it to the list of terms to review" # TODO: think about the list of terms to review  
+    logger.log_prompt_feedback(prompt[0], prompt[1], response)
+    set_most_recent_prompt( (None, None) ) # clear the most recent prompt
+     
     return jsonify({'status': 'success', 'received': response})
 
     # print(answer)
@@ -67,7 +78,6 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _nlp)
             for term in terms:
                 logger.log_term(term, 'Number of touches', language=_language)
-    print(prompt_type)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language) # TODO: 
@@ -155,14 +165,6 @@ def submit_choice():
 @app.route('/uploads/<filename>')
 def get_uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/prompt-feedback')
-def get_prompt_feedback():
-    feedback = request.args.get('feedback', '0')
-    prompt_type = request.args.get('prompt-type', 'No prompt type provided') # this is currently not available to the lesson page
-    prompt_index = request.args.get('prompt-index', 'No prompt index provided') # this is currently not available to the lesson page
-    # logger.log_feedback(feedback, prompt_type, prompt_index)
-    #return to homepage
 
 @app.route('/')
 def home():
