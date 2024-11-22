@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import simpledialog  # CustomTkinter does not have its own dialogs yet, so we still use this
+#from tkinter import simpledialog  # CustomTkinter does not have its own dialogs yet, so we still use this
 import pygetwindow as gw
 import pyautogui
 import time
@@ -174,7 +174,7 @@ class ScreenRecorder:
         result = [None]
 
         # Function to handle submission
-        def submit() -> None:
+        def submit():
             result[0] = filename_var.get().replace('.csv', '')  # Remove '.csv' if entered
             root.quit()  # Close the window
 
