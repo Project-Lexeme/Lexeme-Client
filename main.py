@@ -31,7 +31,6 @@ to compile all:
 to compile individual language:
     python -m PyInstaller spec/{language}.spec /main.py 
     --noconfirm to skip output overwrite warning
-
 '''
 
 if __name__ == '__main__':
