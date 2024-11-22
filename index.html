@@ -508,14 +508,41 @@
         fetch('/take-screenshot', {
             method: 'POST'
         })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').textContent = data.message;
-            })
-            .catch(error => {
-                console.error('Error taking screenshot:', error);
-                document.getElementById('response').textContent = 'Failed to take screenshot';
-            });
+        .then(response => response.json())
+        .then(data => {
+            // Reuse the recording status popup for screenshots
+            recordingStatusTitle.textContent = 'Screenshot Taken';
+            recordingStatusMessage.textContent = data.message;
+
+            recordingStatusPopup.classList.remove('fade-out');
+            recordingStatusPopup.classList.add('show');
+
+            // Auto-fade out after 7 seconds
+            setTimeout(() => {
+                recordingStatusPopup.classList.add('fade-out');
+                setTimeout(() => {
+                    recordingStatusPopup.classList.remove('show');
+                }, 300);
+            }, 7000);
+        })
+        .catch(error => {
+            console.error('Error taking screenshot:', error);
+
+            // Show error in the same popup
+            recordingStatusTitle.textContent = 'Screenshot Error';
+            recordingStatusMessage.textContent = 'Failed to take screenshot';
+
+            recordingStatusPopup.classList.remove('fade-out');
+            recordingStatusPopup.classList.add('show');
+
+            // Auto-fade out after 7 seconds
+            setTimeout(() => {
+                recordingStatusPopup.classList.add('fade-out');
+                setTimeout(() => {
+                    recordingStatusPopup.classList.remove('show');
+                }, 300);
+            }, 7000);
+        });
     });
 
     document.getElementById('adjust-bounding-box-button').addEventListener('click', function() {

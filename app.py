@@ -159,22 +159,24 @@ def stop_recording():
     return jsonify({"status":"error", "message":"No recording in progress"})
 
 @app.route('/take-screenshot', methods=['POST'])
-def take_screenshot(): 
+def take_screenshot():
     try:
-        
-        if _recorder is not None:
-            _recorder.window = _recorder.get_rectangle()
-        if _recorder is None:
-            instantiate_screen_recorder()
-        
         # Create a screenshots directory if it doesn't exist
         screenshot_dir = 'screenshots'
         os.makedirs(screenshot_dir, exist_ok=True)
 
-        text = _recorder.take_screenshot()
+        # Generate a unique filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"screenshot_{timestamp}.png"
+        full_path = os.path.abspath(os.path.join(screenshot_dir, filename))
+
+        # Take screenshot
+        screenshot = pyautogui.screenshot()
+        screenshot.save(full_path)
 
         return jsonify({
-            'message': f'{text}',
+            'message': filename,
+            'path': full_path,
             'status': 'success'
         })
     except Exception as e:
