@@ -12,9 +12,10 @@ def check_for_learner_profile():
         with csv_file.open('w') as f:
             f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
-def log_term(term: str, on: str, language: str) -> None: 
+def log_term(term: str, on: str, nlp_language_code: str) -> None: 
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
+    language - NLP lang
     '''
     check_for_learner_profile()
 
@@ -22,7 +23,7 @@ def log_term(term: str, on: str, language: str) -> None:
     indexer = touched_terms.loc[touched_terms['Term'] == term]
     
     if len(indexer) == 0: # if term is not in list of terms
-        term_dictionary_contents = dictionary.get_term_dictionary_contents(term, language)
+        term_dictionary_contents = dictionary.get_term_dictionary_contents(term, nlp_language_code)
         # # need to also concat definition and other language info
         to_concat = pd.DataFrame({'Term': [term], on: [1]}) # this is going to add 1 to whichever column you passed as 'on'
         to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])

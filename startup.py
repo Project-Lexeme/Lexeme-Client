@@ -66,21 +66,8 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
 
     options_font = ctk.CTkFont("Courier New", size=18)
 
-    # Language and proficiency options
-    language_codes = {
-        "English": ["eng", "en_core_web_sm"],
-        "Spanish": ["spa", 'es_core_news_sm'],
-        "French": ["fra", "fr_core_news_sm"],
-        "German": ["deu", "de_core_news_sm"],
-        "Chinese Simplified": ["chi_sim", "zh_core_web_sm"],
-        "Chinese Traditional": ["chi_tra", "zh_core_web_sm"],
-        "Japanese": ["jpn", "ja_core_news_sm"],
-        "Korean": ["kor", "ko_core_news_sm"],
-        "Russian": ['rus', "ru_core_news_sm"]
-    }
-    proficiencies = ['No proficiency', 'Memorized proficiency', 'Elementary proficiency',
-                     'Limited working proficiency', 'General professional proficiency',
-                     'Advanced professional proficiency']
+    language_codes = get_language_dicts()
+    proficiencies = get_proficiencies()
 
     languages = [lang for lang in language_codes.keys()]
 
@@ -112,6 +99,27 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
             [language_codes[selected_values['language']][0],
              language_codes[selected_values['language']][1],
              selected_values['proficiency']])
+
+def get_language_dicts():
+    # Language and proficiency options
+    language_codes = { #{'Plain English' : ["tesseract","spacy"]}
+        "English": ["eng", "en_core_web_sm"],
+        "Spanish": ["spa", 'es_core_news_sm'],
+        "French": ["fra", "fr_core_news_sm"],
+        "German": ["deu", "de_core_news_sm"],
+        "Chinese Simplified": ["chi_sim", "zh_core_web_sm"],
+        "Chinese Traditional": ["chi_tra", "zh_core_web_sm"],
+        "Japanese": ["jpn", "ja_core_news_sm"],
+        "Korean": ["kor", "ko_core_news_sm"],
+        "Russian": ['rus', "ru_core_news_sm"]
+    }
+    return language_codes
+
+def get_proficiencies():
+    proficiencies = ['No proficiency', 'Memorized proficiency', 'Elementary proficiency',
+                     'Limited working proficiency', 'General professional proficiency',
+                     'Advanced professional proficiency']
+    return proficiencies
 
 
 if __name__ == "__main__":

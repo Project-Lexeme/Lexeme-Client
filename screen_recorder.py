@@ -7,8 +7,11 @@ import re
 import threading
 import config
 import logger
+import prompt_generator
 import screenshot_text_extractor
 import os
+
+import startup
 
 
 def clean_filename(title) -> str:  # Replace invalid characters with underscores or remove them
@@ -61,7 +64,11 @@ def draw_rectangle(root) -> None:
 
 
 class ScreenRecorder:
-    def __init__(self, language, preprocessors, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
+    def __init__(self, language, nlp, preprocessors, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
+        '''
+        language: 
+        '''
+        
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
@@ -74,6 +81,7 @@ class ScreenRecorder:
         self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
         self.config = config
         self.time_between_screencaps = time_between_screencaps
+        self.nlp = nlp
 
     def get_rectangle(self) -> tuple[int, int, int, int]:
         root = ctk.CTk()
@@ -119,6 +127,38 @@ class ScreenRecorder:
         root.mainloop()  # Start the GUI event loop
 
         return selected_title  # type: ignore # Return the selected window title
+    
+    def take_screenshot(self) -> str: # send image through the ringer
+        '''
+        Takes a screenshot and returns the parsed text
+        '''
+        #try:
+        if not self.window:
+            self.window = self.get_rectangle()
+        
+        left, top = self.window[0], self.window[1]
+        width, height = self.window[2] - self.window[0], self.window[3] - self.window[1]
+        screenshot = pyautogui.screenshot(region=(left, top, width, height))
+        screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
+
+        
+        text = screenshot_text_extractor.comparative_read_text_from_image(
+        filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, 
+        config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
+
+        if len(text) > 0:
+            # for v in startup.get_language_dicts().values():
+            #     if v[0] == self.language:
+            #         spacy_lang_code = v[1]
+            terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp) 
+            for term in terms:
+                logger.log_term(term, 'Number of touches', nlp_language_code=self.language)
+
+        # except Exception as e:
+        #     print(f"Error taking screenshot: {e}")
+        #     text = ''
+        return text
+
 
     def start_recording(self) -> bool:
         self.filename = self.prompt_for_filename()

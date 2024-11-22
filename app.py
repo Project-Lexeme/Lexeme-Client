@@ -42,6 +42,16 @@ def set_language(language) -> None:
     global _language
     _language = language
 
+def instantiate_screen_recorder() -> None:
+    # Set up the screen recorder
+    language, codes_and_proficiency =  startup.get_language_and_proficiency()
+    lang_code, nlp_lang, proficiency = codes_and_proficiency
+    set_language(lang_code)
+    set_recorder(ScreenRecorder(language=lang_code, nlp=_nlp, preprocessors=3, use_comparative_preprocessing=True, minimum_confidence=70, config=r'--psm 6', time_between_screencaps=.6))
+    print("ScreenRecorder is set up")
+    set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
+    setup_pytesseract.setup_tessdata(lang_code)
+
 def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
     global _most_recent_prompt
     _most_recent_prompt = (prompt_csv_filepath, empty_prompt)
@@ -107,6 +117,8 @@ def get_choices(part_of_speech='NOUN'):
 
 @app.route('/adjust-bounding-box', methods=['POST'])
 def adjust_bounding_box():
+    if _recorder is None:
+        instantiate_screen_recorder()
     _recorder.window = _recorder.get_rectangle()
     return jsonify({'status': 'success'})
 
@@ -135,14 +147,7 @@ def upload_image(): #TODO refactor to simplify if possible
 def begin_recording():
     print("begin_recording flask function called")
     if _recorder is None:
-        # Set up the screen recorder
-        language, codes_and_proficiency =  startup.get_language_and_proficiency()
-        lang_code, nlp_lang, proficiency = codes_and_proficiency
-        set_language(lang_code)
-        set_recorder(ScreenRecorder(language=lang_code, preprocessors=3, use_comparative_preprocessing=True, minimum_confidence=70, config=r'--psm 6', time_between_screencaps=.6))
-        print("ScreenRecorder is set up")
-        set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
-        setup_pytesseract.setup_tessdata(lang_code)
+        instantiate_screen_recorder()
     if _recorder.start_recording():
         return jsonify({"status":"success", "message":"Recording started"})
     return jsonify({"status":"error", "message":"Recording already started"})
@@ -154,22 +159,22 @@ def stop_recording():
     return jsonify({"status":"error", "message":"No recording in progress"})
 
 @app.route('/take-screenshot', methods=['POST'])
-def take_screenshot():
+def take_screenshot(): 
     try:
+        
+        if _recorder is not None:
+            _recorder.window = _recorder.get_rectangle()
+        if _recorder is None:
+            instantiate_screen_recorder()
+        
         # Create a screenshots directory if it doesn't exist
         screenshot_dir = 'screenshots'
         os.makedirs(screenshot_dir, exist_ok=True)
 
-        # Generate a unique filename with timestamp
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{screenshot_dir}/screenshot_{timestamp}.png"
-
-        # Take screenshot
-        screenshot = pyautogui.screenshot()
-        screenshot.save(filename)
+        text = _recorder.take_screenshot()
 
         return jsonify({
-            'message': f'Screenshot saved as {filename}',
+            'message': f'{text}',
             'status': 'success'
         })
     except Exception as e:
@@ -201,7 +206,6 @@ def start_app():
     print("Config loaded successfully!")
     language, codes_and_proficiency =  startup.get_language_and_proficiency()
     lang_code, nlp_lang, proficiency = codes_and_proficiency
-    #print(f"You chose {language} at a {proficiency} level!") # not currently doing anything with language/nlp_lang
     set_language(lang_code)
     set_nlp(startup.install_and_load_nlp_lang(nlp_lang))
     print("SpaCy installed, imported, and loaded")
@@ -210,8 +214,5 @@ def start_app():
     print("Checking for language data for your language...")
     setup_pytesseract.setup_tessdata(lang_code)
     print("PyTesseract set up!")
-    #recorder = ScreenRecorder(language=lang_code, use_preprocessing=False, minimum_confidence=70, config=r'', time_between_screencaps=.8) ## TODO: revisit preprocess, explore pytesseract config files
-    #set_recorder(recorder)
-    #print("ScreenRecorder is set up")
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)

@@ -27,6 +27,10 @@ def check_img_tesseract_compatibility(img): # converts img if preprocessing turn
     return img
 
 def comparative_read_text_from_image(filepath: str, language: str, number_of_preprocessors=3, display_comparison=False, **kwargs): 
+    '''
+    language: tesseract lang
+    '''
+    
     minimum_confidence = kwargs.get('minimum_confidence')
     print_confidence_levels = kwargs.get('print_confidence_levels')
     display_text_boxes = kwargs.get('display_text_boxes')
@@ -62,8 +66,7 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     if display_text_boxes == True: 
         display_text_box_image(selected_data, img)
 
-    print(f'Text: {text}, performant preprocessor: {max_index}')
-    print(preprocessed_images[max_index][1])
+    print(f'Text: {text}')
     
     return text
 
