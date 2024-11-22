@@ -14,11 +14,12 @@ import os
 def clean_filename(title) -> str:  # Replace invalid characters with underscores or remove them
     return re.sub(r'[<>:"/\\|?*. ]', '_', title)
 
+
 class DrawRectangleApp:
     def __init__(self, root, left, top, width, height) -> None:
         self.root = root
         self.root.attributes("-topmost", True)  # Always on top
-        self.root.attributes("-alpha", 0.5)     # Transparent background
+        self.root.attributes("-alpha", 0.5)  # Transparent background
         self.root.attributes("-fullscreen", True)
 
         self.canvas = ctk.CTkCanvas(root, bg='white', highlightthickness=0)
@@ -61,7 +62,8 @@ def draw_rectangle(root) -> None:
 
 
 class ScreenRecorder:
-    def __init__(self, language, preprocessors, minimum_confidence, config, time_between_screencaps, use_comparative_preprocessing) -> None:
+    def __init__(self, language, preprocessors, minimum_confidence, config, time_between_screencaps,
+                 use_comparative_preprocessing) -> None:
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
@@ -71,7 +73,9 @@ class ScreenRecorder:
         self.preprocessors = preprocessors
         self.minimum_confidence = minimum_confidence
         self.use_comparative_preprocessing = use_comparative_preprocessing
-        self.filename = clean_filename(self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
+        self.filename = clean_filename(
+            self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(
+                time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
         self.config = config
         self.time_between_screencaps = time_between_screencaps
 
@@ -143,12 +147,12 @@ class ScreenRecorder:
 
     def log_screencap_subtitles(self) -> None:
         text = screenshot_text_extractor.comparative_read_text_from_image(
-            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence, 
+            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language,
+            minimum_confidence=self.minimum_confidence,
             config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
         print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
-
 
     def prompt_for_filename(self) -> str:
         # Create a custom Tkinter window for file name input
@@ -184,7 +188,6 @@ class ScreenRecorder:
 
         # Return the filename with .csv extension
         return result[0] + '.csv' if result[0] else None
-
 
 # Example instantiation
 # this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)

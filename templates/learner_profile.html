@@ -1,170 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review Terms</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@700&display=spawn" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #444444;
-      color: #fff;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Terms</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@700&display=spawn" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #444444;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    #container {
-      margin-top: 50px;
-      background-color: #787878;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-      width: 80%;
-      max-width: 1400px;
-      position: relative;
-      overflow: auto;
-    }
+        #container {
+            margin-top: 50px;
+            background-color: #787878;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 1400px;
+            position: relative;
+            overflow: auto;
+        }
 
-    h2 {
-      font-size: 24px;
-      font-family: 'Courier New', monospace;
-      margin: 0 0 20px;
-    }
+        h2 {
+            font-size: 24px;
+            font-family: 'Courier New', monospace;
+            margin: 0 0 20px;
+        }
 
-    .term-row {
-      display: flex;
-      justify-content: center;
-      grid-template-columns: repeat(5, minmax(150px, 1fr));
-      flex-wrap: wrap;
-    }
+        .term-row {
+            display: flex;
+            justify-content: center;
+            grid-template-columns: repeat(5, minmax(150px, 1fr));
+            flex-wrap: wrap;
+        }
 
-    .term-cell {
-      flex: 1 1 15%;
-      padding: 8px 12px;
-      text-align: center;
-      border: 1px solid #ddd;
-      cursor: pointer;
-      color: white;
-    }
+        .term-cell {
+            flex: 1 1 15%;
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            color: white;
+        }
 
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
 
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 200px;
-      background-color: #333;
-      color: #fff;
-      text-align: left;
-      border-radius: 5px;
-      padding: 10px;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -100px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
 
-    #searchInput {
-      margin: 20px auto;
-      padding: 8px 12px;
-      width: 40%;
-      display: block;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
+        #searchInput {
+            margin: 20px auto;
+            padding: 8px 12px;
+            width: 40%;
+            display: block;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-    .highlighted {
-      background-color: #155bad;
-    }
+        .highlighted {
+            background-color: #155bad;
+        }
 
-    button, select {
-      font-family: 'Courier New', monospace;
-      padding: 10px 20px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      background-color: #155bad;
-      color: white;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+        button, select {
+            font-family: 'Courier New', monospace;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background-color: #155bad;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-    button:hover {
-      background-color: #44475a;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
+        button:hover {
+            background-color: #44475a;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
 
-    .back-button {
-      background-color: #6c757d;
-    }
+        .back-button {
+            background-color: #6c757d;
+        }
 
-    .back-button:hover {
-      background-color: #5a6268;
-    }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
 
-    #lessonButton {
-      opacity: 0.5;
-    }
+        #lessonButton {
+            opacity: 0.5;
+        }
 
-    #lessonButton.enabled {
-      opacity: 1;
-      cursor: pointer;
-    }
+        #lessonButton.enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
 
-    #lessonButton:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
+        #lessonButton:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-    label[for="prompt-type-dropdown"] {
-      font-size: 16px;
-      color: white;
-      margin-right: 10px;
-    }
-  </style>
+        label[for="prompt-type-dropdown"] {
+            font-size: 16px;
+            color: white;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
 <div id="container">
-  <h2>Your Review Terms</h2>
-  <input type="text" id="searchInput" placeholder="Search for terms..." onkeyup="filterTable()">
-  <label for="prompt-type-dropdown">Select Lesson Type:</label>
-  <select id="prompt-type-dropdown">
-    {% for prompt_type in prompt_types %}
-    <option value="{{ prompt_type }}" {% if loop.first %} selected {% endif %}>{{ prompt_type }}</option>
-    {% endfor %}
-  </select>
-  <div>
-    <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
-    <button onclick="window.location.href='/';" class="back-button">Back</button>
-  </div>
-  <div class="term-row">
-    {% set terms = csv_data[1:] | map(attribute=0) | list %}
-    {% set num_terms = terms | length %}
-    {% for i in range(num_terms) %}
-    <div class="term-cell tooltip" onclick="highlightTerm(this, '{{ terms[i] }}')">
-      {{ terms[i] }}
-      <span class="tooltiptext">
+    <h2>Your Review Terms</h2>
+    <input type="text" id="searchInput" placeholder="Search for terms..." onkeyup="filterTable()">
+    <label for="prompt-type-dropdown">Select Lesson Type:</label>
+    <select id="prompt-type-dropdown">
+        {% for prompt_type in prompt_types %}
+        <option value="{{ prompt_type }}" {% if loop.first %} selected {% endif %}>{{ prompt_type }}</option>
+        {% endfor %}
+    </select>
+    <div>
+        <button id="lessonButton" onclick="redirectToLesson()" disabled>Get Review For Selected</button>
+        <button onclick="window.location.href='/';" class="back-button">Back</button>
+    </div>
+    <div class="term-row">
+        {% set terms = csv_data[1:] | map(attribute=0) | list %}
+        {% set num_terms = terms | length %}
+        {% for i in range(num_terms) %}
+        <div class="term-cell tooltip" onclick="highlightTerm(this, '{{ terms[i] }}')">
+            {{ terms[i] }}
+            <span class="tooltiptext">
             <strong>{{csv_data[0][4] | capitalize}}: </strong> {{ csv_data[i + 1][4] }} <br>
             <strong>{{csv_data[0][5] | capitalize}}: </strong> {{ csv_data[i + 1][5] }} <br>
             <strong>{{csv_data[0][6] | capitalize}}: </strong> {{ csv_data[i + 1][6] }} <br>
@@ -172,75 +172,73 @@
             <strong>{{csv_data[0][7] | capitalize}}: </strong> {{ csv_data[i + 1][7] }} <br>
         {% endif %}
           </span>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 </div>
 
 <script>
-  // Store selected terms globally
-  let selectedTerms = [];
+    // Store selected terms globally
+    let selectedTerms = [];
 
-  // Function to filter table rows based on search input
-  function filterTable() {
-    var input = document.getElementById("searchInput");
-    var filter = input.value.toLowerCase();
-    var termCells = document.getElementsByClassName("term-cell");
+    // Function to filter table rows based on search input
+    function filterTable() {
+        var input = document.getElementById("searchInput");
+        var filter = input.value.toLowerCase();
+        var termCells = document.getElementsByClassName("term-cell");
 
-    // Loop through each term cell
-    for (var i = 0; i < termCells.length; i++) {
-      var termText = termCells[i].textContent.toLowerCase();
+        // Loop through each term cell
+        for (var i = 0; i < termCells.length; i++) {
+            var termText = termCells[i].textContent.toLowerCase();
 
-      // Check if the term contains the search query
-      if (termText.includes(filter)) {
-        termCells[i].style.display = "";  // Show term
-      } else {
-        termCells[i].style.display = "none";  // Hide term
-      }
-    }
-  }
-
-  // Function to highlight the clicked term (toggle highlight for individual term)
-  function highlightTerm(cell, term) {
-    cell.classList.toggle("highlighted");
-
-    // Add or remove term from selectedTerms array
-    if (cell.classList.contains("highlighted")) {
-      selectedTerms.push(term);
-    } else {
-      const index = selectedTerms.indexOf(term);
-      if (index > -1) {
-        selectedTerms.splice(index, 1);
-      }
+            // Check if the term contains the search query
+            if (termText.includes(filter)) {
+                termCells[i].style.display = "";  // Show term
+            } else {
+                termCells[i].style.display = "none";  // Hide term
+            }
+        }
     }
 
-    // Update button state
-    updateButtonState();
-  }
+    // Function to highlight the clicked term (toggle highlight for individual term)
+    function highlightTerm(cell, term) {
+        cell.classList.toggle("highlighted");
 
-  // Function to check if any term is selected and update button state
-  function updateButtonState() {
-    var button = document.getElementById("lessonButton");
+        // Add or remove term from selectedTerms array
+        if (cell.classList.contains("highlighted")) {
+            selectedTerms.push(term);
+        } else {
+            const index = selectedTerms.indexOf(term);
+            if (index > -1) {
+                selectedTerms.splice(index, 1);
+            }
+        }
 
-    // Enable button if at least one term is selected
-    if (selectedTerms.length > 0) {
-      button.classList.add("enabled");
-      button.disabled = false;
-    } else {
-      button.classList.remove("enabled");
-      button.disabled = true;
+        // Update button state
+        updateButtonState();
     }
-  }
 
-  // Function to redirect to the lesson page with selected terms as a URL parameter
-  function redirectToLesson() {
-    // Encode the selected terms and redirect
-    const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
-    const promptType = document.getElementById("prompt-type-dropdown").value; // Get the selected prompt type
-    window.location.href = `/lesson?choice=${selectedTermsParam}&prompt_type=${encodeURIComponent(promptType)}`;
-  }
+    // Function to check if any term is selected and update button state
+    function updateButtonState() {
+        var button = document.getElementById("lessonButton");
+
+        // Enable button if at least one term is selected
+        if (selectedTerms.length > 0) {
+            button.classList.add("enabled");
+            button.disabled = false;
+        } else {
+            button.classList.remove("enabled");
+            button.disabled = true;
+        }
+    }
+
+    // Function to redirect to the lesson page with selected terms as a URL parameter
+    function redirectToLesson() {
+        // Encode the selected terms and redirect
+        const selectedTermsParam = encodeURIComponent(selectedTerms.join(','));
+        const promptType = document.getElementById("prompt-type-dropdown").value; // Get the selected prompt type
+        window.location.href = `/lesson?choice=${selectedTermsParam}&prompt_type=${encodeURIComponent(promptType)}`;
+    }
 </script>
-
 </body>
 </html>
-
