@@ -149,7 +149,7 @@ def take_screenshot():
     if _recorder == None:
         instantiate_screen_recorder()
     try:
-        # Create a screenshots directory if it doesn't exist
+        # Create a screenshots directory if it doesn't exist1
         screenshot_dir = 'screenshots'
         os.makedirs(screenshot_dir, exist_ok=True)
 
@@ -160,7 +160,6 @@ def take_screenshot():
 
         # Take screenshot
         _recorder.take_screenshot()
-        screenshot.save(full_path)
 
         return jsonify({
             'message': filename,
