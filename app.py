@@ -146,6 +146,8 @@ def stop_recording():
 
 @app.route('/take-screenshot', methods=['POST'])
 def take_screenshot():
+    if _recorder == None:
+        instantiate_screen_recorder()
     try:
         # Create a screenshots directory if it doesn't exist
         screenshot_dir = 'screenshots'
@@ -157,7 +159,7 @@ def take_screenshot():
         full_path = os.path.abspath(os.path.join(screenshot_dir, filename))
 
         # Take screenshot
-        screenshot = pyautogui.screenshot()
+        _recorder.take_screenshot()
         screenshot.save(full_path)
 
         return jsonify({

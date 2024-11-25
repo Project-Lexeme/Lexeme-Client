@@ -135,23 +135,32 @@ class ScreenRecorder:
         return selected_title  # type: ignore # Return the selected window title
 
     def take_screenshot(self) -> str: # send image through the ringer
-        '''
-        Takes a screenshot and returns the parsed text
-        '''
-        #try:
+        """Gets bounding boxes (sets them if need be) and takes a screenshot, logging the terms in the learner profile.
+        
+        <br>Uses an extra preprocessor if ScreenRecorder is not recording (meaning it's a one-off screenshot)
+        
+        Returns:
+            str: text string derived from image
+        """
         if not self.window:
             self.window = self.get_rectangle()
 
         left, top = self.window[0], self.window[1]
         width, height = self.window[2] - self.window[0], self.window[3] - self.window[1]
         screenshot = pyautogui.screenshot(region=(left, top, width, height))
-        screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
+        
 
+        if self.is_recording == False: # use an extra preprocessor
+            screenshot.save(f"{os.getcwd()}/screenshots/{self.filename}.png")
+            text = screenshot_text_extractor.comparative_read_text_from_image(
+            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence,
+            config=self.config, number_of_preprocessors=self.preprocessors + 1, display_comparison=False)
 
-        text = screenshot_text_extractor.comparative_read_text_from_image(
-        filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence,
-        config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
-
+        else:
+            screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
+            text = screenshot_text_extractor.comparative_read_text_from_image(
+            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence,
+            config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
         if len(text) > 0:
             terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp)
             for term in terms:
