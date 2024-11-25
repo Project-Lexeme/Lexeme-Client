@@ -65,34 +65,37 @@ def draw_rectangle(root) -> None:
 
 
 class ScreenRecorder:
-    def __init__(self, language, nlp, preprocessors, minimum_confidence, config, time_between_screencaps,
-                 use_comparative_preprocessing) -> None:
-        '''
-        language:
-        '''
+    def __init__(self, ocr_lang_code: str, nlp_model, preprocessors: int, minimum_confidence: int, config, time_between_screencaps: float) -> None:
+        """Comprehensive screen recorder for screenshots and recording, and OCR that follows
+
+        Args:
+            ocr_lang_code (str): tesseract-friendly language code such as "chi_sim" or "rus"
+            nlp_model (spacy.Language): loaded language model 
+            preprocessors (int): number of different preprocessors to use for comparison against parent - should be in the range of 1-4 depending on CPU
+            minimum_confidence (int): confidence level to filter out Tesseract token confidence - should be in the range of [0-100] with high confidence being 80+
+            config (_type_): _description_
+            time_between_screencaps (float): time between screencaps when recording
+        """
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
         self.window_title = self.select_window()
         self.window = self.get_rectangle()
-        self.language = language
+        self.language = ocr_lang_code
         self.preprocessors = preprocessors
         self.minimum_confidence = minimum_confidence
-        self.use_comparative_preprocessing = use_comparative_preprocessing
         self.filename = clean_filename(
             self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(
                 time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
         self.config = config
         self.time_between_screencaps = time_between_screencaps
-        self.nlp = nlp
+        self.nlp_model = nlp_model
 
     def get_rectangle(self) -> tuple[int, int, int, int]:
         root = ctk.CTk()
         window = gw.getWindowsWithTitle(self.window_title)[0]
         rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height)
         root.mainloop()
-        print(rect.coords)
-
         return rect.coords
 
     def capture_screen(self) -> None:
@@ -150,16 +153,9 @@ class ScreenRecorder:
         config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
         if len(text) > 0:
-            # for v in startup.get_language_dicts().values():
-            #     if v[0] == self.language:
-            #         spacy_lang_code = v[1]
             terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp)
             for term in terms:
                 logger.log_term(term, 'Number of touches', nlp_language_code=self.language)
-
-        # except Exception as e:
-        #     print(f"Error taking screenshot: {e}")
-        #     text = ''
         return text
 
 
@@ -191,7 +187,7 @@ class ScreenRecorder:
             config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
         logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
-        print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
+        #print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
 
     def prompt_for_filename(self) -> str:
         # Create a custom Tkinter window for file name input
@@ -228,5 +224,6 @@ class ScreenRecorder:
         # Return the filename with .csv extension
         return result[0] + '.csv' if result[0] else None
 
-# Example instantiation
-# this = ScreenRecorder(language='chi_sim', use_preprocessing=True, minimum_confidence=50, config=r'--oem 3 -l chi_sim', time_between_screencaps=1)
+if __name__ == "__main__":
+    print("I should really test an instantiation of ScreenRecorder here")
+    #screen_recorder = ScreenRecorder()

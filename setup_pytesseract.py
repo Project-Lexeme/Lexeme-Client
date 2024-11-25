@@ -70,8 +70,18 @@ def run_installer():
         print("Installer not found or could not be run.")
 
 
-def setup_tessdata(language):
-    # Define the tessdata path
+def setup_tessdata(ocr_lang_code: str):
+    """Checks for ocr_lang_code.traineddata in ./tessdata, installs if not found. 
+    Sets os.environ variable to this file's location
+
+    Args:
+        ocr_lang_code (str): language code used by OCR (currently Tesseract) e.g. "chi_sim" or "rus"
+
+    Returns:
+        str: absolute path to traineddata
+    """
+    print("Checking for language data for your language...")
+    
     if getattr(sys, 'frozen', False):
         tessdata_path = os.path.join(config.get_data_directory(), 'tessdata')
     else:
@@ -81,10 +91,10 @@ def setup_tessdata(language):
     os.makedirs(tessdata_path, exist_ok=True)
 
     # Check if the language file exists
-    lang_file = os.path.join(tessdata_path, f"{language}.traineddata")
+    lang_file = os.path.join(tessdata_path, f"{ocr_lang_code}.traineddata")
     if not os.path.isfile(lang_file):
-        print(f"{language}.traineddata not found. Downloading...")
-        download_language_data(language, tessdata_path)
+        print(f"{ocr_lang_code}.traineddata not found. Downloading...")
+        download_language_data(ocr_lang_code, tessdata_path)
 
     os.environ['TESSDATA_PREFIX'] = tessdata_path
 

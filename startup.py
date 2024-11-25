@@ -31,6 +31,8 @@ def populate_prompts() -> None:
             print(f'Copied: {source_file} to {target_file}')
 
 def install_and_load_nlp_lang(module_name):
+
+    
     if getattr(sys, 'frozen', False):
         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}')
     else:
@@ -43,6 +45,12 @@ def install_and_load_nlp_lang(module_name):
     return spacy.load(model_path)
 
 def get_language_and_proficiency() -> tuple[str, list[str]]:
+    """
+    Creates a GUI to select language and proficiency
+
+    Returns:
+        tuple[str, list[str]]: (language, [tesseract, SpaCy, proficiency])
+    """
     # Try to fetch configuration or set defaults
     try:
         lang, prof = config.get_config_default_language_and_proficiency()

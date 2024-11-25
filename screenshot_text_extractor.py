@@ -70,14 +70,25 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     
     return text
 
-def read_text_from_img(preprocessed_image, tesseract_config, language, print_confidence_levels):
+def read_text_from_img(preprocessed_image, tesseract_config, ocr_lang_code, print_confidence_levels):
+    """Takes in a preprocessed image and everything Tesseract needs to do OCR
+
+    Args:
+        preprocessed_image (PIL.Image): either PIL Image or np.array - doesn't have to be but is currently only used as a preprocessed image
+        tesseract_config (str): r-string tesseract config e.g. r'--psm 6 --oem 1' - see tesseract documentation https://muthu.co/all-tesseract-ocr-options/
+        ocr_lang_code (str): tesseract language codes, e.g. "chi_sim" or "rus"
+        print_confidence_levels (bool): Whether or not to print each token's associated confidence - for debugging/performance testing
+
+    Returns:
+        dict: pytesseract.image_to_data dict output with a number of keys per token - see TSV section of https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html
+    """
     img = preprocessed_image[0]
     img = check_img_tesseract_compatibility(img)    
 
     if tesseract_config:
-        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language, config=tesseract_config)
+        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=ocr_lang_code, config=tesseract_config)
     else:
-        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=language)
+        param_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, lang=ocr_lang_code)
 
     if print_confidence_levels:
         for i, w in enumerate(param_data['conf']):
