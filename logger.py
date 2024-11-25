@@ -4,26 +4,31 @@ import os
 import config
 import dictionary
 
-def check_for_learner_profile():
-    csv_file = Path(f'{config.get_data_directory()}/learner_profile.csv')
+def check_for_learner_profile(ocr_lang_code: str):
+    """Checks for learner profile with OCR lang code prefix
+
+    Args:
+        ocr_lang_code (str): Tesseract OCR-friendly lang code, 
+    """
+    csv_file = Path(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv')
     if not csv_file.is_file():  # Check if the file exists
         # If it doesn't exist, create it
         csv_file.touch()
         with csv_file.open('w') as f:
             f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
-def log_term(term: str, on: str, nlp_language_code: str) -> None: 
+def log_term(term: str, on: str, nlp_lang_code: str, ocr_lang_code: str) -> None: 
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
-    language - NLP lang
+    
     '''
-    check_for_learner_profile()
+    check_for_learner_profile(ocr_lang_code)
 
-    touched_terms = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv') # term, no_touches
+    touched_terms = pd.read_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv') # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
     
     if len(indexer) == 0: # if term is not in list of terms
-        term_dictionary_contents = dictionary.get_term_dictionary_contents(term, nlp_language_code)
+        term_dictionary_contents = dictionary.get_term_dictionary_contents(term, ocr_lang_code)
         # # need to also concat definition and other language info
         to_concat = pd.DataFrame({'Term': [term], on: [1]}) # this is going to add 1 to whichever column you passed as 'on'
         to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])
@@ -40,14 +45,22 @@ def log_term(term: str, on: str, nlp_language_code: str) -> None:
         touched_terms.drop_duplicates('Term', inplace=True)
         touched_terms.loc[touched_terms['Term'] == term, on] = summed
     
-    touched_terms.to_csv(f'{config.get_data_directory()}/learner_profile.csv', index=False)
+    touched_terms.to_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv', index=False)
 
-def get_terms(sort_by='weakest', qty=0, all=False):
-    '''
-    if qty == 0, returns all terms, else returns the number requested
-    '''
+def get_terms(ocr_lang_code: str, sort_by='weakest', qty=0, all=False):
+    """Returns learner profile contents for selected language
 
-    terms_df = pd.read_csv(f'{config.get_data_directory()}/learner_profile.csv')
+    Args:
+        ocr_lang_code (str): Tesseract OCR-friendly code to math how learner_profiles are named, e.g. "chi_sim"
+        sort_by (str, optional): Yet to be implemented. Defaults to 'weakest'.
+        qty (int, optional): Number of terms to return. Defaults to 0, which signififies ALL.
+        all (bool, optional): whether all fields associated with a term (e.g. definition) are returned or just the term. Defaults to False.
+
+    Returns:
+        List[List[str]]: returns a list of terms or a list of lists of terms and their contents
+    """
+
+    terms_df = pd.read_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv')
     if all == True:
         terms = [terms_df.columns.tolist()] + terms_df.values.tolist()
 
@@ -104,5 +117,5 @@ def log_prompt_feedback(prompts_filepath, empty_prompt:str, feedback: int): # tr
 
 
 if __name__ == "__main__":
-    log_term('天','Number of touches', 'chi_sim')
+    #log_term('天','Number of touches', 'chi_sim')
     print(log_subtitle(' yeah。', 'MediaPlayer2911121.csv'))

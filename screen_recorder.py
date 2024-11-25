@@ -19,7 +19,7 @@ def clean_filename(title) -> str:  # Replace invalid characters with underscores
 
 
 class DrawRectangleApp:
-    def __init__(self, root, left, top, width, height) -> None:
+    def __init__(self, root) -> None:
         self.root = root
         self.root.attributes("-topmost", True)  # Always on top
         self.root.attributes("-alpha", 0.5)  # Transparent background
@@ -58,18 +58,19 @@ class DrawRectangleApp:
         print(f"Rectangle coordinates per on_button_release: {self.rect_start}, {self.rect_end}")
 
 
-def draw_rectangle(root) -> None:
-    rect = DrawRectangleApp(root)
-    root.mainloop()
-    return
+# def draw_rectangle(root) -> None:
+#     rect = DrawRectangleApp(root)
+#     root.mainloop()
+#     return
 
 
 class ScreenRecorder:
-    def __init__(self, ocr_lang_code: str, nlp_model, preprocessors: int, minimum_confidence: int, config, time_between_screencaps: float) -> None:
+    def __init__(self, ocr_lang_code: str, nlp_model, preprocessors: int, minimum_confidence: int, config, time_between_screencaps: float, nlp_lang_code) -> None:
         """Comprehensive screen recorder for screenshots and recording, and OCR that follows
 
         Args:
             ocr_lang_code (str): tesseract-friendly language code such as "chi_sim" or "rus"
+            nlp_lang_code (str): NLP friendly language code such as "fra_news_core_sm"
             nlp_model (spacy.Language): loaded language model 
             preprocessors (int): number of different preprocessors to use for comparison against parent - should be in the range of 1-4 depending on CPU
             minimum_confidence (int): confidence level to filter out Tesseract token confidence - should be in the range of [0-100] with high confidence being 80+
@@ -79,22 +80,26 @@ class ScreenRecorder:
         self.is_recording = False
         self.record_thread = None
         self._recording_lock = threading.Lock()
-        self.window_title = self.select_window()
         self.window = self.get_rectangle()
-        self.language = ocr_lang_code
+        self.ocr_lang_code = ocr_lang_code
+        self.nlp_lang_code = nlp_lang_code
         self.preprocessors = preprocessors
         self.minimum_confidence = minimum_confidence
-        self.filename = clean_filename(
-            self.language + '' + self.window_title[:10] + str(time.localtime().tm_yday) + '' + str(
+        self.subtitle_filename = clean_filename(
+            self.ocr_lang_code + '' + str(time.localtime().tm_yday) + '' + str(
                 time.localtime().tm_hour) + '' + str(time.localtime().tm_min)) + '.csv'
         self.config = config
         self.time_between_screencaps = time_between_screencaps
         self.nlp_model = nlp_model
 
     def get_rectangle(self) -> tuple[int, int, int, int]:
+        """Allows user to draw a rectangle on the screen to choose bounding box
+
+        Returns:
+            tuple[int, int, int, int]: left, top, right, bottom
+        """
         root = ctk.CTk()
-        window = gw.getWindowsWithTitle(self.window_title)[0]
-        rect = DrawRectangleApp(root, window.left, window.top, window.width, window.height)
+        rect = DrawRectangleApp(root)
         root.mainloop()
         return rect.coords
 
@@ -111,65 +116,42 @@ class ScreenRecorder:
             self.log_screencap_subtitles()
             time.sleep(self.time_between_screencaps)
 
-    def select_window(self) -> str:
-        def on_button_click(window_title) -> None:
-            nonlocal selected_title
-            selected_title = window_title
-            root.destroy()  # Close the GUI after selection
-
-        root = ctk.CTk()
-        root.title("Select Window to Capture")
-        root.minsize(width=400, height=300)
-
-        available_windows = gw.getAllTitles()
-        selected_title = None  # Variable to hold the selected title
-
-        # Create a button for each window title
-        for title in available_windows:
-            if len(title) > 3:
-                button = ctk.CTkButton(root, text=title, command=lambda t=title: on_button_click(t))
-                button.pack(pady=5)
-
-        root.mainloop()  # Start the GUI event loop
-
-        return selected_title  # type: ignore # Return the selected window title
-
     def take_screenshot(self) -> str: # send image through the ringer
-        """Gets bounding boxes (sets them if need be) and takes a screenshot, logging the terms in the learner profile.
+        """For use with "Take Screenshot" button. Gets bounding boxes (sets them if need be) and takes a screenshot, logging the terms in the learner profile.
         
-        <br>Uses an extra preprocessor if ScreenRecorder is not recording (meaning it's a one-off screenshot)
+        <br>Uses an extra preprocessor if ScreenRecorder.
         
         Returns:
             str: text string derived from image
         """
+
+
         if not self.window:
             self.window = self.get_rectangle()
 
         left, top = self.window[0], self.window[1]
         width, height = self.window[2] - self.window[0], self.window[3] - self.window[1]
         screenshot = pyautogui.screenshot(region=(left, top, width, height))
+        filename = self.ocr_lang_code + '' + str(time.localtime().tm_yday) + '' + str(
+                time.localtime().tm_hour) + '' + str(time.localtime().tm_min)
+        filepath = f"{os.getcwd()}/screenshots/{filename}.png"
+        screenshot.save(filepath)
+        text = screenshot_text_extractor.comparative_read_text_from_image(filepath=filepath,
+                                                                          language=self.ocr_lang_code,
+                                                                          minimum_confidence=self.minimum_confidence,
+                                                                          config=self.config,
+                                                                          number_of_preprocessors=self.preprocessors + 1,
+                                                                          display_comparison=False)
         
-
-        if self.is_recording == False: # use an extra preprocessor
-            screenshot.save(f"{os.getcwd()}/screenshots/{self.filename}.png")
-            text = screenshot_text_extractor.comparative_read_text_from_image(
-            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence,
-            config=self.config, number_of_preprocessors=self.preprocessors + 1, display_comparison=False)
-
-        else:
-            screenshot.save(f"{os.getcwd()}/uploads/Screenshot.png")
-            text = screenshot_text_extractor.comparative_read_text_from_image(
-            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language, minimum_confidence=self.minimum_confidence,
-            config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
         if len(text) > 0:
-            terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp)
+            terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
             for term in terms:
-                logger.log_term(term, 'Number of touches', nlp_language_code=self.language)
+                logger.log_term(term, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
         return text
 
 
     def start_recording(self) -> bool:
-        self.filename = self.prompt_for_filename()
+        self.subtitle_filename = self.prompt_for_filename()
 
         with self._recording_lock:
             if not self.is_recording:
@@ -191,12 +173,12 @@ class ScreenRecorder:
 
     def log_screencap_subtitles(self) -> None:
         text = screenshot_text_extractor.comparative_read_text_from_image(
-            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.language,
+            filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.ocr_lang_code,
             minimum_confidence=self.minimum_confidence,
             config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
-        logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.filename}')
-        #print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.filename}')
+        logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.subtitle_filename}')
+        #print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.subtitle_filename}')
 
     def prompt_for_filename(self) -> str:
         # Create a custom Tkinter window for file name input
@@ -210,7 +192,7 @@ class ScreenRecorder:
         label.pack(pady=20)
 
         # Create an entry field for filename input
-        filename_var = ctk.StringVar(value=self.filename)  # Initial value
+        filename_var = ctk.StringVar(value=self.subtitle_filename)  # Initial value
         entry = ctk.CTkEntry(root, textvariable=filename_var, width=300)
         entry.pack(pady=10)
 

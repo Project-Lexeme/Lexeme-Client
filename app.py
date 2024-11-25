@@ -36,7 +36,12 @@ def set_cfg(cfg) -> None:
     _cfg = cfg
 
 def instantiate_screen_recorder() -> None:
-    set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code, nlp_model=_language_data.nlp_model, preprocessors=3, minimum_confidence=70, config=r'--psm 6', time_between_screencaps=.6))
+    set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code, 
+                                nlp_lang_code=_language_data.nlp_lang_code, 
+                                nlp_model=_language_data.nlp_model, 
+                                preprocessors=3, minimum_confidence=70, 
+                                config=r'--psm 6', time_between_screencaps=.6))
+    
     print("ScreenRecorder is set up")
 
 def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
@@ -67,7 +72,7 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
             for term in terms:
-                logger.log_term(term, 'Number of touches', nlp_language_code=_language_data.nlp_lang_code)
+                logger.log_term(term, 'Number of touches', nlp_language_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language) # TODO: 
@@ -90,7 +95,7 @@ def get_subtitle_files():
 
 @app.route('/get-learner-profile')
 def get_learner_profile():
-    learner_profile = logger.get_terms(all=True)
+    learner_profile = logger.get_terms(ocr_lang_code=_language_data.ocr_lang_code, all=True)
     prompt_types = prompt_generator.get_prompt_types(isTerm=True)
     return render_template('learner_profile.html', csv_data=learner_profile, prompt_types=prompt_types)
 
