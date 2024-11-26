@@ -40,7 +40,7 @@ def instantiate_screen_recorder() -> None:
                                 nlp_lang_code=_language_data.nlp_lang_code, 
                                 nlp_model=_language_data.nlp_model, 
                                 preprocessors=3, minimum_confidence=70, 
-                                config=r'--psm 6', time_between_screencaps=.6))
+                                config=r'--psm 6', time_between_screencaps=.75))
     
     print("ScreenRecorder is set up")
 
@@ -72,7 +72,7 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
             for term in terms:
-                logger.log_term(term, 'Number of touches', nlp_language_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
+                logger.log_term(term, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language) # TODO: 
