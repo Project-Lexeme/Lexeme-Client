@@ -4,7 +4,7 @@ import csv
 import random
 import pandas as pd
 import config
-import app
+#import app
 import numpy as np
 
 def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
@@ -116,7 +116,7 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     selected_index = select_index_from_score_probability(filtered_df)
     empty_prompt = filtered_df.iloc[selected_index, 1] 
 
-    app.set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
+    #app.set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
     formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')

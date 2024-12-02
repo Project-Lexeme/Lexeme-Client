@@ -111,7 +111,7 @@ def set_config_default_language_and_proficiency(lang: str, proficiency: str) -> 
         with open(config_file_path, 'w') as configfile:
             cfg.write(configfile)
 
-    except FileNotFoundError:
+    except: # FileNotFoundError
         init_config()
 
 

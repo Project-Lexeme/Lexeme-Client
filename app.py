@@ -24,7 +24,7 @@ _recorder = None
 _cfg = None
 _most_recent_prompt = (None, None) # tuple containining (prompt_csv_filepath, empty_prompt)
 
-_language_data = LanguageData() # lazy global
+_language_data = None # lazy global
 
 
 def set_recorder(recorder: ScreenRecorder) -> None:
@@ -197,6 +197,8 @@ def home():
 def start_app():
     startup.make_dirs()
     set_cfg(config.get_config())
+    global _language_data
+    _language_data = LanguageData()
     print("Config loaded successfully!")
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
