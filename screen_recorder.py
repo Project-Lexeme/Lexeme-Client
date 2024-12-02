@@ -209,7 +209,7 @@ class ScreenRecorder:
         submit_button.pack(pady=20)
 
         # Run the GUI loop
-        root.after(0, root.mainloop) 
+        root.mainloop()
         root.destroy()
 
         # Return the filename with .csv extension
