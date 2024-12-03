@@ -1,15 +1,12 @@
 import webbrowser
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
-import spacy
 from screen_recorder import ScreenRecorder
 from language_data import LanguageData
 import screenshot_text_extractor, prompt_generator, config
 import LLMserver
 import logger
-import setup_pytesseract
 import startup
-import pyautogui
 from datetime import datetime
 
 app = Flask(__name__)
@@ -36,11 +33,15 @@ def set_cfg(cfg) -> None:
     _cfg = cfg
 
 def instantiate_screen_recorder() -> None:
+    OCR_settings = _cfg['SettingsOCR']
+    _config = r"{}".format(OCR_settings['tesseract_configuration'])
+    _time_between_screencaps = float(OCR_settings['time_between_screenshots'])
+    _preprocessors = int(OCR_settings['num_of_preprocessors'])
     set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code, 
                                 nlp_lang_code=_language_data.nlp_lang_code, 
                                 nlp_model=_language_data.nlp_model, 
-                                preprocessors=3, minimum_confidence=70, 
-                                config=r'--psm 6', time_between_screencaps=.75))
+                                preprocessors=_preprocessors, minimum_confidence=70, 
+                                config=_config, time_between_screencaps=_time_between_screencaps))
     
     print("ScreenRecorder is set up")
 
