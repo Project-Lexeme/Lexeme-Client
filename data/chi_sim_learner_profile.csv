@@ -9,7 +9,7 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 抓,1,,,to grab/to catch/to arrest/to snatch/to scratch,zhua1,抓
 回来,1,,,to return; to come back,hui2 lai5,回來
 毙,1,,,to die/to shoot dead/to reject/to fall forward/(suffix) to death,bi4,斃
-是,4,,,to be (followed by substantives only)/correct; right; true/(respectful acknowledgement of a command) very well/(adverb for emphatic assertion),shi4,是
+是,5,,,to be (followed by substantives only)/correct; right; true/(respectful acknowledgement of a command) very well/(adverb for emphatic assertion),shi4,是
 家里,1,,,home,jia1 li3,家裡
 老婆,2,,,(coll.) wife,lao3 po2,老婆
 孩子,2,,,child,hai2 zi5,孩子
@@ -20,10 +20,10 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 为,1,,,as (in the capacity of)/to take sth as/to act as/to serve as/to behave as/to become/to be/to do/by (in the passive voice),wei2,為
 技,1,,,skill,ji4,技
 力,1,,,surname Li,Li4,力
-入,1,,,"to enter; to go into/to join; to become a member of/(bound form) to conform to (as in 入時|入时[ru4shi2])/abbr. for 入聲|入声[ru4sheng1]/(on product packaging, after {number n} + {classifier}) containing (n pieces) (from Japanese 入 ""iri"")",ru4,入
+入,2,,,"to enter; to go into/to join; to become a member of/(bound form) to conform to (as in 入時|入时[ru4shi2])/abbr. for 入聲|入声[ru4sheng1]/(on product packaging, after {number n} + {classifier}) containing (n pieces) (from Japanese 入 ""iri"")",ru4,入
 生,1,,,to be born/to give birth/life/to grow/raw/uncooked/student,sheng1,生
-没,3,,,(negative prefix for verbs) have not; not,mei2,沒
-能,3,,,surname Neng,Neng2,能
+没,5,,,(negative prefix for verbs) have not; not,mei2,沒
+能,4,,,surname Neng,Neng2,能
 汽车,1,,,car/automobile/bus/CL:輛|辆[liang4],qi4 che1,汽車
 死,1,,,to die/impassable/uncrossable/inflexible/rigid/extremely/damned,si3,死
 愿意,1,,,to wish/to want/ready/willing (to do sth),yuan4 yi4,願意
@@ -46,22 +46,22 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 兵,2,,,soldiers/a force/an army/weapons/arms/military/warlike/CL:個|个[ge4],bing1,兵
 心,1,,,"heart/mind/intention/center/core/CL:顆|颗[ke1],個|个[ge4]",xin1,心
 厂,1,,,"""cliff"" radical in Chinese characters (Kangxi radical 27), occurring in 原, 历, 压 etc",han3,厂
-人,4,,,"person; people/CL:個|个[ge4],位[wei4]",ren2,人
+人,7,,,"person; people/CL:個|个[ge4],位[wei4]",ren2,人
 叹,1,,,to sigh/to exclaim,tan4,嘆
-管,1,,,variant of 管[guan3],guan3,筦
-给,1,,,to/for/for the benefit of/to give/to allow/to do sth (for sb)/(grammatical equivalent of 被)/(grammatical equivalent of 把)/(sentence intensifier),gei3,給
-围,1,,,surname Wei,Wei2,圍
-有,2,,,to have; there is/(bound form) having; with; -ful; -ed; -al (as in 有意[you3yi4] intentional),you3,有
-死人,3,,,dead person/(coll.) to die; (of a death) to happen,si3 ren2,死人
-身上,2,,,on the body/at hand/among,shen1 shang5,身上
+管,4,,,variant of 管[guan3],guan3,筦
+给,2,,,to/for/for the benefit of/to give/to allow/to do sth (for sb)/(grammatical equivalent of 被)/(grammatical equivalent of 把)/(sentence intensifier),gei3,給
+围,2,,,surname Wei,Wei2,圍
+有,3,,,to have; there is/(bound form) having; with; -ful; -ed; -al (as in 有意[you3yi4] intentional),you3,有
+死人,6,,,dead person/(coll.) to die; (of a death) to happen,si3 ren2,死人
+身上,4,,,on the body/at hand/among,shen1 shang5,身上
 扒,1,,,to peel/to skin/to tear/to pull down/to cling to (sth on which one is climbing)/to dig,ba1,扒
-冻死,1,,,to freeze to death/to die off in winter,dong4 si3,凍死
-穿,2,,,to wear/to put on/to dress/to bore through/to pierce/to perforate/to penetrate/to pass through/to thread,chuan1,穿
-活人,1,,,living person,huo2 ren2,活人
-要紧,1,,,important/urgent,yao4 jin3,要緊
-摸,1,,,to feel with the hand/to touch/to stroke/to grope/to steal/to abstract,mo1,摸
-下来,1,,,"to come down/(completed action marker)/(after verb of motion, indicates motion down and towards us, also fig.)/(indicates continuation from the past towards us)/to be harvested (of crops)/to be over (of a period of time)/to go among the masses (said of leaders)",xia4 lai5,下來
-照顾,1,,,to take care of/to show consideration/to attend to/to look after,zhao4 gu5,照顧
+冻死,2,,,to freeze to death/to die off in winter,dong4 si3,凍死
+穿,3,,,to wear/to put on/to dress/to bore through/to pierce/to perforate/to penetrate/to pass through/to thread,chuan1,穿
+活人,2,,,living person,huo2 ren2,活人
+要紧,2,,,important/urgent,yao4 jin3,要緊
+摸,2,,,to feel with the hand/to touch/to stroke/to grope/to steal/to abstract,mo1,摸
+下来,2,,,"to come down/(completed action marker)/(after verb of motion, indicates motion down and towards us, also fig.)/(indicates continuation from the past towards us)/to be harvested (of crops)/to be over (of a period of time)/to go among the masses (said of leaders)",xia4 lai5,下來
+照顾,2,,,to take care of/to show consideration/to attend to/to look after,zhao4 gu5,照顧
 司,1,,,surname Si,Si1,司
 考,1,,,to beat/to hit/variant of 考[kao3]/to inspect/to test/to take an exam,kao3,攷
 部,1,,,"ministry/department/section/part/division/troops/board/classifier for works of literature, films, machines etc",bu4,部
@@ -69,7 +69,7 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 怎么,2,,,how?/what?/why?,zen3 me5,怎麼
 贵,1,,,abbr. for Guizhou Province 貴州|贵州[Gui4zhou1],Gui4,貴
 少爷,1,,,son of the boss/young master of the house/your son (honorific),shao4 ye5,少爺
-没有,2,,,haven't/hasn't/doesn't exist/to not have/to not be,mei2 you3,沒有
+没有,3,,,haven't/hasn't/doesn't exist/to not have/to not be,mei2 you3,沒有
 押,1,,,to mortgage/to pawn/to detain in custody/to escort and protect/(literary) to sign,ya1,押
 了,6,,,"(completed action marker)/(modal particle indicating change of state, situation now)/(modal particle intensifying preceding clause)",le5,了
 赌,1,,,to bet; to gamble,du3,賭
@@ -84,7 +84,43 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 以为,2,,,to think (i.e. to take it to be true that ...) (Usually there is an implication that the notion is mistaken – except when expressing one's own current opinion.),yi3 wei2,以為
 饷,2,,,soldier's pay,xiang3,餉
 券,1,,,"bond (esp. document split in two, with each party holding one half)/contract/deed (i.e. title deeds)/ticket/voucher/certificate",quan4,券
-券,1,,,variant of 券[quan4],quan4,劵
-要,1,,,(bound form) to demand; to coerce,yao1,要
-要,1,,,to want; to need; to ask for/will; shall; about to/need to; should/if (same as 要是[yao4 shi5])/(bound form) important,yao4,要
+要,2,,,(bound form) to demand; to coerce,yao1,要
 命,1,,,"life/fate/order or command/to assign a name, title etc",ming4,命
+倒,1,,,to fall; to collapse; to lie horizontally/to fail; to go bankrupt/to overthrow/to change (trains or buses)/to move around/to resell at a profit,dao3,倒
+声,1,,,sound/voice/tone/noise/reputation/classifier for sounds,sheng1,聲
+白天,2,,,daytime/during the day/day/CL:個|个[ge4],bai2 tian1,白天
+扑,1,,,to throw oneself at/to pounce on/to devote one's energies/to flap/to flutter/to dab/to pat/to bend over,pu1,撲
+运气,1,,,luck (good or bad),yun4 qi5,運氣
+碰上,1,,,to run into/to come upon/to meet,peng4 shang4,碰上
+这么,1,,,so much/this much/how much?/this way/like this,zhe4 me5,這麼
+好人,1,,,"good person/healthy person/person who tries not to offend anyone, even at the expense of principle",hao3 ren2,好人
+出门,1,,,to go out/to leave home/to go on a journey/away from home/(of a woman) to get married,chu1 men2,出門
+难处,1,,,trouble; difficulty; problem,nan2 chu5,難處
+再说,1,,,to say again/to put off a discussion until later/moreover/what's more/besides,zai4 shuo1,再說
+老乡,1,,,fellow townsman; fellow villager; sb from the same hometown,lao3 xiang1,老鄉
+乡,1,,,country or countryside/native place/home village or town/township (PRC administrative unit),xiang1,鄉
+老,1,,,prefix used before the surname of a person or a numeral indicating the order of birth of the children in a family or to indicate affection or familiarity/old (of people)/venerable (person)/experienced/of long standing/always/all the time/of the past/very/outdated/(of meat etc) tough,lao3,老
+北,1,,,north/(classical) to be defeated,bei3,北
+回家,5,,,to return home,hui2 jia1,回家
+呆,1,,,foolish; stupid/expressionless; blank/to stay (variant of 待[dai1]),dai1,呆
+珂,1,,,jade-like stone,ke1,珂
+时候,1,,,time/length of time/moment/period,shi2 hou5,時候
+冲锋,1,,,to charge/to assault/assault,chong1 feng1,衝鋒
+可不,1,,,see 可不是[ke3 bu5 shi4],ke3 bu5,可不
+长眼,1,,,to have eyes/(fig.) to look where one is going; to watch one's step; to be cautious,zhang3 yan3,長眼
+乱跑,1,,,to run around all over the place,luan4 pao3,亂跑
+枪,2,,,surname Qiang,Qiang1,槍
+等,1,,,to wait for; to await/by the time; when; till/and so on; etc.; et al./(bound form) class; rank; grade/(bound form) equal to; same as/(used to end an enumeration)/(literary) (plural suffix attached to a personal pronoun or noun),deng3,等
+房,1,,,surname Fang,Fang2,房
+还给,1,,,to return sth to sb,huan2 gei3,還給
+邓,1,,,surname Deng,Deng4,鄧
+听任,1,,,to let (sth happen)/to allow (sb to do sth)/to submit to/to yield,ting1 ren4,聽任
+手举,1,,,a salute/hands raised,shou3 ju3,手舉
+起来,1,,,to stand up; to get up/also pr. [qi3lai2],qi3 lai5,起來
+行,2,,,"row/line/commercial firm/line of business/profession/to rank (first, second etc) among one's siblings (by age)/(in data tables) row/(Tw) column",hang2,行
+打,1,,,(loanword) dozen/Taiwan pr. [da3],da2,打
+打,1,,,to beat/to strike/to hit/to break/to type/to mix up/to build/to fight/to fetch/to make/to tie up/to issue/to shoot/to calculate/to play (a game)/since/from,da3,打
+事,2,,,"matter/thing/item/work/affair/CL:件[jian4],樁|桩[zhuang1],回[hui2]",shi4,事
+经历,2,,,"to experience; to go through/experience (CL:段[duan4],次[ci4])",jing1 li4,經歷
+吃,1,,,"to eat; to consume/to eat at (a cafeteria etc)/to eradicate; to destroy/to absorb/to suffer (shock, injury, defeat etc)",chi1,吃
+吃,1,,,variant of 吃[chi1],chi1,喫
