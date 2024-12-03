@@ -4,7 +4,8 @@ import app
 TODO: refactor, clean - DO IT. don't be lazy. Big rocks are prompt_generator
 TODO: add support for multiple monitors - Desktopmagic library for python - wil be a headache.
 TODO: ADD FUNCTION TO LESSON PAGE WITH EXISTING PARTS OF SPEECH TOOLTIPS RETRIEVER
-
+TODO: Investigate how to get around Tesseract installer requiring admin privileges to install
+TODO: Instantiate empty learner profile for selected language on startup
 TO THINK: ABILITY TO SET PROFILE GROUPINGS
 
 v0.6 goals
