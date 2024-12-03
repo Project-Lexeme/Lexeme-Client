@@ -19,7 +19,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 _recorder = None
 _cfg = None
-_most_recent_prompt = (None, None) # tuple containining (prompt_csv_filepath, empty_prompt)
 
 _language_data = None # lazy global
 
@@ -45,20 +44,16 @@ def instantiate_screen_recorder() -> None:
     
     print("ScreenRecorder is set up")
 
-def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
-    global _most_recent_prompt
-    _most_recent_prompt = (prompt_csv_filepath, empty_prompt)
-
 @app.route('/prompt-feedback', methods=['POST']) # TODO:
 def get_prompt_feedback():
     data = request.get_json()
-    prompt = _most_recent_prompt
+    prompt = prompt_generator.get_most_most_recent_prompt()
     response = data.get('response')
     # Process the response here, e.g., update database or perform logic
     print(f'Response received: {response}')
     
     logger.log_prompt_feedback(prompt[0], prompt[1], response)
-    set_most_recent_prompt(None, None) # clear the most recent prompt
+    prompt_generator.set_most_recent_prompt(None, None) # clear the most recent prompt
 
     return jsonify({'status': 'success', 'received': response})
 

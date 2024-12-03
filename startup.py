@@ -12,14 +12,26 @@ ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("blue")
 
 def make_dirs() -> None:
+    """
+    Runs at app start to create subtitle, prompt, and dictionaries directories, then copy/pastes prompts/dictionaries if applicable
+    """
     path = config.get_data_directory()
+    
     subtitle_path = Path(os.path.join(path, 'subtitles'))
     subtitle_path.mkdir(parents=True, exist_ok=True)
+    
     prompt_path = Path(os.path.join(path, 'prompts'))
     prompt_path.mkdir(parents=True, exist_ok=True)
     populate_prompts()
 
+    dictionaries_path = Path(os.path.join(path, 'dictionaries'))
+    dictionaries_path.mkdir(parents=True, exist_ok=True)
+    populate_dictionaries()
+
 def populate_prompts() -> None:
+    """
+    Checks if executable; if so, copy/pastes prompts from executable temp folder into permanent app data folder 
+    """
     if getattr(sys, 'frozen', False):
         prompt_dir = os.path.join(sys._MEIPASS, 'data', 'prompts')
         for f in os.listdir(prompt_dir):
@@ -30,9 +42,21 @@ def populate_prompts() -> None:
             shutil.copy(source_file, target_file)
             print(f'Copied: {source_file} to {target_file}')
 
-def install_and_load_nlp_lang(module_name):
+def populate_dictionaries() -> None:
+    """
+    Checks if executable; if so, copy/pastes dictionaries from executable temp folder into permanent app data folder 
+    """
+    if getattr(sys, 'frozen', False):
+        prompt_dir = os.path.join(sys._MEIPASS, 'data', 'dictionaries')
+        for f in os.listdir(prompt_dir):
+            if f.endswith('.csv'):
+                source_file = os.path.join(sys._MEIPASS, 'data', 'dictionaries', f)
+                target_file = os.path.join(config.get_data_directory(), 'dictionaries', f)
+            # Copy the .csv file to the target directory
+            shutil.copy(source_file, target_file)
+            print(f'Copied: {source_file} to {target_file}')
 
-    
+def install_and_load_nlp_lang(module_name):
     if getattr(sys, 'frozen', False):
         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}')
     else:
