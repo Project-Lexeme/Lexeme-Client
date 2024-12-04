@@ -155,7 +155,7 @@
 </div>
 
 <div id="change-settings-options">
-    <div class="tile" onclick="modifyConfigurations()"><h2>MODIFY CONFIGURATIONS</h2></div>
+    <div class="tile" onclick="modifyConfiguration()"><h2>MODIFY CONFIGURATIONS</h2></div>
     <div class="tile" onclick="viewGeneratedSubtitles()"><h2>VIEW GENERATED SUBTITLES</h2></div>
     <div class="tile" onclick="goBack()"><h2>BACK</h2></div>
 </div>
@@ -217,11 +217,35 @@
                 document.getElementById('response').textContent = 'Error fetching subtitle files.';
             });
     }
-    function modifyConfigurations(){
-        document.getElementById('response').textContent = 'Modifying Configurations';
+
+    function modifyConfiguration() {
+        fetch('/open-config-file', {
+            method: 'POST'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to open config file');
+                }
+                else {
+                    document.getElementById('response').textContent = 'Modifying Configurations';
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
-    function viewGeneratedSubtitles(){
-        document.getElementById('response').textContent = 'Viewing Generated Subtitles';
+
+    function viewGeneratedSubtitles() {
+        fetch('/open-subtitles-folder', {
+            method: 'POST'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to open subtitles folder');
+                }
+                else{
+                    document.getElementById('response').textContent = 'Viewing Generated Subtitles';
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
     function generateLesson() {
         const subtitleDropdown = document.getElementById('subtitle-dropdown');
