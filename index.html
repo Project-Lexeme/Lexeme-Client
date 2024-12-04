@@ -117,6 +117,37 @@
             background-color: #e74c3c; /* Red when recording */
             color: white;
         }
+        .prompt-container {
+            grid-column: 1 / span 3;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .prompt-container .dropdown-wrapper {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .custom-dropdown {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier', Arial, sans-serif;
+            font-size: 18px;
+            appearance: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-dropdown:hover {
+            background-color: #dedede;
+        }
     </style>
 </head>
 <body>
@@ -161,12 +192,22 @@
 </div>
 
 <div id="subtitle-selection">
-    <div class="dropdown-container">
-        <select id="subtitle-dropdown"></select>
-        <select id="prompt-type-dropdown"></select>
-        <button onclick="generateLesson()">GENERATE LESSON</button>
+    <div class="prompt-container">
+        <span>I WANT TO GENERATE A</span>
+        <div class="dropdown-wrapper">
+            <select id="prompt-type-dropdown" class="custom-dropdown"></select>
+        </div>
+        <span>WITH</span>
+        <div class="dropdown-wrapper">
+            <select id="subtitle-dropdown" class="custom-dropdown"></select>
+        </div>
     </div>
-    <div class="tile" onclick="goBackToLessonOptions()"><h2>BACK</h2></div>
+    <div class="tile generate-tile" onclick="generateLesson()">
+        <h2>GENERATE LESSON</h2>
+    </div>
+    <div class="tile back-tile" onclick="goBackToLessonOptions()">
+        <h2>BACK</h2>
+    </div>
 </div>
 
 <div id="record-content-options">
