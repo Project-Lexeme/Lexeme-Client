@@ -22,7 +22,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 _recorder = None
 _cfg = None
-_most_recent_prompt = (None, None) # tuple containining (prompt_csv_filepath, empty_prompt)
+_most_recent_prompt = (None, None) # tuple containing (prompt_csv_filepath, empty_prompt)
 
 _language_data = LanguageData() # lazy global
 
@@ -65,7 +65,7 @@ def get_prompt_feedback():
     
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
-    choice = request.args.get('choice', 'No choice provided')
+    choice = request.args.get('subtitle', 'No choice provided')
     prompt_type = request.args.get('prompt_type', 'Any')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
@@ -180,9 +180,9 @@ def take_screenshot():
 @app.route('/submit', methods=['POST'])
 def submit_choice():
     data = request.get_json()  # Get the JSON data from the request body
-    selected_choice = data.get('choice')
+    selected_subtitle = data.get('subtitle')
     
-    response = {"message": f"Loading lesson plan for: {selected_choice}..."} ## TODO: change response
+    response = {"message": f"Loading lesson plan for: {selected_subtitle}..."} ## TODO: change response
     return jsonify(response)
 
 @app.route('/uploads/<filename>')

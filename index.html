@@ -3,549 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Lexeme</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+New:wght@700&display=swap" rel="stylesheet">
+    <title>Project Lexeme</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #444444;
-            color: #fff;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        #container {
-            background-color: #787878;
-            padding: 200px;
-            border-radius: 10px;
-            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-            width: 80%;
-            max-width: 800px;
-            position: relative;
-            overflow: auto;
-        }
-
-        #welcome-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            font-family: 'Courier', Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            background-color: #787878;
-            animation: fade-in 2s ease-in-out, slide-down 2s ease-in-out;
-            z-index: 2;
+            justify-content: center;
+            height: 100vh;
         }
 
-        #welcome-screen h1 {
-            font-size: 48px;
-            font-family: 'Courier New', monospace;
-            margin: 0;
-            opacity: 0;
-            animation: fade-in 2s ease-in-out 1s forwards;
+        #header {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: #2c3e50;
         }
 
-        #main-screen {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
         }
 
-        button, select {
-            font-family: 'Courier New', monospace;
-            padding: 10px 10px;
-            margin: 10px 0;
-            border: none;
+        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .tile {
+            background-color: #fff;
             border-radius: 8px;
-            background-color: #2187fc;
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        button:hover {
-            background-color: #44475a;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .tile:hover {
+            background-color: #dedede;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        select {
+        .tile h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .tile p {
+            margin-bottom: 0;
+            color: #7f8c8d;
+        }
+
+        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options{
             display: none;
-            background-color: #44475a;
-            color: white;
         }
 
+        #lesson-prompt-options .tile:last-child,
+        #record-content-options .tile:last-child,
+        #subtitle-selection .tile:last-child,
+        #change-settings-options .tile:last-child{
+            grid-column: 2;
+        }
+
+        .dropdown-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .dropdown-container select {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        .dropdown-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         #response {
             margin-top: 20px;
             font-size: 18px;
-            color: #50fa7b;
+            color: #2ecc71;
         }
 
-        @keyframes fade-in {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
+        #record-content-options .tile[data-recording="false"] {
+            background-color: #fff;
         }
-
-        @keyframes slide-down {
-            0% {
-                transform: translateY(-50%);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        #initial-options, #generate-lesson-options, #record-content-options {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .lesson-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px; /* Space between the buttons */
-            margin-bottom: 15px; /* Space between the button row and the Back button */
-        }
-
-        .green-button {
-            background-color: #28a745; /* Green color */
-        }
-
-        .green-button:hover {
-            background-color: #218838; /* Darker green on hover */
-        }
-
-        .red-button {
-            background-color: #dc3545; /* Red color */
-        }
-
-        .red-button:hover {
-            background-color: #c82333; /* Darker red on hover */
-        }
-
-        .back-button {
-            background-color: #6c757d; /* Gray color */
-        }
-
-        .back-button:hover {
-            background-color: #5a6268; /* Darker gray on hover */
-        }
-
-        /* New styles for the "Get Lesson from Subtitles" section */
-        #lesson-prompt-options {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 90%;
-        }
-
-        #lesson-prompt-options h2 {
-            font-size: 24px;
-            margin-top: 100px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #lesson-prompt-options select {
-            margin: 0 10px;
-        }
-
-        #lesson-prompt-options button {
-            margin-top: 20px;
-            width: 200px; /* Set a fixed width for the buttons */
-            display: block; /* Display the buttons as block elements */
-            margin-left: auto;
-            margin-right: auto; /* Center the buttons horizontally */
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translate(-50%, 20px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-        #recording-status-popup {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #333;
+        /*TEST TO CHANGE THIS*/
+        #record-content-options .tile[data-recording="false"]:hover {
+            background-color: #2ecc71; /* Green on hover */
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            text-align: center;
-            display: none;
-            max-width: 300px;
-            width: 90%;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform: translateY(100%);
-            opacity: 0;
         }
-
-        #recording-status-popup.show {
-            display: block;
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        #recording-status-popup.fade-out {
-            opacity: 0;
-            transform: translateY(100%);
-        }
-
-        #recording-status-popup h2 {
-            margin-top: 0;
-            color: #2187fc;
-        }
-
-        #recording-status-popup .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
+        #record-content-options .tile[data-recording="true"] {
+            background-color: #e74c3c; /* Red when recording */
             color: white;
-            font-size: 20px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-<div id="container">
-    <div id="welcome-screen">
-        <h1>WELCOME TO PROJECT LEXEME</h1>
+<div id="header">PROJECT LEXEME</div>
+<div class="container">
+    <div class="tile" onclick="showLessonOptions()">
+        <h2>GENERATE LESSON</h2>
+        <p>Get lessons from subtitles or vocabulary</p>
     </div>
-    <div id="main-screen">
-        <div id="initial-options" style="display: flex; flex-direction: column; align-items: center;">
-            <button id="generate-lesson-button">GENERATE LESSON</button>
-            <button id="record-content-button">RECORD CONTENT</button>
-        </div>
-        <div id="generate-lesson-options" style="display: none;">
-            <div class="lesson-buttons">
-                <button id="lesson-from-recent-subtitles-button">GET LESSON FROM SUBTITLES</button>
-                <button id="view-touched-terms-button" onclick="window.location.href='/get-learner-profile'">GET LESSON
-                    FROM VOCABULARY
-                </button>
-            </div>
-            <button id="back-button-lesson" class="back-button">BACK</button>
-        </div>
-        <div id="lesson-prompt-options" style="display: none;">
-            <h2>GENERATE A <select id="second-dropdown"></select> BASED ON <select id="dropdown"></select>.</h2>
-            <div>
-                <button id="submit-button">SUBMIT CHOICE</button>
-            </div>
-            <button id="back-button-prompt" class="back-button">BACK</button>
-        </div>
-        <div id="record-content-options" style="display: none;">
-            <button id="take-screenshot-button">TAKE SCREENSHOT</button>
-            <button id="toggle-recording-button" class="green-button">BEGIN RECORDING SCREEN</button>
-            <button id="adjust-bounding-box-button">ADJUST BOUNDING BOX</button>
-            <button id="back-button-record" class="back-button">BACK</button>
-        </div>
+    <div class="tile" onclick="showSettingsOptions()">
+        <h2>CHANGE SETTINGS</h2>
+        <p>Customize your experience</p>
     </div>
-    <div id="response"></div>
+    <div class="tile" onclick="showRecordOptions()">
+        <h2>RECORD CONTENT</h2>
+        <p>Capture screenshots and record your screen</p>
+    </div>
+    <div class="tile">
+        <h2>COMING SOON</h2>
+        <p>Additional functionality</p>
+    </div>
+    <div class="tile">
+        <h2>ALSO COMING SOON</h2>
+        <p>More features</p>
+    </div>
+    <div class="tile">
+        <h2>COMING, BUT NOT SO SOON</h2>
+        <p>Expand capabilities</p>
+    </div>
 </div>
-<div id="recording-status-popup">
-    <button class="close-btn">&times;</button>
-    <h2 id="recording-status-title">Recording Status</h2>
-    <p id="recording-status-message"></p>
+
+<div id="lesson-prompt-options">
+    <div class="tile" onclick="getLessonFromSubtitles()"><h2>GET LESSON FROM SUBTITLES</h2></div>
+    <div class="tile" onclick="getLessonFromVocabulary()"><h2>GET LESSON FROM VOCABULARY</h2></div>
+    <div class="tile" onclick="goBack()"><h2>BACK</h2></div>
 </div>
+
+<div id="change-settings-options">
+    <div class="tile" onclick="modifyConfigurations()"><h2>MODIFY CONFIGURATIONS</h2></div>
+    <div class="tile" onclick="viewGeneratedSubtitles()"><h2>VIEW GENERATED SUBTITLES</h2></div>
+    <div class="tile" onclick="goBack()"><h2>BACK</h2></div>
+</div>
+
+<div id="subtitle-selection">
+    <div class="dropdown-container">
+        <select id="subtitle-dropdown"></select>
+        <select id="prompt-type-dropdown"></select>
+        <button onclick="generateLesson()">GENERATE LESSON</button>
+    </div>
+    <div class="tile" onclick="goBackToLessonOptions()"><h2>BACK</h2></div>
+</div>
+
+<div id="record-content-options">
+    <div class="tile" onclick="takeScreenshot()"><h2>TAKE SCREENSHOT</h2></div>
+    <div class="tile" onclick="toggleScreenRecording()"><h2>BEGIN RECORDING SCREEN</h2></div>
+    <div class="tile" onclick="adjustBoundingBox()"><h2>ADJUST BOUNDING BOX</h2></div>
+    <div class="tile" onclick="goBack()"><h2>BACK</h2></div>
+</div>
+
+<div id="response"></div>
 
 <script>
-    // Check localStorage to see if the welcome screen has been shown before
-    const hasSeenWelcomeScreen = localStorage.getItem('hasSeenWelcomeScreen');
-
-    const welcomeScreen = document.getElementById('welcome-screen');
-    const mainScreen = document.getElementById('main-screen');
-
-    if (!hasSeenWelcomeScreen) {
-        // Show the welcome screen if the user hasn't seen it
-        setTimeout(() => {
-            welcomeScreen.style.display = 'none';
-            mainScreen.style.display = 'block';
-            // Set localStorage flag to true after showing the animation
-            localStorage.setItem('hasSeenWelcomeScreen', 'true');
-        }, 4000); // Adjust the time based on your animation
-    } else {
-        // Skip the welcome screen if the user has already seen it
-        welcomeScreen.style.display = 'none';
-        mainScreen.style.display = 'block';
-    }
-
-    // Event listeners for the initial options
-    document.getElementById('generate-lesson-button').addEventListener('click', () => {
-        document.getElementById('initial-options').style.display = 'none';
-        document.getElementById('generate-lesson-options').style.display = 'flex';
-    });
-
-    document.getElementById('record-content-button').addEventListener('click', () => {
-        document.getElementById('initial-options').style.display = 'none';
-        document.getElementById('record-content-options').style.display = 'flex';
-    });
-
-    // Event listener for the Back button in "Generate Lesson" options
-    document.getElementById('back-button-lesson').addEventListener('click', () => {
-        document.getElementById('generate-lesson-options').style.display = 'none';
-        document.getElementById('initial-options').style.display = 'flex'; // Show initial options
-    });
-
-    // Event listener for the Back button in "Record Content" options
-    document.getElementById('back-button-record').addEventListener('click', () => {
-        document.getElementById('record-content-options').style.display = 'none';
-        document.getElementById('initial-options').style.display = 'flex'; // Show initial options
-    });
-
-    document.getElementById('lesson-from-recent-subtitles-button').addEventListener('click', function () {
+    function getLessonFromSubtitles() {
         fetch('/get-subtitle-files')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return response.json(); // Get both files and prompt_types
+                return response.json();
             })
             .then(data => {
-                const dropdown = document.getElementById('dropdown');
-                dropdown.innerHTML = ''; // Clear previous options
-
-                // Populate the first dropdown with files
+                // Populate subtitle dropdown
+                const subtitleDropdown = document.getElementById('subtitle-dropdown');
+                subtitleDropdown.innerHTML = ''; // Clear previous options
                 data.choices.forEach(choice => {
                     const option = document.createElement('option');
                     option.value = choice;
                     option.textContent = choice;
-                    dropdown.appendChild(option);
+                    subtitleDropdown.appendChild(option);
                 });
-                dropdown.style.display = 'block'; // Show dropdown
 
-                populateSecondDropdown(data.prompt_types);
+                // Populate prompt type dropdown
+                const promptTypeDropdown = document.getElementById('prompt-type-dropdown');
+                promptTypeDropdown.innerHTML = ''; // Clear previous options
+                data.prompt_types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    promptTypeDropdown.appendChild(option);
+                });
 
-                // Show the lesson prompt options
-                document.getElementById('generate-lesson-options').style.display = 'none';
-                document.getElementById('lesson-prompt-options').style.display = 'block';
+                // Hide lesson prompt options and show subtitle selection
+                document.getElementById('lesson-prompt-options').style.display = 'none';
+                document.getElementById('subtitle-selection').style.display = 'grid';
             })
-            .catch(error => console.error('Error fetching choices:', error));
-    });
-
-    // Function to populate the second dropdown with prompt_types
-    function populateSecondDropdown(prompt_types) {
-        const secondDropdown = document.getElementById('second-dropdown');
-        secondDropdown.innerHTML = ''; // Clear previous options
-
-        // Add a default "Select" option
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Select a prompt type';
-        secondDropdown.appendChild(defaultOption);
-
-        // Populate the second dropdown with prompt_types
-        prompt_types.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            secondDropdown.appendChild(option);
-        });
-
-        // Show the second dropdown
-        secondDropdown.style.display = 'block';
+            .catch(error => {
+                console.error('Error fetching subtitle files:', error);
+                document.getElementById('response').textContent = 'Error fetching subtitle files.';
+            });
     }
+    function modifyConfigurations(){
+        document.getElementById('response').textContent = 'Modifying Configurations';
+    }
+    function viewGeneratedSubtitles(){
+        document.getElementById('response').textContent = 'Viewing Generated Subtitles';
+    }
+    function generateLesson() {
+        const subtitleDropdown = document.getElementById('subtitle-dropdown');
+        const promptTypeDropdown = document.getElementById('prompt-type-dropdown');
 
-    // Function to handle form submission when the submit button is clicked
-    document.getElementById('submit-button').addEventListener('click', function () {
-        const dropdown = document.getElementById('dropdown');
-        const selectedChoice = dropdown.value; // Get the selected choice from the first dropdown
+        const selectedSubtitle = subtitleDropdown.value;
+        const selectedPromptType = promptTypeDropdown.value;
 
-        const secondDropdown = document.getElementById('second-dropdown');
-        const selectedPromptType = secondDropdown.value; // Get the selected choice from the second dropdown
-
-        // Submit the selected choices as JSON
         fetch('/submit', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                choice: selectedChoice,
+                subtitle: selectedSubtitle,
                 prompt_type: selectedPromptType
             })
         })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('response').textContent = data.message; // Show the response message
-                window.location.href = `/lesson?choice=${encodeURIComponent(selectedChoice)}&prompt_type=${encodeURIComponent(selectedPromptType)}`;
+                document.getElementById('response').textContent = 'Lesson generated successfully!';
+                window.location.href = `/lesson?subtitle=${encodeURIComponent(selectedSubtitle)}&prompt_type=${encodeURIComponent(selectedPromptType)}`;
+                // Additional handling of lesson data can be added here
             })
-            .catch(error => console.error('Error submitting choice:', error));
-    });
+            .catch(error => {
+                console.error('Error generating lesson:', error);
+                document.getElementById('response').textContent = 'Error generating lesson.';
+            });
+    }
 
-    // Add event listener for the new "Back" button in the "Get Lesson from Subtitles" section
-    document.getElementById('back-button-prompt').addEventListener('click', function () {
+    function showSettingsOptions() {
+        document.querySelector('.container').style.display = 'none';
+        const settingsOptions = document.getElementById('change-settings-options');
+        settingsOptions.style.display = 'grid';
+    }
+
+    function showRecordOptions() {
+        document.querySelector('.container').style.display = 'none';
+        const recordOptions = document.getElementById('record-content-options');
+        recordOptions.style.display = 'grid';
+    }
+    function showLessonOptions() {
+        document.querySelector('.container').style.display = 'none';
+        const lessonOptions = document.getElementById('lesson-prompt-options');
+        lessonOptions.style.display = 'grid';
+    }
+
+    function goBack() {
         document.getElementById('lesson-prompt-options').style.display = 'none';
-        document.getElementById('generate-lesson-options').style.display = 'flex';
-    });
-
-    // Handle recording buttons
-    let isRecording = false; // Flag to track the recording state
-
-    const recordingStatusPopup = document.getElementById('recording-status-popup');
-    const recordingStatusTitle = document.getElementById('recording-status-title');
-    const recordingStatusMessage = document.getElementById('recording-status-message');
-    const recordingStatusCloseBtn = recordingStatusPopup.querySelector('.close-btn');
-
-    function showRecordingStatusPopup(isStarting) {
-        recordingStatusPopup.classList.remove('fade-out');
-        recordingStatusPopup.classList.add('show');
-
-        if (isStarting) {
-            recordingStatusTitle.textContent = 'Recording Started';
-            recordingStatusMessage.textContent = 'Screen recording has begun. Click Stop when you want to end the recording.';
-        } else {
-            recordingStatusTitle.textContent = 'Recording Stopped';
-            recordingStatusMessage.textContent = 'Screen recording has been completed.';
-        }
-
-        // Auto-fade out after 7 seconds
-        setTimeout(() => {
-            recordingStatusPopup.classList.add('fade-out');
-            setTimeout(() => {
-                recordingStatusPopup.classList.remove('show');
-            }, 300);
-        }, 5000);
+        document.getElementById('record-content-options').style.display = 'none';
+        document.getElementById('change-settings-options').style.display = 'none';
+        document.querySelector('.container').style.display = 'grid';
+    }
+    function goBackToLessonOptions() {
+        document.getElementById('subtitle-selection').style.display = 'none';
+        document.getElementById('lesson-prompt-options').style.display = 'grid';
     }
 
-    function hideRecordingStatusPopup() {
-        recordingStatusPopup.classList.add('fade-out');
-        setTimeout(() => {
-            recordingStatusPopup.classList.remove('show');
-        }, 300);
+
+    function getLessonFromVocabulary() {
+        window.location.href = '/get-learner-profile';
     }
 
-    recordingStatusCloseBtn.addEventListener('click', hideRecordingStatusPopup);
+    function takeScreenshot() {
+        fetch('/take-screenshot', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').textContent = data.message;
+            })
+            .catch(error => {
+                document.getElementById('response').textContent = 'Failed to take screenshot.';
+            });
+    }
 
-    // Modify existing recording button event listener
-    document.getElementById('toggle-recording-button').addEventListener('click', function () {
-        const toggleButton = document.getElementById('toggle-recording-button');
+    let isRecording = false;
 
-        if (!isRecording) {
-            // Begin recording
+    function toggleScreenRecording() {
+        const recordTile = document.querySelector('#record-content-options .tile[onclick="toggleScreenRecording()"]');
+
+        isRecording = !isRecording;
+        recordTile.setAttribute('data-recording', isRecording);
+
+        if (isRecording) {
+            recordTile.querySelector('h2').textContent = 'STOP RECORDING SCREEN ';
             fetch('/begin-recording', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({message: "Begin recording button clicked"})
+                }
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Update button text and style to Stop Recording
-                    toggleButton.textContent = 'STOP RECORDING SCREEN';
-                    toggleButton.classList.remove('green-button');
-                    toggleButton.classList.add('red-button');
-
-                    isRecording = true; // Update recording state
-
-                    // Show recording started popup
-                    showRecordingStatusPopup(true);
+                    document.getElementById('response').textContent = 'Screen recording started.';
                 })
                 .catch(error => {
-                    console.error('Error starting recording:', error);
+                    document.getElementById('response').textContent = 'Failed to start recording.';
                 });
-
         } else {
-            // Stop recording
+            recordTile.querySelector('h2').textContent = 'BEGIN RECORDING SCREEN ';
             fetch('/stop-recording', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({message: "Stop recording button clicked"})
+                }
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Update button text and style to Begin Recording
-                    toggleButton.textContent = 'BEGIN RECORDING SCREEN';
-                    toggleButton.classList.remove('red-button');
-                    toggleButton.classList.add('green-button');
-
-                    isRecording = false; // Update recording state
-
-                    // Show recording stopped popup
-                    showRecordingStatusPopup(false);
+                    document.getElementById('response').textContent = 'Screen recording stopped.';
                 })
                 .catch(error => {
-                    console.error('Error stopping recording:', error);
+                    document.getElementById('response').textContent = 'Failed to stop recording.';
                 });
         }
-    });
+    }
 
-    document.getElementById('take-screenshot-button').addEventListener('click', function () {
-        fetch('/take-screenshot', {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Reuse the recording status popup for screenshots
-            recordingStatusTitle.textContent = 'Screenshot Taken';
-            recordingStatusMessage.textContent = data.message;
-
-            recordingStatusPopup.classList.remove('fade-out');
-            recordingStatusPopup.classList.add('show');
-
-            // Auto-fade out after 7 seconds
-            setTimeout(() => {
-                recordingStatusPopup.classList.add('fade-out');
-                setTimeout(() => {
-                    recordingStatusPopup.classList.remove('show');
-                }, 300);
-            }, 7000);
-        })
-        .catch(error => {
-            console.error('Error taking screenshot:', error);
-
-            // Show error in the same popup
-            recordingStatusTitle.textContent = 'Screenshot Error';
-            recordingStatusMessage.textContent = 'Failed to take screenshot';
-
-            recordingStatusPopup.classList.remove('fade-out');
-            recordingStatusPopup.classList.add('show');
-
-            // Auto-fade out after 7 seconds
-            setTimeout(() => {
-                recordingStatusPopup.classList.add('fade-out');
-                setTimeout(() => {
-                    recordingStatusPopup.classList.remove('show');
-                }, 300);
-            }, 7000);
-        });
-    });
-
-    document.getElementById('adjust-bounding-box-button').addEventListener('click', function() {
+    function adjustBoundingBox() {
         fetch('/adjust-bounding-box', {
             method: 'POST'
         })
@@ -554,10 +348,9 @@
                 document.getElementById('response').textContent = data.message;
             })
             .catch(error => {
-                console.error('Error taking screenshot:', error);
-                document.getElementById('response').textContent = 'Failed to adjust bounding box';
+                document.getElementById('response').textContent = 'Failed to adjust bounding box.';
             });
-    });
+    }
 </script>
 </body>
 </html>
