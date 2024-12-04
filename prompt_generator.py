@@ -122,7 +122,10 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
-    formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
+    # format beginning and end of script here
+    prompt_beginning = "The following is a list of line-break-separated subtitles from a video, possibly a movie. Please do not guess what specific video this comes from. There may be multiple characters in the scene talking in these subtitles. You can ignore errant punctuation marks or individual characters without context. "
+    prompt_ending = " Please use HTML-formatted <p> paragraphs in your response.  Subtitles: '{}'"
+    formatted_prompt = prompt_beginning + empty_prompt + prompt_ending.format(f'\n{subtitle_str}')
     return formatted_prompt
 
 def set_most_recent_prompt(prompt_csv_filepath, empty_prompt):
