@@ -6,6 +6,8 @@ TODO: add support for multiple monitors - Desktopmagic library for python - wil 
 TODO: ADD FUNCTION TO LESSON PAGE WITH EXISTING PARTS OF SPEECH TOOLTIPS RETRIEVER
 TODO: Investigate how to get around Tesseract installer requiring admin privileges to install
 TODO: Instantiate empty learner profile for selected language on startup
+TODO: think about how dictionary contents with multiple meanings/contexts can be stored and recalled
+TODO: print most recent parsed text as popup instead of to terminal
 TO THINK: ABILITY TO SET PROFILE GROUPINGS
 
 v0.6 goals

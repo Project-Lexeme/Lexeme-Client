@@ -22,7 +22,7 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 力,1,,,surname Li,Li4,力
 入,2,,,"to enter; to go into/to join; to become a member of/(bound form) to conform to (as in 入時|入时[ru4shi2])/abbr. for 入聲|入声[ru4sheng1]/(on product packaging, after {number n} + {classifier}) containing (n pieces) (from Japanese 入 ""iri"")",ru4,入
 生,1,,,to be born/to give birth/life/to grow/raw/uncooked/student,sheng1,生
-没,5,,,(negative prefix for verbs) have not; not,mei2,沒
+没,6,,,(negative prefix for verbs) have not; not,mei2,沒
 能,4,,,surname Neng,Neng2,能
 汽车,1,,,car/automobile/bus/CL:輛|辆[liang4],qi4 che1,汽車
 死,1,,,to die/impassable/uncrossable/inflexible/rigid/extremely/damned,si3,死
@@ -110,7 +110,7 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 长眼,1,,,to have eyes/(fig.) to look where one is going; to watch one's step; to be cautious,zhang3 yan3,長眼
 乱跑,1,,,to run around all over the place,luan4 pao3,亂跑
 枪,2,,,surname Qiang,Qiang1,槍
-等,1,,,to wait for; to await/by the time; when; till/and so on; etc.; et al./(bound form) class; rank; grade/(bound form) equal to; same as/(used to end an enumeration)/(literary) (plural suffix attached to a personal pronoun or noun),deng3,等
+等,2,,,to wait for; to await/by the time; when; till/and so on; etc.; et al./(bound form) class; rank; grade/(bound form) equal to; same as/(used to end an enumeration)/(literary) (plural suffix attached to a personal pronoun or noun),deng3,等
 房,1,,,surname Fang,Fang2,房
 还给,1,,,to return sth to sb,huan2 gei3,還給
 邓,1,,,surname Deng,Deng4,鄧
@@ -119,8 +119,24 @@ Term,Number of touches,Number correct,Number incorrect,definition,pinyin,trad
 起来,1,,,to stand up; to get up/also pr. [qi3lai2],qi3 lai5,起來
 行,2,,,"row/line/commercial firm/line of business/profession/to rank (first, second etc) among one's siblings (by age)/(in data tables) row/(Tw) column",hang2,行
 打,1,,,(loanword) dozen/Taiwan pr. [da3],da2,打
-打,1,,,to beat/to strike/to hit/to break/to type/to mix up/to build/to fight/to fetch/to make/to tie up/to issue/to shoot/to calculate/to play (a game)/since/from,da3,打
 事,2,,,"matter/thing/item/work/affair/CL:件[jian4],樁|桩[zhuang1],回[hui2]",shi4,事
 经历,2,,,"to experience; to go through/experience (CL:段[duan4],次[ci4])",jing1 li4,經歷
 吃,1,,,"to eat; to consume/to eat at (a cafeteria etc)/to eradicate; to destroy/to absorb/to suffer (shock, injury, defeat etc)",chi1,吃
-吃,1,,,variant of 吃[chi1],chi1,喫
+说,3,,,to persuade,shui4,說
+赌场,1,,,casino,du3 chang3,賭場
+规矩,1,,,lit. compass and set square/fig. established standard/rule/customs/practices/fig. upright and honest/well-behaved,gui1 ju5,規矩
+长者,1,,,senior/older person,zhang3 zhe3,長者
+证人,1,,,witness,zheng4 ren2,證人
+到,1,,,to reach; to arrive/to leave for; to go to/to (a place); until (a time); up to (a point)/(verb complement indicating arriving at a place or reaching a point)/considerate; thoughtful; thorough,dao4,到
+上去,1,,,to go up,shang4 qu4,上去
+当着,2,,,in front of/in the presence of,dang1 zhe5,當著
+话说,2,,,It is said that ... (at the start of a narrative)/to discuss; to recount,hua4 shuo1,話說
+清,2,,,Qing (Wade-Giles: Ch'ing) dynasty of China (1644-1911)/surname Qing,Qing1,清
+有事,1,,,to be occupied with sth/to have sth on one's mind/there is something the matter,you3 shi4,有事
+那时,1,,,then/at that time/in those days,na4 shi2,那時
+晨,1,,,morning/dawn/daybreak,chen2,晨
+目,1,,,eye/(literary) to look; to regard/eye (of a net); mesh/mesh size; grit size (abbr. for 目數|目数[mu4 shu4])/item; section/list; catalogue/(taxonomy) order/name; title,mu4,目
+少,1,,,few/less/to lack/to be missing/to stop (doing sth)/seldom,shao3,少
+少,1,,,young,shao4,少
+奶奶,1,,,(informal) grandma (paternal grandmother)/(respectful) mistress of the house/CL:位[wei4]/(coll.) boobies/breasts,nai3 nai5,奶奶
+半天,1,,,half of the day/a long time/quite a while/midair/CL:個|个[ge4],ban4 tian1,半天
