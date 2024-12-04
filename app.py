@@ -1,6 +1,9 @@
 import webbrowser
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
+import platform
+import subprocess
+import spacy
 from screen_recorder import ScreenRecorder
 from language_data import LanguageData
 import screenshot_text_extractor, prompt_generator, config
@@ -37,10 +40,10 @@ def instantiate_screen_recorder() -> None:
     _config = r"{}".format(OCR_settings['tesseract_configuration'])
     _time_between_screencaps = float(OCR_settings['time_between_screenshots'])
     _preprocessors = int(OCR_settings['num_of_preprocessors'])
-    set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code, 
+    set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code,
                                 nlp_lang_code=_language_data.nlp_lang_code, 
                                 nlp_model=_language_data.nlp_model, 
-                                preprocessors=_preprocessors, minimum_confidence=70, 
+                                preprocessors=_preprocessors, minimum_confidence=70,
                                 config=_config, time_between_screencaps=_time_between_screencaps))
     
     print("ScreenRecorder is set up")
@@ -62,7 +65,8 @@ def get_prompt_feedback():
     
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
-    choice = request.args.get('subtitle', 'No choice provided')
+    choice = request.args.get('subtitles') or request.args.get('choice') or 'No choice provided'
+
     prompt_type = request.args.get('prompt_type', 'Any')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
@@ -190,6 +194,52 @@ def get_uploaded_file(filename):
 def home():
     return send_from_directory('.', 'index.html')
 
+@app.route('/open-subtitles-folder', methods=['POST'])
+def open_subtitles_folder():
+    subtitles_path = os.path.normpath(f'{config.get_data_directory()}/subtitles/')
+
+    # Ensure the directory exists
+    os.makedirs(subtitles_path, exist_ok=True)
+
+    # Platform-specific file explorer opening
+    if platform.system() == 'Windows':
+        subprocess.Popen(f'explorer "{subtitles_path}"', shell=True)
+    elif platform.system() == 'Darwin':  # macOS
+        subprocess.Popen(['open', subtitles_path])
+    else:  # Linux and other Unix-like systems
+        subprocess.Popen(['xdg-open', subtitles_path])
+
+    return '', 204
+
+@app.route('/open-configuration', methods=['POST'])
+def open_configuration():
+    subtitles_path = os.path.normpath(f'{config.get_data_directory()}/subtitles/')
+
+    # Ensure the directory exists
+    os.makedirs(subtitles_path, exist_ok=True)
+
+    # Platform-specific file explorer opening
+    if platform.system() == 'Windows':
+        subprocess.Popen(f'explorer "{subtitles_path}"', shell=True)
+    elif platform.system() == 'Darwin':  # macOS
+        subprocess.Popen(['open', subtitles_path])
+    else:  # Linux and other Unix-like systems
+        subprocess.Popen(['xdg-open', subtitles_path])
+
+    return '', 204
+
+@app.route('/open-config-file', methods=['POST'])
+def open_config_file():
+    config_path = os.path.join(config.get_data_directory(), 'config.ini')
+
+    if platform.system() == 'Windows':
+        subprocess.Popen(f'notepad "{config_path}"', shell=True)
+    elif platform.system() == 'Darwin':  # macOS
+        subprocess.Popen(['open', '-t', config_path])
+    else:  # Linux
+        subprocess.Popen(['xdg-open', config_path])
+
+    return '', 204
 
 def start_app():
     startup.make_dirs()
