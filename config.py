@@ -77,11 +77,10 @@ def init_config() -> None:
     cfg['General'] = {'debug': True, 'log_level': 'info'}
     cfg['SettingsOCR'] = {'num_of_preprocessors': 3, 'tesseract_configuration': '--psm 7',
                           'time_between_screenshots': 0.8}
-    cfg['Server'] = {
-        'base_url': base_url,
-        'api_key': api_key,
-        'model': model
-    }
+    cfg['Server'] = {'base_url': base_url, 
+                     'api_key': api_key, 
+                     'model': model}
+    
     data_dir = get_data_directory()
     with open(os.path.join(data_dir, 'config.ini'), 'w') as configfile:
         cfg.write(configfile)
@@ -111,7 +110,7 @@ def set_config_default_language_and_proficiency(lang: str, proficiency: str) -> 
         with open(config_file_path, 'w') as configfile:
             cfg.write(configfile)
 
-    except FileNotFoundError:
+    except: # FileNotFoundError
         init_config()
 
 

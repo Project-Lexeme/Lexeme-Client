@@ -1,5 +1,5 @@
 # Ignore CSVs with learner profiles
-learner_profile.csv
+*learner_profile.csv
 !*_prompts.csv
 !learner_profile_sample.csv
 
@@ -9,7 +9,8 @@ __pycache__/*.pyc
 *.pyc
 
 # Ignore screencaps
-uploads/*.png
+uploads/*
+screenshots/*
 
 # Ignore config file
 data/config.ini

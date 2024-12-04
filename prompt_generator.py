@@ -4,8 +4,11 @@ import csv
 import random
 import pandas as pd
 import config
-import app
 import numpy as np
+
+
+_empty_prompt = None
+_prompt_csv_filepath = None
 
 def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
     if choice.endswith('.csv'):
@@ -59,7 +62,7 @@ def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_file
     
     selected_index = select_index_from_score_probability(empty_prompts) 
     empty_prompt = empty_prompts.iloc[selected_index, 1]
-    app.set_most_recent_prompt(prompts_csv_filename, empty_prompt)
+    set_most_recent_prompt(prompts_csv_filename, empty_prompt)
     formatted_prompt = empty_prompt.format(term) # 0 index is type, 1 is prompt
     return formatted_prompt
 
@@ -116,11 +119,23 @@ def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_c
     selected_index = select_index_from_score_probability(filtered_df)
     empty_prompt = filtered_df.iloc[selected_index, 1] 
 
-    app.set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
+    set_most_recent_prompt(prompt_csv_filepath, empty_prompt) # set global var in app - YES this is a godawful way to do this
     subtitle_df = pd.read_csv(subtitles_csv_filepath, sep='/n', engine='python')
     subtitle_str = '\n'.join(subtitle_df.iloc[:,0].astype(str).tolist()) # adds all rows in subtitle file to list and casts appropriately
-    formatted_prompt = empty_prompt.format(f'\n{subtitle_str}')
+    # format beginning and end of script here
+    prompt_beginning = "The following is a list of line-break-separated subtitles from a video, possibly a movie. Please do not guess what specific video this comes from. There may be multiple characters in the scene talking in these subtitles. You can ignore errant punctuation marks or individual characters without context. "
+    prompt_ending = " Please use HTML-formatted <p> paragraphs in your response.  Subtitles: '{}'"
+    formatted_prompt = prompt_beginning + empty_prompt + prompt_ending.format(f'\n{subtitle_str}')
     return formatted_prompt
+
+def set_most_recent_prompt(prompt_csv_filepath, empty_prompt):
+    global _prompt_csv_filepath
+    _prompt_csv_filepath = prompt_csv_filepath
+    global _empty_prompt
+    _empty_prompt = empty_prompt
+
+def get_most_most_recent_prompt():
+    return _prompt_csv_filepath, _empty_prompt
 
 if __name__ == '__main__':
     select_index_from_score_probability(pd.read_csv('./data/prompts/subtitle_prompts.csv'))

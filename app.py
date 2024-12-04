@@ -1,15 +1,12 @@
 import webbrowser
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
-import spacy
 from screen_recorder import ScreenRecorder
 from language_data import LanguageData
 import screenshot_text_extractor, prompt_generator, config
 import LLMserver
 import logger
-import setup_pytesseract
 import startup
-import pyautogui
 from datetime import datetime
 
 app = Flask(__name__)
@@ -24,7 +21,7 @@ _recorder = None
 _cfg = None
 _most_recent_prompt = (None, None) # tuple containing (prompt_csv_filepath, empty_prompt)
 
-_language_data = LanguageData() # lazy global
+_language_data = None # lazy global
 
 
 def set_recorder(recorder: ScreenRecorder) -> None:
@@ -36,28 +33,28 @@ def set_cfg(cfg) -> None:
     _cfg = cfg
 
 def instantiate_screen_recorder() -> None:
+    OCR_settings = _cfg['SettingsOCR']
+    _config = r"{}".format(OCR_settings['tesseract_configuration'])
+    _time_between_screencaps = float(OCR_settings['time_between_screenshots'])
+    _preprocessors = int(OCR_settings['num_of_preprocessors'])
     set_recorder(ScreenRecorder(ocr_lang_code=_language_data.ocr_lang_code, 
                                 nlp_lang_code=_language_data.nlp_lang_code, 
                                 nlp_model=_language_data.nlp_model, 
-                                preprocessors=3, minimum_confidence=70, 
-                                config=r'--psm 6', time_between_screencaps=.75))
+                                preprocessors=_preprocessors, minimum_confidence=70, 
+                                config=_config, time_between_screencaps=_time_between_screencaps))
     
     print("ScreenRecorder is set up")
-
-def set_most_recent_prompt(prompt_csv_filepath, empty_prompt) -> None:
-    global _most_recent_prompt
-    _most_recent_prompt = (prompt_csv_filepath, empty_prompt)
 
 @app.route('/prompt-feedback', methods=['POST']) # TODO:
 def get_prompt_feedback():
     data = request.get_json()
-    prompt = _most_recent_prompt
+    prompt = prompt_generator.get_most_most_recent_prompt()
     response = data.get('response')
     # Process the response here, e.g., update database or perform logic
     print(f'Response received: {response}')
     
     logger.log_prompt_feedback(prompt[0], prompt[1], response)
-    set_most_recent_prompt(None, None) # clear the most recent prompt
+    prompt_generator.set_most_recent_prompt(None, None) # clear the most recent prompt
 
     return jsonify({'status': 'success', 'received': response})
 
@@ -197,6 +194,8 @@ def home():
 def start_app():
     startup.make_dirs()
     set_cfg(config.get_config())
+    global _language_data
+    _language_data = LanguageData()
     print("Config loaded successfully!")
     webbrowser.open('http://127.0.0.1:5000/')
     app.run(port=5000)
