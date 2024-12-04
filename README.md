@@ -7,19 +7,22 @@ Roadmap as of 12/4
 			- if acquired, limited local release to target audience
 				- if limited local release, develop feedback mechanism 
 		- present to local leadership and secure permission to open-source the project.
+		- virtual show-and-tell with AFCLC 
 
 	2. January goals:
-		- present to ODNI TEG (in talks with Mr. Purkey and Hamrick at ODNI) to generate buzz
+		- present to ODNI TEG (in talks with Mr. Purkey and Hamrick) to generate buzz (scheduled)
 		- broaden beta tester pool
-		- release first publically-available version of app with accompanying access token distribution
+		- release first publically-available v1.0 of app with accompanying access token distribution
 		- look into audio capture instead of just relying on subtitles
 
 	3. Spring 2025 goals:
-		- mature audio capture
+		- mature audio capture capabilities if pursued
 		- get link on AFCLC website under resources page
-		- attend relevant conferences if feasible, if not continue to use partners to advocate for project
+		- if there exists other repository of approved language tools, get there (e.g. if DLI has such a list)
+		- attend relevant conferences, present at working groups, etc. if feasible. If not continue to use partners to advocate for project.
 	
 	4. Summer 2025 goals:
+		- v1.5 release - feature set pending
 		- 
 
 	5. Indefinite future goals:
