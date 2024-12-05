@@ -7,6 +7,8 @@ Notes on dictionaries:
 1. Sources are various open-source dictionaries, with a special thanks to Matthias Buchmeier for compiling significant Ding-formatted OS dictionaries from Wiktionary
 2. formatted dictionaries are saved with formatted Tesseract-OCR lang codes, e.g. chi_sim_dictionary.csv 
 
+TODO: create a separate get_term_dictionary function to pass in a list and search for all contents through dictionary_dict.keys, opening the dictionary just once instead of for each new term
+
 '''
 
 def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # Ding format from https://en.wiktionary.org/wiki/User:Matthias_Buchmeier/download
