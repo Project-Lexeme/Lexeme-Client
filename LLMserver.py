@@ -23,13 +23,23 @@ def set_model(model):
     _model = model 
 
 # Point to the local server
-def post_prompt_to_LLM(prompt:str, target_language: str):
+def post_prompt_to_LLM(prompt:str, target_language: str, proficiency: str):
+    """Posts prompt to LLM
+
+    Args:
+        prompt (str): formatted prompt
+        target_language (str): language_data.language
+        proficiency (str): language_data.proficiency
+
+    Returns:
+        str: 'content' block of LLM response JSON
+    """
     client = OpenAI(base_url=f"{_url}", api_key=f"{_api_key}")
 
     completion = client.chat.completions.create(
     model=f"{_model}",
     messages=[
-        {"role": "system", "content": f"You are a {target_language} teacher teaching {target_language} to English learners. Anytime I ask you to speak in the target language, I'm referring to {target_language}. Unless otherwise requested, you always provide answers primarily in {target_language} but using easy-to-understand terms and examples. You occasionally use an English sentence to explain a difficult concept."},
+        {"role": "system", "content": f"You are a {target_language} teacher teaching {target_language} to English-speaking learners who have a proficiency level of '{proficiency}'. Anytime I ask you to speak in the target language, I'm referring to {target_language}. Unless otherwise requested, you always provide answers primarily in {target_language} but using easy-to-understand terms and examples. You occasionally use an English sentence to explain a difficult concept."},
         {"role": "user", "content": f"{prompt}"}
     ],
     temperature=0.3,

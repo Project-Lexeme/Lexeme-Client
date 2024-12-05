@@ -8,6 +8,7 @@ TODO: Investigate how to get around Tesseract installer requiring admin privileg
 TODO: Instantiate empty learner profile for selected language on startup
 TODO: think about how dictionary contents with multiple meanings/contexts can be stored and recalled
 TODO: print most recent parsed text as popup instead of to terminal
+TODO: use formatted JSON response capabilities in LLM interface to get things like quiz answers in their own section.
 TO THINK: ABILITY TO SET PROFILE GROUPINGS
 
 v0.6 goals
@@ -15,6 +16,7 @@ TODO: ADD TUTORIAL
 TODO: MODIFY THE GENERATE LESSON TO ALLOW A GENERATE A "ANY TYPE" BASED ON BLANK
 TODO: ALLOW FOR GENERATE LESSON AFTER RECORDING IS FINISHED        
 TODO: CREATE A SETTINGS PAGE TO MODIFY CONFIGURATIONS
+TODO: "No choice provided" as choice param in app.get_lesson() which breaks program downstream
 '''
 
 '''

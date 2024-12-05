@@ -76,7 +76,7 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
                 logger.log_term(term, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
-    llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language) # TODO: 
+    llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language, _language_data.proficiency)
     return render_template('lesson.html', choice=choice, llm_response=llm_response)
 
 @app.route('/review-choices')
