@@ -45,7 +45,6 @@ def instantiate_screen_recorder() -> None:
                                 nlp_model=_language_data.nlp_model, 
                                 preprocessors=_preprocessors, minimum_confidence=70,
                                 config=_config, time_between_screencaps=_time_between_screencaps))
-    
     print("ScreenRecorder is set up")
 
 @app.route('/prompt-feedback', methods=['POST']) # TODO:
@@ -65,7 +64,7 @@ def get_prompt_feedback():
     
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
-    choice = request.args.get('subtitles') or request.args.get('choice') or 'No choice provided'
+    choice = request.args.get('subtitle') or request.args.get('choice') or 'No choice provided'
 
     prompt_type = request.args.get('prompt_type', 'Any')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
@@ -178,7 +177,7 @@ def take_screenshot():
             'status': 'error'
         })
    
-@app.route('/submit', methods=['POST'])
+@app.route('/generate', methods=['POST'])
 def submit_choice():
     data = request.get_json()  # Get the JSON data from the request body
     selected_subtitle = data.get('subtitle')
@@ -238,6 +237,23 @@ def open_config_file():
         subprocess.Popen(['open', '-t', config_path])
     else:  # Linux
         subprocess.Popen(['xdg-open', config_path])
+
+    return '', 204
+
+@app.route('/open-prompt-directory', methods=['POST'])
+def open_prompt_directory():
+    prompts_path = os.path.normpath(f'{config.get_data_directory()}/prompts/')
+
+    # Ensure the directory exists
+    os.makedirs(prompts_path, exist_ok=True)
+
+    # Platform-specific file explorer opening
+    if platform.system() == 'Windows':
+        subprocess.Popen(f'explorer "{prompts_path}"', shell=True)
+    elif platform.system() == 'Darwin':  # macOS
+        subprocess.Popen(['open', prompts_path])
+    else:  # Linux and other Unix-like systems
+        subprocess.Popen(['xdg-open', prompts_path])
 
     return '', 204
 
