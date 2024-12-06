@@ -1,6 +1,23 @@
 from datetime import datetime
 import re
 
+def get_subtitle_file_bookend_timestamps(filepath: str) -> tuple[int,int]:
+    """For displaying slider for user to select part of SRT file they want to add to a subtitle file
+
+    Args:
+        filepath (str): path to uploaded SRT tile
+
+    Returns:
+        tuple[int,int]: begin, end in seconds, e.g. (5, 2500) = from 0:00:05 to 0:41:40
+    """
+    with open(filepath, 'r', encoding='UTF-8') as f:
+        subtitle_file_contents = f.read()
+    
+    subtitles_dict = get_times_and_subtitles_dict(subtitle_file_contents)
+    first_timestamp = list(subtitles_dict.keys())[0]
+    last_timestamp = list(subtitles_dict.keys())[-1]
+    return (first_timestamp, last_timestamp)
+
 def get_subtitle_contents_from_srt(filepath: str, timestamps: tuple[int, int]=(0,0)) -> str:
     """Entry-point function for extracting subtitles from an SRT file
 
@@ -75,4 +92,4 @@ def format_timestamp(timestamp: str) -> int:
 
 if __name__ == "__main__":
     filepath = './data/subtitles/uploaded_subtitles/To_Live.srt'
-    get_subtitle_contents_from_srt(filepath, (900, 1000))
+    get_subtitle_file_bookend_timestamps(filepath)
