@@ -3,19 +3,20 @@ import sys
 import pytesseract
 import requests
 import config
-import tempfile
 import subprocess
+import platform
 
 def set_tesseract_cmd():
     if not check_tesseract_installation():
         run_installer()
 
-    if os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64':
-        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # 64-bit
-    elif os.environ['PROCESSOR_ARCHITECTURE'] == 'x86':
-        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe" # 32-bit
-    else: # TODO: handle other OS's here 
-        return 'Unknown'
+    if platform.system() == 'Windows':
+        if os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64':
+            pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # 64-bit
+        elif os.environ['PROCESSOR_ARCHITECTURE'] == 'x86':
+            pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe" # 32-bit
+    elif platform.system() == 'Linux':  
+        pytesseract.pytesseract.tesseract_cmd = r"/bin/tesseract"
     
     return
 

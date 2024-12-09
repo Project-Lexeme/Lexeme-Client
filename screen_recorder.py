@@ -1,6 +1,5 @@
 import customtkinter as ctk
-#from tkinter import simpledialog  # CustomTkinter does not have its own dialogs yet, so we still use this
-import pygetwindow as gw
+#import pygetwindow as gw
 import pyautogui
 import time
 import re
