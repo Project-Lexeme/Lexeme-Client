@@ -39,7 +39,7 @@
             gap: 20px;
         }
 
-        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options{
+        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options, #modify-configuration-options {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(2, 1fr);
@@ -72,7 +72,7 @@
             color: #7f8c8d;
         }
 
-        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options{
+        #lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options, #modify-configuration-options {
             display: none;
         }
 
@@ -81,7 +81,8 @@
         #subtitle-selection .tile:last-child,
         #change-settings-options .tile:last-child,
         #upload-content-options .tile:last-child
-        {
+        ,
+        #modify-configuration-options .tile:last-child {
             grid-column: 2;
         }
         
@@ -109,20 +110,19 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         #response {
             margin-top: 20px;
             font-size: 18px;
             color: #2ecc71;
         }
 
-        #record-content-options .tile[data-recording="false"] {
-            background-color: #fff;
-        }
         /*TEST TO CHANGE THIS*/
         #record-content-options .tile[data-recording="false"]:hover {
             background-color: #2ecc71; /* Green on hover */
             color: white;
         }
+
         #record-content-options .tile[data-recording="true"] {
             background-color: #e74c3c; /* Red when recording */
             color: white;
@@ -163,6 +163,38 @@
             display: none;
             margin-top: 20px;
         }
+
+        .prompt-container {
+            grid-column: 1 / span 3;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .prompt-container .dropdown-wrapper {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .custom-dropdown {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier', Arial, sans-serif;
+            font-size: 18px;
+            appearance: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-dropdown:hover {
+            background-color: #dedede;
+        }
     </style>
 </head>
 <body>
@@ -201,18 +233,37 @@
 </div>
 
 <div id="change-settings-options">
-    <div class="tile" onclick="modifyConfiguration()"><h2>MODIFY CONFIGURATIONS</h2></div>
+    <div class="tile" onclick="modifyConfigurationOptions()"><h2>MODIFY CONFIGURATIONS</h2></div>
     <div class="tile" onclick="viewGeneratedSubtitles()"><h2>VIEW GENERATED SUBTITLES</h2></div>
+    <div class="tile" onclick="viewPromptsForLLM()"><h2>VIEW PROMPTS</h2></div>
     <div class="tile" onclick="goBack()"><h2>BACK</h2></div>
 </div>
 
+<div id="modify-configuration-options">
+    <div class="tile" onclick="changeGeneralSettings()"><h2>GENERAL SETTINGS</h2></div>
+    <div class="tile" onclick="changeOCRSettings()"><h2>OCR SETTINGS</h2></div>
+    <div class="tile" onclick="changeServerSettings()"><h2>SERVER SETTINGS</h2></div>
+    <div class="tile" onclick="changeProficiencySettings()"><h2>PROFICIENCY SETTINGS</h2></div>
+    <div class="tile" onclick="goBackToChangeSettingsOptions()"><h2>BACK</h2></div>
+</div>
+
 <div id="subtitle-selection">
-    <div class="dropdown-container">
-        <select id="subtitle-dropdown"></select>
-        <select id="prompt-type-dropdown"></select>
-        <button onclick="generateLesson()">GENERATE LESSON</button>
+    <div class="prompt-container">
+        <span style="font-size: 20px">I WANT TO GENERATE A</span>
+        <div class="dropdown-wrapper">
+            <select id="prompt-type-dropdown" class="custom-dropdown"></select>
+        </div>
+        <span style="font-size: 20px">WITH</span>
+        <div class="dropdown-wrapper">
+            <select id="subtitle-dropdown" class="custom-dropdown"></select>
+        </div>
     </div>
-    <div class="tile" onclick="goBackToLessonOptions()"><h2>BACK</h2></div>
+    <div class="tile generate-tile" onclick="generate()">
+        <h2>GENERATE</h2>
+    </div>
+    <div class="tile back-tile" onclick="goBackToLessonOptions()">
+        <h2>BACK</h2>
+    </div>
 </div>
 
 <div id="record-content-options">
@@ -296,8 +347,7 @@
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to open config file');
-                }
-                else {
+                } else {
                     document.getElementById('response').textContent = 'Modifying Configurations';
                 }
             })
@@ -311,21 +361,35 @@
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to open subtitles folder');
-                }
-                else{
+                } else {
                     document.getElementById('response').textContent = 'Viewing Generated Subtitles';
                 }
             })
             .catch(error => console.error('Error:', error));
     }
-    function generateLesson() {
+
+    function viewPromptsForLLM() {
+        fetch('/open-prompt-directory', {
+            method: 'POST'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to open prompt directory');
+                } else {
+                    document.getElementById('response').textContent = 'Opening Prompt Directory';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function generate() {
         const subtitleDropdown = document.getElementById('subtitle-dropdown');
         const promptTypeDropdown = document.getElementById('prompt-type-dropdown');
 
         const selectedSubtitle = subtitleDropdown.value;
         const selectedPromptType = promptTypeDropdown.value;
 
-        fetch('/submit', {
+        fetch('/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -353,11 +417,18 @@
         settingsOptions.style.display = 'grid';
     }
 
+    function modifyConfigurationOptions() {
+        document.getElementById('change-settings-options').style.display = 'none';
+        const configurationOptions = document.getElementById('modify-configuration-options');
+        configurationOptions.style.display = 'grid';
+    }
+
     function showRecordOptions() {
         document.querySelector('.container').style.display = 'none';
         const recordOptions = document.getElementById('record-content-options');
         recordOptions.style.display = 'grid';
     }
+
     function showLessonOptions() {
         document.querySelector('.container').style.display = 'none';
         const lessonOptions = document.getElementById('lesson-prompt-options');
@@ -374,11 +445,21 @@
         document.getElementById('record-content-options').style.display = 'none';
         document.getElementById('change-settings-options').style.display = 'none';
         document.getElementById('upload-content-options').style.display = 'none';
+        document.getElementById('modify-configuration-options').style.display = 'none';
+        document.getElementById('response').textContent = " ";
         document.querySelector('.container').style.display = 'grid';
     }
+
     function goBackToLessonOptions() {
         document.getElementById('subtitle-selection').style.display = 'none';
         document.getElementById('lesson-prompt-options').style.display = 'grid';
+        document.getElementById('response').textContent = " ";
+    }
+
+    function goBackToChangeSettingsOptions() {
+        document.getElementById('modify-configuration-options').style.display = 'none';
+        document.getElementById('change-settings-options').style.display = 'grid';
+        document.getElementById('response').textContent = " ";
     }
 
     function getLessonFromVocabulary() {

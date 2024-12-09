@@ -24,7 +24,7 @@ def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str)
     '''
     check_for_learner_profile(ocr_lang_code)
 
-    touched_terms = pd.read_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv') # term, no_touches
+    touched_terms = pd.read_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv")) # term, no_touches
     # indexer = touched_terms.loc[touched_terms['Term'].isin(terms)]
     
     # if len(indexer) == 0: # if term is not in list of terms
@@ -42,12 +42,11 @@ def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str)
             
     # else: # duplicate entries exist, combine them    
     #     summed = sum(touched_terms.loc[touched_terms['Term'] == term, on])
-        # touched_terms.drop_duplicates('Term', inplace=True)
-        # touched_terms.loc[touched_terms['Term'] == term, on] = summed
-    
+    #     touched_terms.drop_duplicates('Term', inplace=True)
+    #     touched_terms.loc[touched_terms['Term'] == term, on] = summed
     touched_terms.drop_duplicates('Term', inplace=True)
 
-    touched_terms.to_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv', index=False)
+    touched_terms.to_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv"), index=False)
 
 def get_terms(ocr_lang_code: str, sort_by='weakest', qty=0, all=False):
     """Returns learner profile contents for selected language
@@ -62,7 +61,7 @@ def get_terms(ocr_lang_code: str, sort_by='weakest', qty=0, all=False):
         List[List[str]]: returns a list of terms or a list of lists of terms and their contents
     """
 
-    terms_df = pd.read_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv')
+    terms_df = pd.read_csv(os.path.join(config.get_data_directory(),f"{ocr_lang_code}_learner_profile.csv"))
     if all == True:
         terms = [terms_df.columns.tolist()] + terms_df.values.tolist()
 

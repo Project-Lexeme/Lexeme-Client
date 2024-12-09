@@ -107,7 +107,9 @@
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const choice = urlParams.get('choice');
+        const choice = urlParams.get('subtitle') === 'No choice provided'
+            ? urlParams.get('choice')
+            : urlParams.get('subtitle');
         const choiceMessage = document.getElementById('choice-message');
         if (choice) {
             choiceMessage.textContent = `You navigated to the lesson with choice: ${choice}`;

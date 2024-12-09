@@ -1,13 +1,14 @@
 Project Lexeme:
 
 Roadmap as of 12/4
-	1. December goals:
+	
+ 	1. December goals:
 		- release feature set to include tutorial, configuration editing, and some Quality of Life upgrades for UX
 		- find short-term funds for hosting, either on AWS (~$400/month) or using a supercomputer somewhere.
 			- if acquired, limited local release to target audience
 				- if limited local release, develop feedback mechanism 
 		- present to local leadership and secure permission to open-source the project.
-		- virtual show-and-tell with AFCLC 
+		- virtual show-and-tell with AFCLC, DLI 
 
 	2. January goals:
 		- present to ODNI TEG (in talks with Mr. Purkey and Hamrick) to generate buzz (scheduled)
@@ -33,9 +34,17 @@ Roadmap as of 12/4
 	
 
 To add support for a new language:
-	1. in Venv, use python interactive interpreter to download target spacy language
-	2. in venv/Lib/site-packages/target-language-directory, copy contents of versioned subdirectory into the parent target language directory
-	3. open up {language}.spec in spec/
-	4. add 'venv/Lib/site-packages/{target language spacy module name}', 'spacy/data/{target language spacy module name}'
-	5. add relevant dictionary - if it doesn't exist, find one online and parse it into correct format (e.g. de-en-enwiktionary.txt -> deu_dictionary.csv)
-	6. cry
+	
+ 	1. in Venv, use python interactive interpreter to download target spacy language
+	
+ 	2. in venv/Lib/site-packages/target-language-directory, copy contents of versioned subdirectory into the parent target language directory
+	
+ 	3. open up {language}.spec in spec/
+	
+ 	4. add 'venv/Lib/site-packages/{target language spacy module name}', 'spacy/data/{target language spacy module name}'
+	
+ 	5. add relevant dictionary - if it doesn't exist, find one online and parse it into correct format (e.g. de-en-enwiktionary.txt -> deu_dictionary.csv)
+
+ 	6. build that relevant .spec or all - good luck figuring out what directory to run it from to get relative paths correct
+ 	
+  	7. cry
