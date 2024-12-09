@@ -10,9 +10,10 @@ def get_subtitle_file_bookend_timestamps(filepath: str) -> tuple[int,int]:
     Returns:
         tuple[int,int]: begin, end in seconds, e.g. (5, 2500) = from 0:00:05 to 0:41:40
     """
-    with open(filepath, 'r', encoding='UTF-8') as f:
-        subtitle_file_contents = f.read()
-    
+    # with open(filepath, 'r', encoding='UTF-8') as f:
+    #     subtitle_file_contents = f.read().decode('utf-8')
+
+    subtitle_file_contents = filepath.read().decode('utf-8')
     subtitles_dict = get_times_and_subtitles_dict(subtitle_file_contents)
     first_timestamp = list(subtitles_dict.keys())[0]
     last_timestamp = list(subtitles_dict.keys())[-1]
@@ -57,17 +58,17 @@ def filter_subtitles_based_on_timestamp(subtitles_dict: dict[int, str], timestam
     return '\n'.join(filtered_subtitles)
 
 def get_times_and_subtitles_dict(subtitle_file_contents: str) -> dict[str:str]:
-    """Takes in raw SRT file contents and outputs a dict containing {timestamp: subtitle}
+    """Takes in string SRT file contents and outputs a dict containing {timestamp: subtitle}
 
     Args:
         subtitle_file_contents (str): Raw SRT file contents
     Returns:
         dict: {timestamps:subtitles}
     """
-    subtitle_file_split = subtitle_file_contents.split('\n\n')
+    subtitle_file_split = subtitle_file_contents.split('\r\n\r\n') # artifact of decoding json from '\n\n' in srt
     times = []
     subtitles = []
-    for subtitle_contents in subtitle_file_split: # get rid of this index to UNLEASH THE FLOODGATES
+    for subtitle_contents in subtitle_file_split:
         contents = subtitle_contents.split('\n')
         time = format_timestamp(re.match(pattern=r'(.*) -->', string=contents[1]).groups()[0])
         times.append(time)

@@ -12,6 +12,8 @@ import logger
 import startup
 from datetime import datetime
 
+import subtitle_upload_parser
+
 app = Flask(__name__)
 
 # Define the upload folder
@@ -100,6 +102,22 @@ def get_learner_profile():
     prompt_types = prompt_generator.get_prompt_types(isTerm=True)
     return render_template('learner_profile.html', csv_data=learner_profile, prompt_types=prompt_types)
 
+@app.route('/upload-subtitles', methods=['POST'])
+def upload_srt():
+     # Check if the file is present in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file attached'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    # Process the file here (e.g., parse the .srt file)
+    begin_timestamp, end_timestamp = subtitle_upload_parser.get_subtitle_file_bookend_timestamps(file)
+    print(f"Timestamps: {begin_timestamp / 60}, {end_timestamp / 60}")
+    return jsonify({
+        'slider_values': {'min': begin_timestamp / 60, 'max': end_timestamp / 60}
+    })
 
 @app.route('/choices', methods=['GET']) # DEPRECATED
 def get_choices(part_of_speech='NOUN'):
@@ -115,7 +133,7 @@ def adjust_bounding_box():
     return jsonify({'status': 'success'})
 
 @app.route('/upload', methods=['POST'])
-def upload_image(): #TODO refactor to simplify if possible
+def upload_image(): 
     if 'image' not in request.files:
         print('error: No image file provided')
         return jsonify({'error': 'No image file provided'}), 400
