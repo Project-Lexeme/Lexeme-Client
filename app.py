@@ -67,15 +67,15 @@ def get_prompt_feedback():
     
 @app.route('/lesson', methods=['GET'])
 def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of lesson (unique values in the first column 'Type' of prompt CSVs)
-    choice = request.args.get('subtitles') or request.args.get('choice') or 'No choice provided'
+    choice = request.args.get('subtitle') or request.args.get('choice') or 'No choice provided'
 
     prompt_type = request.args.get('prompt_type', 'Any')
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
-            for term in terms:
-                logger.log_term(term, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
+            
+            logger.log_terms(terms, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language, _language_data.proficiency)

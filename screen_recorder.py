@@ -145,8 +145,7 @@ class ScreenRecorder:
         
         if len(text) > 0:
             terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
-            for term in terms:
-                logger.log_term(term, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
+            logger.log_terms(terms, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
         return text
 
 

@@ -82,10 +82,10 @@ def standardize_u8_dictionary(filepath: str) -> None:
     df.to_csv(chi_tra_save_filepath, index=False)
     return
 
-def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one (correct) item
+def get_term_dictionary_contents(terms: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one (correct) item
     dictionary_csv_filepath = f'{config.get_data_directory()}\\dictionaries\\{language}_dictionary.csv'
     df = pd.read_csv(dictionary_csv_filepath)
-    term_contents = df[df.iloc[:,0] == term]
+    term_contents = df[df.iloc[:,0].isin(terms)]
     return term_contents
 
 if __name__ == "__main__":
