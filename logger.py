@@ -24,7 +24,7 @@ def log_term(term: str, on: str, nlp_lang_code: str, ocr_lang_code: str) -> None
     '''
     check_for_learner_profile(ocr_lang_code)
 
-    touched_terms = pd.read_csv(f'{config.get_data_directory()}/{ocr_lang_code}_learner_profile.csv') # term, no_touches
+    touched_terms = pd.read_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv")) # term, no_touches
     indexer = touched_terms.loc[touched_terms['Term'] == term]
     
     if len(indexer) == 0: # if term is not in list of terms

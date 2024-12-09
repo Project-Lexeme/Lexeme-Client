@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import config
 import re
@@ -21,7 +22,7 @@ def standardize_wiktionary_dictionary(filepath: str, lang_code: str) -> None: # 
                 entries.append([term, definition, POS, notes])
 
     lang_codes_dict = {'de-en':'deu',  'es-en':'spa', 'fr-en':'fra', 'ru-en':'rus'} # found in startup.py - these are Tesseract-OCR codes
-    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{lang_codes_dict[lang_code]}_dictionary.csv" # have to switch hyphen for underscore
+    lang_dict_save_filepath = os.path.join(config.get_data_directory(), "dictionaries", f"{lang_codes_dict[lang_code]}_dictionary.csv") # f"{config.get_data_directory()}\\dictionaries\\{lang_codes_dict[lang_code]}_dictionary.csv" # have to switch hyphen for underscore
     df = pd.DataFrame(entries)
     
     df.columns = ['term','definition','POS','notes']
@@ -43,7 +44,8 @@ def standardize_korean_dictionary(filepath: str) -> None: # TODO: find better ko
                 entries.append([term, definition, notes])
 
     korean_lang_code = 'kor'
-    lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{korean_lang_code}_dictionary.csv" # have to switch hyphen for underscore
+    # lang_dict_save_filepath = f"{config.get_data_directory()}\\dictionaries\\{korean_lang_code}_dictionary.csv" # have to switch hyphen for underscore
+    lang_dict_save_filepath = os.path.join(config.get_data_directory(), "dictionaries", f"{korean_lang_code}_dictionary.csv")
     df = pd.DataFrame(entries)
     print(entries)
     print(df.shape)
@@ -71,8 +73,11 @@ def standardize_u8_dictionary(filepath: str) -> None:
                 print(sim)
                 entries.append([trad, sim, pinyin, definition])
         
-    chi_sim_save_filepath = f'{config.get_data_directory()}\\dictionaries\\chi_sim_dictionary.csv'
-    chi_tra_save_filepath = f'{config.get_data_directory()}\\dictionaries\\chi_tra_dictionary.csv'
+    # chi_sim_save_filepath = f'{config.get_data_directory()}\\dictionaries\\chi_sim_dictionary.csv'
+    # chi_tra_save_filepath = f'{config.get_data_directory()}\\dictionaries\\chi_tra_dictionary.csv'
+    chi_sim_save_filepath = os.path.join(config.get_data_directory(), "dictionaries", f"chi_sim_dictionary.csv")
+    chi_tra_save_filepath = os.path.join(config.get_data_directory(), "dictionaries", f"chi_tra_dictionary.csv")
+    
     df = pd.DataFrame(entries)
     
     df.columns = ['trad','term','pinyin','definition']
@@ -85,7 +90,7 @@ def standardize_u8_dictionary(filepath: str) -> None:
     return
 
 def get_term_dictionary_contents(term: str, language: str) -> pd.DataFrame: #TODO: make sure it only returns one (correct) item
-    dictionary_csv_filepath = f'{config.get_data_directory()}\\dictionaries\\{language}_dictionary.csv'
+    dictionary_csv_filepath = os.path.join(config.get_data_directory(), "dictionaries", f"{language}_dictionary.csv") #f'{config.get_data_directory()}\\dictionaries\\{language}_dictionary.csv'
     df = pd.read_csv(dictionary_csv_filepath)
     term_contents = df[df.iloc[:,0] == term]
     return term_contents

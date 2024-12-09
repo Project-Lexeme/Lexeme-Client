@@ -1,3 +1,4 @@
+import os
 import re
 import spacy
 import csv
@@ -12,15 +13,15 @@ _prompt_csv_filepath = None
 
 def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
     if choice.endswith('.csv'):
-        prompt_csv_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
-        subtitles_csv_filepath = f'{config.get_data_directory()}/subtitles/{choice}'
+        prompt_csv_filepath = os.path.join(config.get_data_directory(), "prompts", "subtitle_prompts.csv")
+        subtitles_csv_filepath = os.path.join(config.get_data_directory(), "subtitles", f"{choice}")
         print(f'subtitle csv filepath: {subtitles_csv_filepath}')
         prompt = generate_prompt_from_list_of_subtitles(prompt_csv_filepath, subtitles_csv_filepath, prompt_type)
         print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
     else:         
-        prompt_csv_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
+        prompt_csv_filepath = os.path.join(config.get_data_directory(), "prompts", "term_prompts.csv")
         prompt = generate_prompt_from_term_and_scaffolded_prompts(choice, prompt_csv_filepath, prompt_type)
         print(f'You just asked the LLM the following: {prompt}')
         return prompt
@@ -92,18 +93,20 @@ def load_chinese_samples_csv(file_name: str) -> list[str]:
 
 def get_prompt_types(isTerm: bool) -> list[str]:
     if isTerm:
-        prompt_filepath = f'{config.get_data_directory()}/prompts/term_prompts.csv'
+        prompt_filepath = os.path.join(config.get_data_directory(), "prompts", "term_prompts.csv")
     else:
-        prompt_filepath = f'{config.get_data_directory()}/prompts/subtitle_prompts.csv'
+        prompt_filepath = os.path.join(config.get_data_directory(), "prompts", "subtitle_prompts.csv")
     prompt_df = pd.read_csv(prompt_filepath)
     prompt_types = prompt_df.iloc[:, 0].unique().tolist()
     return prompt_types
 
 def save_prompts(list_of_prompts: list) -> None: # FUTURE feature: to save historical prompts? may be useless
-    df = pd.Series(list_of_prompts)
-    df2 = pd.read_csv(f'{config.get_data_directory()}/prompts.csv').iloc[:,0]
-    concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
-    concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
+    # df = pd.Series(list_of_prompts)
+    # read_filepath = os.path.join(config.get_data_directory(), "prompts.csv")
+    # df2 = pd.read_csv(f'{read_filepath}').iloc[:,0]
+    # concat_df: pd.DataFrame = pd.DataFrame(pd.concat([df2, df], ignore_index=True).drop_duplicates(inplace=True))
+    # concat_df.to_csv(f'{config.get_data_directory()}/prompts.csv', index=False)
+    return 
 
 def generate_prompt_from_list_of_subtitles(prompt_csv_filepath: str, subtitles_csv_filepath: str, prompt_type: str = 'Any Type') -> str:
     '''

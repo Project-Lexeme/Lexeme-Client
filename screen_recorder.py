@@ -176,7 +176,8 @@ class ScreenRecorder:
             minimum_confidence=self.minimum_confidence,
             config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
 
-        logger.log_subtitle(text, f'{config.get_data_directory()}\\subtitles\\{self.subtitle_filename}')
+        log_filepath = os.path.join(config.get_data_directory(), "subtitles", f"{self.subtitle_filename}")
+        logger.log_subtitle(text, log_filepath)
         #print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.subtitle_filename}')
 
     def prompt_for_filename(self) -> str:
