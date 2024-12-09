@@ -73,8 +73,8 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
         text = logger.get_subtitles_csv(choice)
         for sentence in text:
             terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
-            
-            logger.log_terms(terms, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
+            if len(terms) > 0:
+                logger.log_terms(terms, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)
 
     llm_response = LLMserver.post_prompt_to_LLM(prompt, _language_data.language, _language_data.proficiency)
