@@ -6,7 +6,6 @@ TODO: add support for multiple monitors - Desktopmagic library for python - wil 
 TODO: ADD FUNCTION TO LESSON PAGE WITH EXISTING PARTS OF SPEECH TOOLTIPS RETRIEVER
 TODO: Investigate how to get around Tesseract installer requiring admin privileges to install
 TODO: think about how dictionary contents with multiple meanings/contexts can be stored and recalled
-TODO: add ALL terms' dictionary contents in one function call instead of each term individually
 TODO: print most recent parsed text as popup instead of to terminal
 TODO: use formatted JSON response capabilities in LLM interface to get things like quiz answers in their own section.
 TODO: investigate logger.get_terms assuming dtype (which can lead to strs being read as ints)
