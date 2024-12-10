@@ -215,7 +215,7 @@ def submit_subtitle_upload():
         filename = subtitle_file.filename[:subtitle_file.filename.find(".")] + '.csv'
     except:
         filename = subtitle_file.filename + '.csv'
-    filepath = os.path.join(config.get_data_directory(), "subtitles","uploaded_subtitles", f"{filename}")
+    filepath = os.path.join(config.get_data_directory(), "subtitles", f"{filename}")
     
     try:
         with open(filepath, "x", encoding='utf-8') as file:
@@ -225,7 +225,7 @@ def submit_subtitle_upload():
         with open(filepath, "w", encoding='utf-8') as file:
             # Convert list to string and write to file
             file.write("\n".join(subtitles_list))
-            
+
     response = {"message": f"File uploaded successfully!"}
     return jsonify(response)
 
