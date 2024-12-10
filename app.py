@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
 import platform
 import subprocess
+import pandas as pd
 import spacy
 from screen_recorder import ScreenRecorder
 from language_data import LanguageData
@@ -128,7 +129,8 @@ def get_choices(part_of_speech='NOUN'):
 def adjust_bounding_box():
     if _recorder is None:
         instantiate_screen_recorder()
-    _recorder.window = _recorder.get_rectangle()
+    else:
+        _recorder.window = _recorder.get_rectangle()
     return jsonify({'status': 'success'})
 
 @app.route('/upload', methods=['POST'])
@@ -195,6 +197,38 @@ def take_screenshot():
             'status': 'error'
         })
    
+@app.route('/submit-subtitle-upload', methods=['POST'])
+def submit_subtitle_upload():
+    subtitle_file = request.files.get('subtitle_file')
+    
+    # Get the slider values and convert to seconds
+    slider_from = int(float(request.form.get('slider_from'))) * 60 
+    slider_to = int(float(request.form.get('slider_to'))) * 60 
+
+    subtitle_file_contents = subtitle_file.read().decode('utf-8')
+    print(f"subtitle file: {subtitle_file_contents}") 
+    subtitles_dict = subtitle_upload_parser.get_times_and_subtitles_dict(subtitle_file_contents)
+    filtered_subtitles = subtitle_upload_parser.filter_subtitles_based_on_timestamp(subtitles_dict, (slider_from, slider_to))
+    
+    subtitles_list = filtered_subtitles.split("\n")
+    try:
+        filename = subtitle_file.filename[:subtitle_file.filename.find(".")] + '.csv'
+    except:
+        filename = subtitle_file.filename + '.csv'
+    filepath = os.path.join(config.get_data_directory(), "subtitles","uploaded_subtitles", f"{filename}")
+    
+    try:
+        with open(filepath, "x", encoding='utf-8') as file:
+            # Convert list to string and write to file
+            file.write("\n".join(subtitles_list))
+    except:
+        with open(filepath, "w", encoding='utf-8') as file:
+            # Convert list to string and write to file
+            file.write("\n".join(subtitles_list))
+            
+    response = {"message": f"File uploaded successfully!"}
+    return jsonify(response)
+
 @app.route('/generate', methods=['POST'])
 def submit_choice():
     data = request.get_json()  # Get the JSON data from the request body
