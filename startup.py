@@ -56,7 +56,15 @@ def populate_dictionaries() -> None:
             shutil.copy(source_file, target_file)
             print(f'Copied: {source_file} to {target_file}')
 
-def install_and_load_nlp_lang(module_name):
+def install_and_load_nlp_lang(module_name: str) -> spacy.Language:
+    """Start-up sequence: checks for install and loads NLP lang, stripping the NLP pipeline of extraneous parts
+
+    Args:
+        module_name (str): spacy lang name, e.g. zh_core_web_sm
+
+    Returns:
+        spacy.Language: loaded lang model
+    """
     if getattr(sys, 'frozen', False):
         model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}')
     else:
@@ -66,7 +74,21 @@ def install_and_load_nlp_lang(module_name):
             print(f"{module_name} not found. Installing...")
             download(module_name)
         model_path = module_name
-    return spacy.load(model_path)
+    nlp = remove_excess_nlp_pipeline_parts(spacy.load(model_path))    
+    return nlp
+
+def remove_excess_nlp_pipeline_parts(nlp_lang: spacy.Language):
+    """Removes unnecessary pipeline componenets, e.g. NER, etc. This makes the NLP processing more efficient throughout
+
+    Args:
+        nlp_lang (spacy.Language): loaded Language model
+    """
+    # pipe_names = [pipe[0] for pipe in nlp_lang.pipeline]
+    # for pipe in pipe_names:
+    #     if pipe != 'tagger' and pipe != 'parser':  # Keep only the POS tagger and parser
+    #         nlp_lang.remove_pipe(pipe)
+
+    return nlp_lang
 
 def get_language_and_proficiency() -> tuple[str, list[str]]:
     """

@@ -1,6 +1,7 @@
 import spacy
 import re
 
+
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
     """parses a sentence for a target parts of speech and returns any such tokens, also checking for compound nouns in supported languages
 
@@ -21,9 +22,9 @@ def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: s
         for chunk in doc.noun_chunks:
             if chunk.root.pos_ in part_of_speech:
                 parts_of_speech_in_sentence.append(chunk.text)
-
     except:
         pass
+
     # then parse all tokens regardless of whether they were combined to form compound nouns
     for token in doc:
         if token.pos_ in part_of_speech:
