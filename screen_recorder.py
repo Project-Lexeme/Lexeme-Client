@@ -9,8 +9,7 @@ import logger
 import prompt_generator
 import screenshot_text_extractor
 import os
-
-import startup
+import natural_language_processing
 
 
 def clean_filename(title) -> str:  # Replace invalid characters with underscores or remove them
@@ -143,7 +142,7 @@ class ScreenRecorder:
                                                                           display_comparison=False)
         
         if len(text) > 0:
-            terms = prompt_generator.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
+            terms = natural_language_processing.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
             logger.log_terms(terms, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
         return text
 

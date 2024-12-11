@@ -3,11 +3,9 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
 import platform
 import subprocess
-import pandas as pd
-import spacy
 from screen_recorder import ScreenRecorder
 from language_data import LanguageData
-import screenshot_text_extractor, prompt_generator, config
+import screenshot_text_extractor, prompt_generator, config, natural_language_processing
 import LLMserver
 import logger
 import startup
@@ -73,7 +71,7 @@ def get_lesson(): # # TODO: figure out how to use get_lesson to feed the type of
     if choice.endswith('.csv'): # naive way to check if they asked for an individual term or a subtitled csv file
         text = logger.get_subtitles_csv(choice)
         for sentence in text:
-            terms = prompt_generator.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
+            terms = natural_language_processing.find_parts_of_speech_in_sentence(sentence, ['NOUN', 'ADJ', 'VERB'], _language_data.nlp_model)
             if len(terms) > 0:
                 logger.log_terms(terms, 'Number of touches', nlp_lang_code=_language_data.nlp_lang_code, ocr_lang_code=_language_data.ocr_lang_code)
     prompt = prompt_generator.generate_prompt_from_choice(choice, prompt_type)

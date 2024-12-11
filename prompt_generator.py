@@ -26,28 +26,6 @@ def generate_prompt_from_choice(choice: str, prompt_type: str) -> str:
         print(f'You just asked the LLM the following: {prompt}')
         return prompt
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
-    filtered_sentence: str = filter_different_scripts(sentence, nlp)
-    parts_of_speech: list[str] = []
-    doc = nlp(filtered_sentence)
-    for token in doc:
-        if token.pos_ in part_of_speech:
-            #TODO: get rid of nouns that just don't make damn sense
-            parts_of_speech.append(token.text)
-    return parts_of_speech
-
-def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
-    '''
-    filter sentence to remove all characters not in a target script
-    '''
-    lang = nlp.meta['lang'] # returns two-letter spacy lang code e.g. en for English, fr for French
-    pattern_dict = {'en':'A-Za-zÀ-ÿ ', 'zh':'一-龯 ', 'ko':'가-힣 ', 'ru':'\u0400-\u04FF ', 'ja':'ァ-ヴぁ-ゔー '} # regex patterns that capture each target script INCLUDE A SPACE
-    if lang in pattern_dict:
-        pattern = pattern_dict[lang]
-    else:
-        pattern = pattern_dict['en'] # this is a catch-all for Latin-based languages
-    filtered_sentence = re.findall(fr'[{pattern}]', sentence)
-    return ''.join(filtered_sentence)
 
 #TODO add kwarg to either pass in 'random' or specific prompt index and return only ONE prompt
 def generate_prompt_from_term_and_scaffolded_prompts(term: str, prompts_csv_filename: str, prompt_type: str='Any Type') -> list[str]:
