@@ -155,8 +155,9 @@ def get_language_and_proficiency() -> tuple[str, list[str]]:
              selected_values['proficiency']])
 
 def get_language_dicts():
-    # Language and proficiency options
-    language_codes = { #{'Plain English' : ["tesseract","spacy"]}
+    # Language and proficiency options 
+    #{'Plain English' : ["tesseract","spacy"]}
+    language_codes = { 
         "English": ["eng", "en_core_web_sm"],
         "Spanish": ["spa", 'es_core_news_sm'],
         "French": ["fra", "fr_core_news_sm"],
@@ -165,8 +166,20 @@ def get_language_dicts():
         "Chinese Traditional": ["chi_tra", "zh_core_web_sm"],
         "Japanese": ["jpn", "ja_core_news_sm"],
         "Korean": ["kor", "ko_core_news_sm"],
-        "Russian": ['rus', "ru_core_news_sm"]
-    }
+        "Russian": ['rus', "ru_core_news_sm"],
+        "Persian - Farsi": ["fa","fa_boot_sm"],
+        "Persian - Dari": ["fa","fa_boot_sm"],
+        "Arabic": ["ar","ar_boot_sm"],
+        "Indonesian": ["in","in_boot_sm"],
+        }
+    
+    if os.getenv("LEXEME_LANGUAGE") is not None:
+        target_language = os.getenv("LEXEME_LANGUAGE")
+        language_codes_keys = list(language_codes.keys())
+        target_language_codes_keys = [language_code_key for language_code_key in language_codes_keys if language_code_key.startswith(target_language)]
+        print(target_language_codes_keys)
+
+
     return language_codes
 
 def get_proficiencies():

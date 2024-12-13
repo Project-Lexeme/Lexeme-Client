@@ -1,4 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+
+os.environ['LEXEME_LANGUAGE'] = "Chinese"
 
 a = Analysis( # type: ignore
     ['../main.py'], # because each .spec is in a subfolder, use relative paths to go back to project root dir

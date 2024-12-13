@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 import os
 
-os.environ['LEXEME_LANGUAGE'] = "Korean"
+os.environ['LEXEME_LANGUAGE'] = "Persian"
 
 a = Analysis( # type: ignore
     ['../main.py'],
@@ -12,11 +12,11 @@ a = Analysis( # type: ignore
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
         ('../uploads/Screenshot.png', '.'),
-        ('../venv/Lib/site-packages/ko_core_news_sm', 'spacy/data/ko_core_news_sm'),
+        ('../bootstrapped_models/fa_boot_sm', 'spacy/data/fa_boot_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
-        ('../data/dictionaries/kor_dictionary.csv', 'data/dictionaries/.'),
+        ('../data/dictionaries/fa_dictionary.csv', 'data/dictionaries/.'),
     ],
     hiddenimports=['spacy','pytesseract'], # redundant but hey it works
     hookspath=[],
@@ -35,7 +35,7 @@ exe = EXE( # type: ignore
     a.binaries,
     a.datas,
     [],
-    name='Project Lexeme - Korean',
+    name='Project Lexeme - Persian',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -57,5 +57,5 @@ coll = COLLECT(exe, # type: ignore
                 a.datas,
                 strip=False,
                 upx=True,
-                name='Project Lexeme - Korean',  # Same name as above
+                name='Project Lexeme - Persian',  # Same name as above
                 )

@@ -123,7 +123,8 @@ def get_config_default_language_and_proficiency() -> Union[list[str], list[None]
         lang_prof = [cfg['User']['primary_language'], cfg['User']['proficiency']]
 
     except FileNotFoundError:  # this needs wrapped in a function and called instead of going here
-        lang_prof = [None, None]  # in startup.py, this removes default option from dropdown being a specific language
+        try: lang_prof = [os.getenv("LEXEME_LANGUAGE"), None]  # in startup.py, this removes default option from dropdown being a specific language
+        except: lang_prof = [None, None]
 
     return lang_prof
 

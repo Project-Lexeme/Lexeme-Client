@@ -1,4 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+
+os.environ['LEXEME_LANGUAGE'] = "Russian"
 
 a = Analysis( # type: ignore
     ['../main.py'],
