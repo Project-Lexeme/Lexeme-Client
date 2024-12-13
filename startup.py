@@ -177,8 +177,8 @@ def get_language_dicts():
         target_language = os.getenv("LEXEME_LANGUAGE")
         language_codes_keys = list(language_codes.keys())
         target_language_codes_keys = [language_code_key for language_code_key in language_codes_keys if language_code_key.startswith(target_language)]
-        print(target_language_codes_keys)
-
+        target_language_codes_values = [language_codes[target_language_code_key] for target_language_code_key in target_language_codes_keys]
+        language_codes = dict(zip(target_language_codes_keys, target_language_codes_values))
 
     return language_codes
 
@@ -191,4 +191,5 @@ def get_proficiencies():
 
 if __name__ == "__main__":
     print("startup.py")
-    #print(get_config())
+    os.environ["LEXEME_LANGUAGE"] = "Persian"
+    get_language_dicts()

@@ -119,12 +119,13 @@ def get_config_default_language_and_proficiency() -> Union[list[str], list[None]
     data_dir = get_data_directory()
     try:
         with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
-            cfg.read_file(configfile)
-        lang_prof = [cfg['User']['primary_language'], cfg['User']['proficiency']]
-
-    except FileNotFoundError:  # this needs wrapped in a function and called instead of going here
-        try: lang_prof = [os.getenv("LEXEME_LANGUAGE"), None]  # in startup.py, this removes default option from dropdown being a specific language
-        except: lang_prof = [None, None]
+               cfg.read_file(configfile)
+        if os.environ["LEXEME_LANGUAGE"] is not None:
+            lang_prof = [os.environ["LEXEME_LANGUAGE"], cfg['User']['proficiency']]
+        else:
+            lang_prof = [cfg['User']['primary_language'], cfg['User']['proficiency']]
+    except FileNotFoundError: 
+        lang_prof = [None, None]
 
     return lang_prof
 
