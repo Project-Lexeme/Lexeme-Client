@@ -24,7 +24,8 @@ def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: s
                 parts_of_speech_in_sentence.append(chunk.text)
     except:
         pass
-
+    
+    print_token_attributes(doc)
     # then parse all tokens regardless of whether they were combined to form compound nouns
     for token in doc:
         if token.pos_ in part_of_speech:
@@ -45,3 +46,11 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     filtered_sentence = re.findall(fr'[{pattern}]', sentence)
     return ''.join(filtered_sentence)
 
+def print_token_attributes(doc):
+    for token in doc:
+        print(f"Attributes for Token: {token.text}")
+        print(f"Tag: {token.tag_}")
+        print("-" * 50)
+
+if __name__ == "__main__":
+    print(find_parts_of_speech_in_sentence("اذا أي حد سأل عني، احكيلهم اني راح أكون بالكوفي ش", ["NOUN", "VERB"], spacy.load("models/ar_dep_web_sm")))

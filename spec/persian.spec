@@ -12,7 +12,7 @@ a = Analysis( # type: ignore
         ('../templates', 'templates'),  # html files other than index
         ('../index.html', '.'), 
         ('../uploads/Screenshot.png', '.'),
-        ('../bootstrapped_models/fa_boot_sm', 'spacy/data/fa_boot_sm'),
+        ('../models/fa_dep_web_sm', 'spacy/data/fa_dep_web_sm'),
         ('../venv/Lib/site-packages/spacy_pkuseg', 'spacy_pkuseg'),
         ('../venv/Lib/site-packages/pytesseract', 'pytesseract'),  # Included to avoid issues with 'fetch from recent screenshot'
         ('../data/prompts/.', 'data/prompts/.'),
