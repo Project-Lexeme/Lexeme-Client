@@ -56,7 +56,7 @@ def populate_dictionaries() -> None:
             shutil.copy(source_file, target_file)
             print(f'Copied: {source_file} to {target_file}')
 
-def install_and_load_nlp_lang(module_name: str) -> spacy.Language:
+def install_and_load_nlp_lang_from_spacy(module_name: str) -> spacy.Language:
     """Start-up sequence: checks for install and loads NLP lang, stripping the NLP pipeline of extraneous parts
 
     Args:
@@ -74,6 +74,14 @@ def install_and_load_nlp_lang(module_name: str) -> spacy.Language:
             print(f"{module_name} not found. Installing...")
             download(module_name)
         model_path = module_name
+    nlp = remove_excess_nlp_pipeline_parts(spacy.load(model_path))    
+    return nlp
+
+def load_nlp_lang_from_bootstrapped_models(module_name: str) -> spacy.Language:
+    if getattr(sys, 'frozen', False):
+        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}')
+    else:
+        model_path = os.path.join('models', module_name)
     nlp = remove_excess_nlp_pipeline_parts(spacy.load(model_path))    
     return nlp
 
