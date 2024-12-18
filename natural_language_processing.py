@@ -1,6 +1,6 @@
 import spacy
 import re
-
+import spacy.lang.fa
 
 def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
     """parses a sentence for a target parts of speech and returns any such tokens, also checking for compound nouns in supported languages
@@ -45,3 +45,9 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     filtered_sentence = re.findall(fr'[{pattern}]', sentence)
     return ''.join(filtered_sentence)
 
+if __name__ == "__main__":
+    nlp = spacy.blank('fa')
+    nlp_text = nlp("این یک جمله آزمایشی است.")
+    print(list(nlp_text.noun_chunks) )   
+    # for word in nlp(text):
+    #     print(f"POS: {word.pos}, pos_: {word.lemma_}")
