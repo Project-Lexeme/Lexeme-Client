@@ -8,9 +8,12 @@ Notes on dictionaries:
 1. Sources are various open-source dictionaries, with a special thanks to Matthias Buchmeier for compiling significant Ding-formatted OS dictionaries from Wiktionary
 2. formatted dictionaries are saved with formatted Tesseract-OCR lang codes, e.g. chi_sim_dictionary.csv 
 
+3. for MDict parsing, https://github.com/binhetech/mdict-parser. 
+4. for persian - https://github.com/0xdolan/AryanpourDictionary
+
 '''
 
-def standardize_wiktionary_dictionary(filepath: str, lang_code: str, aggregate_duplicate_terms: bool=True) -> None: # Ding format from https://en.wiktionary.org/wiki/User:Matthias_Buchmeier/download
+def standardize_wiktionary_dictionary(filepath: str, lang_code: str, aggregate_duplicate_terms: bool=True) -> None: # Ding-formatted, sourced from https://en.wiktionary.org/wiki/User:Matthias_Buchmeier/download
     entries = []
     re_string = r'(\S*) \{([\S ]*)\} \[?([\S ]*)?\]? ?:: (.*)'
     with open(filepath,'r', encoding='utf-8') as f:

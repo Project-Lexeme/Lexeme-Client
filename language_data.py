@@ -15,7 +15,7 @@ class LanguageData:
         print("PyTesseract set up!")
 
     def check_language_source(self) -> bool:
-        if self.language in ['arabic','indonesian','tagalog','persian']:
+        if self.language in ['Arabic','Indonesian','Tagalog','Persian - Farsi', 'Persian - Dari']:
             return True
         else:
             return False

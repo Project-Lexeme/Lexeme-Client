@@ -175,10 +175,10 @@ def get_language_dicts():
         "Japanese": ["jpn", "ja_core_news_sm"],
         "Korean": ["kor", "ko_core_news_sm"],
         "Russian": ['rus', "ru_core_news_sm"],
-        "Persian - Farsi": ["fa","fa_boot_sm"],
-        "Persian - Dari": ["fa","fa_boot_sm"],
-        "Arabic": ["ar","ar_boot_sm"],
-        "Indonesian": ["in","in_boot_sm"],
+        "Persian - Farsi": ["fas","fa_dep_web_sm"],
+        "Persian - Dari": ["fas","fa_dep_web_sm"],
+        "Arabic": ["ar","ar_dep_web_sm"],
+        "Indonesian": ["in","in_dep_web_sm"],
         }
     
     if os.getenv("LEXEME_LANGUAGE") is not None:

@@ -1,5 +1,5 @@
 Type,Prompt,Score
-Summary,What information can you get from this exchange? Please use the target language and the same text in English about this situation. If there are any useful idioms in the text could you share a single sentence describing what they mean?,3
+Summary,What information can you get from this exchange? Please use the target language and the same text in English about this situation. If there are any useful idioms in the text could you share a single sentence describing what they mean?,2
 Summary,What is the primary theme that is being discussed? Please use the target language and the same text in English about this situation. Please highlight terms used that support your answer and provide their definition if they are obscure.,1
 Lesson,Primarily use the target language though it's okay to use some English if it helps the learner understand a confusing concept. Can you generate an advanced grammar lesson using the context discussed in this scene?,0
 Lesson,Primarily use the target language though it's okay to use some English if it helps the learner understand a confusing concept. Can you generate an advanced vocabulary lesson using the context discussed in this scene?,1
