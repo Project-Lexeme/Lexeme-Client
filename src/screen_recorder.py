@@ -4,6 +4,7 @@ import time
 import re
 import threading
 import os
+import platform
 
 from src import config
 from src import logger
@@ -19,7 +20,8 @@ class DrawRectangleApp:
     def __init__(self, root) -> None:
         self.root = root
         ###
-        self.root.wait_visibility(self.root)
+        if platform.system() != 'Windows':
+            self.root.wait_visibility(self.root)
         ###
         self.root.attributes("-topmost", True)  # Always on top
         self.root.attributes("-alpha", 0.5)  # Transparent background
