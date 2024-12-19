@@ -1,38 +1,32 @@
 import random
 import cv2 as cv
 import numpy as np
-import concurrent.futures
 
 
 def comparative_preprocessing(img, previous_algorithms, previous_params, number_of_preprocessors, show_comparison=False):
     img = convert_to_grayscale(img)
-
+    
     # set each 'img' arg in each set of params as new img
+    preprocessors = []
     previous_params[0][0] = img
     previous_params[1][0] = img
     previous_params[2][0] = img
 
-    # Initialize the list of preprocessors and add the first (parent) preprocessor
-    preprocessors = []
-    parent_processor_img = apply_algorithms(img, previous_algorithms, previous_params)
+    parent_processor_img = apply_algorithms(img, previous_algorithms,previous_params)
     parent_preprocessor_tuple = (parent_processor_img, previous_algorithms, previous_params)
-    preprocessors.append(parent_preprocessor_tuple)  # first index is parent set
+    preprocessors.insert(0,parent_preprocessor_tuple) # first index is parent set
     
     if number_of_preprocessors < 2:
-        return preprocessors  # Return early if no additional preprocessors are needed
+        return preprocessors 
+    else: # see previous commit for implementation of where n > 3 preprocessors makes 2nd preprocessor parent algo / random params instead of random / random
+        for _ in range(number_of_preprocessors - 1): # n - 1 because the first preprocessor is parent
+            random_preprocessor_tuple = assign_random_preprocessing(img)
+            preprocessors.append(random_preprocessor_tuple)
     
-    # Parallel processing for additional preprocessors
-    def process_random_preprocessor(_):
-        return assign_random_preprocessing(img)  # Task for parallel processing
-    
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        random_preprocessors = list(executor.map(process_random_preprocessor, range(number_of_preprocessors - 1)))
-        preprocessors.extend(random_preprocessors)
-
-    if show_comparison:
+    if show_comparison == True:
         show_preprocessing_comparison(preprocessors)
 
-    return preprocessors  # List of tuples (img, algo, params)
+    return preprocessors # list of tuples (img, algo, params)
 
 def assign_random_preprocessing(random_param_img, previous_algorithms=None):                                  
     noise_removal_dict = {None : [[]],

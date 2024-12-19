@@ -15,7 +15,7 @@ Parking lot:
     - use formatted JSON response capabilities in LLM interface to get things like quiz answers in their own section.
     - implement structured output for quizzes, etc. - full implementation includes front-end handling of new json object e.g. requests.body.get("Answer")-esque stuff
     - SQLAlchemy or similar
-    - multithreading parallel preprocessors
+    - native YT .srt rip functionality
     
 Street parking:
     TODO investigate chinese pulling not noun phrases but just nouns - jieba

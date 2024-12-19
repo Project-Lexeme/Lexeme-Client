@@ -4,6 +4,7 @@ import cv2 as cv
 import numpy as np
 import sys
 import time
+import concurrent.futures
 
 from src import preprocessing
 
@@ -26,7 +27,7 @@ def check_img_tesseract_compatibility(img): # converts img if preprocessing turn
         img = img.convert('RGB')
     return img
 
-def comparative_read_text_from_image(filepath: str, language: str, number_of_preprocessors=3, display_comparison=False, **kwargs): 
+def comparative_read_text_from_image(filepath: str, language: str, number_of_preprocessors=3, multithreading=True, display_comparison=False, **kwargs): 
     '''
     language: tesseract lang
     '''
@@ -44,12 +45,31 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     
     param_conf_sums = []
     param_datas = []
-    for i, _ in enumerate(preprocessed_images):
-        param_data = read_text_from_img(preprocessed_images[i], tesseract_config,language,print_confidence_levels)
-        param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
-        param_conf_sums.append(param_conf_sum)
-        param_datas.append(param_data)
+    if multithreading==True:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Map the 'read_text_from_img' function to each preprocessed image in parallel
+            future_to_image = {
+                executor.submit(read_text_from_img, preprocessed_images[i], tesseract_config, language, print_confidence_levels): i 
+                for i in range(len(preprocessed_images))
+            }
 
+            # Collect results from futures
+            for future in concurrent.futures.as_completed(future_to_image):
+                i = future_to_image[future]
+                try:
+                    param_data = future.result()
+                    param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
+                    param_conf_sums.append(param_conf_sum)
+                    param_datas.append(param_data)
+                except Exception as e:
+                    print(f"Error processing image {i}: {e}")
+
+    else:
+        for i, _ in enumerate(preprocessed_images):
+            param_data = read_text_from_img(preprocessed_images[i], tesseract_config,language,print_confidence_levels)
+            param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
+            param_conf_sums.append(param_conf_sum)
+            param_datas.append(param_data)
     max_index = get_best_output_index(param_datas, minimum_confidence)
 
     _, previous_parent_algorithms, previous_parent_params = preprocessed_images[max_index]
