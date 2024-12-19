@@ -4,12 +4,11 @@ import pyautogui
 import time
 import re
 import threading
-import config
-import logger
-import prompt_generator
-import screenshot_text_extractor
+from src import config
+from src import logger
+from src import screenshot_text_extractor
 import os
-import natural_language_processing
+from src import natural_language_processing
 
 
 def clean_filename(title) -> str:  # Replace invalid characters with underscores or remove them
@@ -19,10 +18,12 @@ def clean_filename(title) -> str:  # Replace invalid characters with underscores
 class DrawRectangleApp:
     def __init__(self, root) -> None:
         self.root = root
+        ###
+        self.root.wait_visibility(self.root)
+        ###
         self.root.attributes("-topmost", True)  # Always on top
         self.root.attributes("-alpha", 0.5)  # Transparent background
         self.root.attributes("-fullscreen", True)
-
         self.canvas = ctk.CTkCanvas(root, bg='white', highlightthickness=0)
         self.canvas.pack(fill=ctk.BOTH, expand=True)
 

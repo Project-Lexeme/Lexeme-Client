@@ -2,7 +2,7 @@ import os
 import sys
 import pytesseract
 import requests
-import config
+from src import config
 import subprocess
 import platform
 
@@ -86,7 +86,9 @@ def setup_tessdata(ocr_lang_code: str):
     if getattr(sys, 'frozen', False):
         tessdata_path = os.path.join(config.get_data_directory(), 'tessdata')
     else:
-        tessdata_path = os.path.join(os.path.dirname(__file__), 'tessdata')
+        current_file_path = os.path.dirname(__file__)
+        parent_dir = os.path.dirname(current_file_path)
+        tessdata_path = os.path.join(parent_dir, 'tessdata')
 
     # Create the tessdata directory if it doesn't exist
     os.makedirs(tessdata_path, exist_ok=True)

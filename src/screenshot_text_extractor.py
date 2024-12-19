@@ -1,4 +1,4 @@
-import preprocessing
+from src import preprocessing
 import pytesseract
 from PIL import Image
 import cv2 as cv

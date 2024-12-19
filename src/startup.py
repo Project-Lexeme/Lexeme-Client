@@ -2,7 +2,7 @@ import shutil
 import customtkinter as ctk
 import spacy
 from spacy.cli import download
-import config
+from src import config
 import os
 from pathlib import Path
 import sys

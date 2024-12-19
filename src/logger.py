@@ -1,8 +1,8 @@
 from pathlib import Path
 import pandas as pd
 import os
-import config
-import dictionary
+from src import config
+from src import dictionary
 
 def check_for_learner_profile(ocr_lang_code: str):
     """Checks for learner profile with OCR lang code prefix

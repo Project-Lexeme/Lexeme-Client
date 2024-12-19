@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import config
+from src import config
 import re
 
 '''

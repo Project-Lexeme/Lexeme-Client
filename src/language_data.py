@@ -1,6 +1,6 @@
-from startup import get_language_and_proficiency, install_and_load_nlp_lang_from_spacy, load_nlp_lang_from_bootstrapped_models
-from setup_pytesseract import set_tesseract_cmd, setup_tessdata
-from logger import check_for_learner_profile
+from src.startup import get_language_and_proficiency, install_and_load_nlp_lang_from_spacy, load_nlp_lang_from_bootstrapped_models
+from src.setup_pytesseract import set_tesseract_cmd, setup_tessdata
+from src.logger import check_for_learner_profile
 
 class LanguageData:
     def __init__(self) -> None:

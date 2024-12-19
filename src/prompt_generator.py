@@ -4,7 +4,7 @@ import spacy
 import csv
 import random
 import pandas as pd
-import config
+from src import config
 import numpy as np
 
 

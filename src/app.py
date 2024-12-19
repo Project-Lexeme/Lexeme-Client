@@ -3,18 +3,18 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
 import platform
 import subprocess
-from screen_recorder import ScreenRecorder
-from language_data import LanguageData
-import screenshot_text_extractor, prompt_generator, config, natural_language_processing
-import LLMserver
-import logger
-import startup
+from src.screen_recorder import ScreenRecorder
+from src.language_data import LanguageData
+from src import screenshot_text_extractor, prompt_generator, config, natural_language_processing
+from src import LLMserver
+from src import logger
+from src import startup
 from datetime import datetime
 import time
 
-import subtitle_upload_parser
+from src import subtitle_upload_parser
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -242,7 +242,7 @@ def get_uploaded_file(filename):
 
 @app.route('/')
 def home():
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html')
 
 @app.route('/open-subtitles-folder', methods=['POST'])
 def open_subtitles_folder():

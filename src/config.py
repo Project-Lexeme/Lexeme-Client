@@ -5,7 +5,7 @@ import sys
 import tkinter as tk
 from tkinter import simpledialog
 from typing import Union
-import LLMserver
+from src import LLMserver
 
 '''
 url: http://10.0.0.10:1234/V1
