@@ -103,10 +103,58 @@ def get_term_dictionary_contents(terms: str, language: str) -> pd.DataFrame: #TO
     term_contents = df[df.iloc[:,0].isin(terms)]
     return term_contents
 
+import re
+import pandas as pd
+
+def parse_fa_mdict_entries(entries):
+    """
+    file = 'AryanpourDictionary.txt'
+    
+    Args:
+        entries (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    
+    parsed_entries = []
+
+    for entry in entries:
+        # Extract Persian term (text before first </div>)
+        persian_term_match = re.search(r'^(.*?)</div>', entry)  # Match everything before the first </div>
+        
+        # Extract English definition (inside <div class="endef">)
+        definition_match = re.search(r'<div class="endef.*?">(.*?)</div>', entry)  # Match inside <div class="endef"></div>
+
+        # Get Persian term and English definition
+        persian_term = persian_term_match.group(1).strip() if persian_term_match else None
+        english_definition = definition_match.group(1).strip() if definition_match else None
+        
+
+        # Add the parsed entry to the list
+        parsed_entries.append({
+            'term': persian_term,
+            'definition': english_definition,
+        })
+
+    return parsed_entries
+
+def standardize_farsi_mdict(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        contents = f.read()
+
+    split_contents = contents.split('faentry">')[1:] # first item in list is everything PRIOR to the farsi entries
+    parsed_entries = parse_fa_mdict_entries(split_contents)
+    df = pd.DataFrame((parsed_entries)) 
+    df.to_csv(f'{config.get_data_directory()}/dictionaries/fa_dictionary.csv', index=False)
+
+
+
 if __name__ == "__main__":
-    # filepath = f'{config.get_data_directory()}/dictionaries/korean.txt'
+    filepath = f'{config.get_data_directory()}/dictionaries/AryanpourDictionary.txt'
+    standardize_farsi_mdict(filepath)
     # standardize_korean_dictionary(filepath)
-    langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
-    for i, lang in enumerate(langs):
-        dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
-        standardize_wiktionary_dictionary(dict_filepath, lang)
+    # langs = ['de-en', 'es-en', 'fr-en', 'ru-en']
+    # for i, lang in enumerate(langs):
+    #     dict_filepath = f'{config.get_data_directory()}\\dictionaries\\{lang}-enwiktionary.txt'
+    #     standardize_wiktionary_dictionary(dict_filepath, lang)
