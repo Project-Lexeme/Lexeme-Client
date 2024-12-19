@@ -4,7 +4,7 @@ Roadmap as of 12/4
 	
  	1. December goals:
 		- release feature set to include tutorial, configuration editing, and some Quality of Life upgrades for UX
-		- find short-term funds for hosting, either on AWS (~$400/month) or using a supercomputer somewhere.
+		- find short-term solution for hosting
 			- if acquired, limited local release to target audience
 				- if limited local release, develop feedback mechanism 
 		- present to local leadership and secure permission to open-source the project.

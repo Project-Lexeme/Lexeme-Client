@@ -1,4 +1,4 @@
-import app
+from src import app
 
 ''' 
 Long-term parking garage:
@@ -14,11 +14,11 @@ Parking lot:
     - Tutorial/documentation
     - use formatted JSON response capabilities in LLM interface to get things like quiz answers in their own section.
     - implement structured output for quizzes, etc. - full implementation includes front-end handling of new json object e.g. requests.body.get("Answer")-esque stuff
-    - support for Persian/other languages
-    - support for farsi
+    - SQLAlchemy or similar
+    - native YT .srt rip functionality
     
 Street parking:
-    TODO investigate chinese pulling not noun phrases but just nouns
+    TODO investigate chinese pulling not noun phrases but just nouns - jieba
     TODO Generate lesson should generate 'any type' if lesson type dropdown is not selected
     TODO Generate summary button should pop up immediately after recording is stopped
     TODO investigate logger.get_terms assuming dtype (which can lead to strs being read as ints)
