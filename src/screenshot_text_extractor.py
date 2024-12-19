@@ -70,6 +70,7 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
             param_conf_sum = sum([conf for conf in param_data['conf'] if conf > 50])
             param_conf_sums.append(param_conf_sum)
             param_datas.append(param_data)
+            
     max_index = get_best_output_index(param_datas, minimum_confidence)
 
     _, previous_parent_algorithms, previous_parent_params = preprocessed_images[max_index]
