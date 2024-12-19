@@ -3,16 +3,15 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
 import platform
 import subprocess
+from datetime import datetime
+
 from src.screen_recorder import ScreenRecorder
 from src.language_data import LanguageData
 from src import screenshot_text_extractor, prompt_generator, config, natural_language_processing
-from src import LLMserver
-from src import logger
-from src import startup
-from datetime import datetime
-import time
+from src import LLMserver, logger, startup, subtitle_upload_parser
 
-from src import subtitle_upload_parser
+
+
 
 app = Flask(__name__, template_folder='../templates')
 

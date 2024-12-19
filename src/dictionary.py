@@ -1,7 +1,8 @@
 import os
 import pandas as pd
-from src import config
 import re
+
+from src import config
 
 '''
 Notes on dictionaries:

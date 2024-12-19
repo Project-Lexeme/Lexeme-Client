@@ -2,9 +2,10 @@ import os
 import sys
 import pytesseract
 import requests
-from src import config
 import subprocess
 import platform
+
+from src import config
 
 def set_tesseract_cmd():
     if not check_tesseract_installation():

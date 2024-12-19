@@ -1,13 +1,13 @@
 import customtkinter as ctk
-#import pygetwindow as gw
 import pyautogui
 import time
 import re
 import threading
+import os
+
 from src import config
 from src import logger
 from src import screenshot_text_extractor
-import os
 from src import natural_language_processing
 
 

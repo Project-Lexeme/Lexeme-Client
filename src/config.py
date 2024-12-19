@@ -5,6 +5,7 @@ import sys
 import tkinter as tk
 from tkinter import simpledialog
 from typing import Union
+
 from src import LLMserver
 
 '''

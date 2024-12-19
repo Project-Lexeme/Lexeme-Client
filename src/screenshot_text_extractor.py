@@ -1,11 +1,11 @@
-from src import preprocessing
 import pytesseract
 from PIL import Image
 import cv2 as cv
 import numpy as np
 import sys
-import multiprocessing
 import time
+
+from src import preprocessing
 
 previous_parent_algorithms = [None, None, None]
 previous_parent_params = [[[]],[[]],[[]]]

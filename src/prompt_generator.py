@@ -1,11 +1,10 @@
 import os
-import re
-import spacy
 import csv
 import random
 import pandas as pd
-from src import config
 import numpy as np
+
+from src import config
 
 
 _empty_prompt = None

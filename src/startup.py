@@ -2,10 +2,11 @@ import shutil
 import customtkinter as ctk
 import spacy
 from spacy.cli import download
-from src import config
 import os
 from pathlib import Path
 import sys
+
+from src import config
 
 # Initialize the appearance of customtkinter (light, dark, or system theme)
 ctk.set_appearance_mode("system")
