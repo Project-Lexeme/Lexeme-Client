@@ -27,6 +27,7 @@ def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: s
     print_token_attributes(doc)
     # then parse all tokens regardless of whether they were combined to form compound nouns
     for token in doc:
+
         if token.pos_ in part_of_speech:
             parts_of_speech_in_sentence.append(token.text)
 
@@ -46,10 +47,12 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     return ''.join(filtered_sentence)
 
 def print_token_attributes(doc):
+    print(doc)
     for token in doc:
-        print(f"Attributes for Token: {token.text}")
+        print(f"Attributes for Token: {token}")
         print(f"Tag: {token.tag_}")
+        print(f"POS: {token.pos_}")
         print("-" * 50)
 
 if __name__ == "__main__":
-    print(find_parts_of_speech_in_sentence("اذا أي حد سأل عني، احكيلهم اني راح أكون بالكوفي ش", ["NOUN", "VERB"], spacy.load("models/ar_dep_web_sm")))
+    print(find_parts_of_speech_in_sentence("عبارات کلیدی که به این تم اشاره دارند عبارتند از: «بی نهایت نوستالژیک»، «دوست داشتم»،", ["NOUN", "VERB"], spacy.load("../models/fa_dep_web_sm")))
