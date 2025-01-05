@@ -80,7 +80,7 @@ def install_and_load_nlp_lang_from_spacy(module_name: str) -> spacy.Language:
 
 def load_nlp_lang_from_bootstrapped_models(module_name: str) -> spacy.Language:
     if getattr(sys, 'frozen', False):
-        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}')
+        model_path = os.path.join(sys._MEIPASS, 'spacy', 'data', f'{module_name}') # this depends on .spec files
     else:
         model_path = os.path.join('models', module_name)
     nlp = remove_excess_nlp_pipeline_parts(spacy.load(model_path))    
