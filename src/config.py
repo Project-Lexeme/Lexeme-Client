@@ -81,6 +81,8 @@ def init_config() -> None:
     cfg['Server'] = {'base_url': base_url, 
                      'api_key': api_key, 
                      'model': model}
+    cfg['Language'] = {'language':'none',
+                       'proficiency':'none'}
     
     data_dir = get_data_directory()
     with open(os.path.join(data_dir, 'config.ini'), 'w') as configfile:
@@ -98,13 +100,13 @@ def set_config_default_language_and_proficiency(lang: str, proficiency: str) -> 
     config_file_path = os.path.join(data_dir, 'config.ini')
     cfg.read(config_file_path)
 
-    # Check if 'User' section exists
-    if not cfg.has_section('User'):
-        cfg.add_section('User')  # Create the section if it doesn't exist
+    # Check if 'Language' section exists
+    if not cfg.has_section('Language'):
+        cfg.add_section('Language')  # Create the section if it doesn't exist
 
-    # Set values for primary_language and proficiency
-    cfg['User']['primary_language'] = lang
-    cfg['User']['proficiency'] = proficiency
+    # Set values for language and proficiency
+    cfg['Language']['language'] = lang
+    cfg['Language']['proficiency'] = proficiency
 
     try:
         # Write the updated configuration back to the file
@@ -121,15 +123,40 @@ def get_config_default_language_and_proficiency() -> Union[list[str], list[None]
     try:
         with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
                cfg.read_file(configfile)
-        if os.environ["LEXEME_LANGUAGE"] is not None:
-            lang_prof = [os.environ["LEXEME_LANGUAGE"], cfg['User']['proficiency']]
+        if os.environ["Language"] is not None:
+            lang_prof = [os.environ["LEXEME_LANGUAGE"], cfg['Language']['proficiency']]
         else:
-            lang_prof = [cfg['User']['primary_language'], cfg['User']['proficiency']]
+            lang_prof = [cfg['Language']['language'], cfg['Language']['proficiency']]
     except FileNotFoundError: 
         lang_prof = [None, None]
 
     return lang_prof
 
+def get_config_home_page_attributes():
+    """return SettingsOCR, Server, and Language parts of config
+
+    """
+    cfg = configparser.ConfigParser()
+    data_dir = get_data_directory()
+    try:
+        with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
+            cfg.read_file(configfile)
+    except:
+        init_config()
+        with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
+            cfg.read_file(configfile)
+
+    
+    num_processors = cfg['SettingsOCR']['num_of_preprocessors']
+    tesseract_configuration = cfg['SettingsOCR']['tesseract_configuration']
+    time_between_screenshots = cfg['SettingsOCR']['time_between_screenshots']
+    base_url = cfg['Server']['base_url']
+    api_key = cfg['Server']['api_key']
+    model = cfg['Server']['model']
+    lang = cfg['Language']['language']
+    prof = cfg['Language']['proficiency']
+
+    return num_processors,tesseract_configuration,time_between_screenshots, base_url,api_key,model, lang, prof
 
 if __name__ == '__main__':
     get_data_directory()

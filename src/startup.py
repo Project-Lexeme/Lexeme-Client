@@ -99,7 +99,7 @@ def remove_excess_nlp_pipeline_parts(nlp_lang: spacy.Language):
 
     return nlp_lang
 
-def get_language_and_proficiency() -> tuple[str, list[str]]:
+def get_language_and_proficiency() -> tuple[str, list[str]]: # TODO: this is being funky with defaults again
     """
     Creates a GUI to select language and proficiency
 

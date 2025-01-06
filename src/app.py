@@ -13,7 +13,7 @@ from src import LLMserver, logger, startup, subtitle_upload_parser
 
 
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -241,7 +241,16 @@ def get_uploaded_file(filename):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    num_processors, tesseract_configuration, time_between_screenshots, base_url, api_key, model, lang, prof = config.get_config_home_page_attributes()
+
+    return render_template('index.html', num_processors=num_processors,
+                           tesseract_configuration=tesseract_configuration,
+                           time_between_screenshots=time_between_screenshots,
+                           base_url=base_url,
+                           api_key=api_key,
+                           model=model,
+                           lang=lang,
+                           prof=prof)
 
 @app.route('/open-subtitles-folder', methods=['POST'])
 def open_subtitles_folder():
