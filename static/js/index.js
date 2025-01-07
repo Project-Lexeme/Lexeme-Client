@@ -1,28 +1,5 @@
 var sliderInstance;
 
-function showAppConfiguration() {
-    const appConfig = document.getElementById('app-configuration');
-    appConfig.style.display = 'block';  // Show the App Configuration section
-}
-
-function hideAppConfiguration() {
-    const appConfig = document.getElementById('app-configuration');
-    appConfig.style.display = 'none';  // Hide the App Configuration section
-}
-
-function changeSettings(){
-    const submitSettingsButton = document.getElementById('submit-settings-button');
-    submitSettingsButton.style.display = 'block'; 
-    const configurationBackButton = document.getElementById('configuration-back-button');
-    configurationBackButton.style.display = 'none';
-}
-
-function submitSettings(){
-    const submitSettingsButton = document.getElementById('submit-settings-button');
-    submitSettingsButton.style.display = 'none';
-    const configurationBackButton = document.getElementById('configuration-back-button');
-    configurationBackButton.style.display = 'block';
-}
 function getLessonFromSubtitles() {
     fetch('/get-subtitle-files')
         .then(response => {
@@ -60,20 +37,6 @@ function getLessonFromSubtitles() {
             console.error('Error fetching subtitle files:', error);
             document.getElementById('response').textContent = 'Error fetching subtitle files.';
         });
-}
-
-function modifyConfiguration() {
-    fetch('/open-config-file', {
-        method: 'POST'
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to open config file');
-            } else {
-                document.getElementById('response').textContent = 'Modifying Configurations';
-            }
-        })
-        .catch(error => console.error('Error:', error));
 }
 
 function viewGeneratedSubtitles() {
@@ -180,10 +143,54 @@ function goBackToLessonOptions() {
 }
 
 function goBackToChangeSettingsOptions() {
+    const h2element = document.getElementById('configuration-back-button').querySelector('h2');
+    if (h2element) {
+        h2element.textContent = "GO BACK"
+    }
+    const changeConfigurationValuesButton = document.getElementById('change-settings-button');
+    changeConfigurationValuesButton.style.display = 'block';
     document.getElementById('modify-configuration-options').style.display = 'none';
     hideAppConfiguration();
+    document.getElementById('submit-settings-button').style.display = 'none';
     document.getElementById('change-settings-options').style.display = 'grid';
     document.getElementById('response').textContent = " ";
+}
+
+function showAppConfiguration() {
+    const appConfig = document.getElementById('app-configuration');
+    appConfig.style.display = 'block';  // Show the App Configuration section
+}
+
+function hideAppConfiguration() {
+    const appConfig = document.getElementById('app-configuration');
+    appConfig.style.display = 'none';  // Hide the App Configuration section
+}
+
+function changeConfigurationValues(){
+    const submitSettingsButton = document.getElementById('submit-settings-button');
+    submitSettingsButton.style.display = 'block'; 
+    const configurationBackButton = document.getElementById('configuration-back-button');
+    const h2element = configurationBackButton.querySelector('h2');
+    if (h2element) {
+        h2element.textContent = "UNDO CHANGES"
+    }
+    const changeConfigurationValuesButton = document.getElementById('change-settings-button');
+    changeConfigurationValuesButton.style.display = 'none';
+}
+
+function submitSettings(){
+    const submitSettingsButton = document.getElementById('submit-settings-button');
+    submitSettingsButton.style.display = 'none';
+    const configurationBackButton = document.getElementById('configuration-back-button');
+    configurationBackButton.style.display = 'block';
+    const h2element = configurationBackButton.querySelector('h2');
+    if (h2element) {
+        h2element.textContent = "GO BACK"
+    }
+    document.getElementById('response').textContent = 'Changes Submitted!';
+
+    const changeConfigurationValuesButton = document.getElementById('change-settings-button');
+    changeConfigurationValuesButton.style.display = 'block';
 }
 
 function getLessonFromVocabulary() {
