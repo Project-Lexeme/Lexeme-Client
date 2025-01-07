@@ -143,6 +143,7 @@ function goBackToLessonOptions() {
 }
 
 function goBackToChangeSettingsOptions() {
+    revertConfigurationValuesToReadOnly();
     const h2element = document.getElementById('configuration-back-button').querySelector('h2');
     if (h2element) {
         h2element.textContent = "GO BACK"
@@ -154,6 +155,7 @@ function goBackToChangeSettingsOptions() {
     document.getElementById('submit-settings-button').style.display = 'none';
     document.getElementById('change-settings-options').style.display = 'grid';
     document.getElementById('response').textContent = " ";
+    
 }
 
 function showAppConfiguration() {
@@ -176,7 +178,71 @@ function changeConfigurationValues(){
     }
     const changeConfigurationValuesButton = document.getElementById('change-settings-button');
     changeConfigurationValuesButton.style.display = 'none';
+    convertConfigurationValuesToEditable();
 }
+
+function convertConfigurationValuesToEditable() {
+    const configItems = document.querySelectorAll('#app-configuration ul li');
+    
+    configItems.forEach(item => {
+        const strong = item.querySelector('strong');
+        const valueSpan = item.querySelector('span');
+        const fieldName = strong.textContent.trim().replace(':', '');
+        
+        // Change "Base URL" to a free text input field
+        if (fieldName === "Base URL" || fieldName === "API Key") {
+            const inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.value = valueSpan.textContent.trim();  // Retain the current value
+            valueSpan.textContent = '';  // Clear the span
+            item.appendChild(inputField);
+        } else {
+            // Change other fields to dropdowns (select elements)
+            const selectField = document.createElement('select');
+            const options = ['Option 1', 'Option 2', 'Option 3']; // Example options
+            options.forEach(optionText => {
+                const option = document.createElement('option');
+                option.textContent = optionText;
+                selectField.appendChild(option);
+            });
+            
+            valueSpan.textContent = ''; // Clear the span
+            selectField.value = valueSpan.textContent.trim();  // Set the current value
+            item.appendChild(selectField);
+        }
+    });
+}
+
+function revertConfigurationValuesToReadOnly() {
+    const configItems = document.querySelectorAll('#app-configuration ul li');
+    
+    configItems.forEach(item => {
+        const strong = item.querySelector('strong');
+        const inputField = item.querySelector('input');
+        const selectField = item.querySelector('select');
+        
+        // If there is an input field (Base URL)
+        if (inputField) {
+            const value = inputField.value;
+            const valueSpan = document.createElement('span');
+            valueSpan.textContent = value;
+            item.appendChild(valueSpan);
+            inputField.remove();  // Remove the input field
+        } 
+        // If there is a select field (other fields like Model, Language)
+        else if (selectField) {
+            const selectedOption = selectField.options[selectField.selectedIndex];
+            if (selectedOption) {
+                const value = selectedOption.text;
+                const valueSpan = document.createElement('span');
+                valueSpan.textContent = value;
+                item.appendChild(valueSpan);
+                selectField.remove();  // Remove the select field
+            }
+        }
+    });
+}
+
 
 function submitSettings(){
     const submitSettingsButton = document.getElementById('submit-settings-button');
@@ -188,7 +254,7 @@ function submitSettings(){
         h2element.textContent = "GO BACK"
     }
     document.getElementById('response').textContent = 'Changes Submitted!';
-
+    revertConfigurationValuesToReadOnly();
     const changeConfigurationValuesButton = document.getElementById('change-settings-button');
     changeConfigurationValuesButton.style.display = 'block';
 }

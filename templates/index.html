@@ -47,14 +47,16 @@
 <div id="app-configuration">
     <h3>App Configuration</h3>
     <ul>
-        <li><strong>Number of Preprocessors:</strong> {{ num_processors }}</li>
-        <li><strong>Tesseract Configuration:</strong> {{ tesseract_configuration }}</li>
-        <li><strong>Time Between Screenshots:</strong> {{ time_between_screenshots }}</li>
-        <li><strong>Base URL:</strong> {{ base_url }}</li>
-        <li><strong>Model:</strong> {{ model }}</li>
-        <li><strong>Language:</strong> {{ lang }}</li>
-        <li><strong>Proficiency:</strong> {{ prof }}</li>
+        <li><strong>Number of Preprocessors:</strong> <span id="num_processors">{{ num_processors }}</span></li>
+        <li><strong>Tesseract Configuration:</strong> <span id="tesseract_configuration">{{ tesseract_configuration }}</span></li>
+        <li><strong>Time Between Screenshots:</strong> <span id="time_between_screenshots">{{ time_between_screenshots }}</span></li>
+        <li><strong>Base URL:</strong> <span id="base_url">{{ base_url }}</span></li>
+        <li><strong>API Key:</strong> <span id="api_key"></span></li>  <!-- HIDDEN: {{ api_key }} -->       
+        <li><strong>Model:</strong> <span id="model">{{ model }}</span></li>
+        <li><strong>Language:</strong> <span id="lang">{{ lang }}</span></li>
+        <li><strong>Proficiency:</strong> <span id="prof">{{ prof }}</span></li>
     </ul>
+    <!-- <button onclick="changeConfigurationValues()">Change Configuration</button> -->
 </div>
 
 <div id="lesson-prompt-options">
