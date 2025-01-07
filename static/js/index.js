@@ -189,6 +189,8 @@ function convertConfigurationValuesToEditable() {
         const valueSpan = item.querySelector('span');
         const fieldName = strong.textContent.trim().replace(':', '');
         
+        const currentValue = valueSpan.textContent.trim();
+
         // Change "Base URL" to a free text input field
         if (fieldName === "Base URL" || fieldName === "API Key") {
             const inputField = document.createElement('input');
@@ -206,8 +208,13 @@ function convertConfigurationValuesToEditable() {
                 selectField.appendChild(option);
             });
             
+            // Set the default selected option to match the current value from the span
+            const defaultOption = Array.from(selectField.options).find(option => option.text === currentValue);
+            if (defaultOption) {
+                defaultOption.selected = true;  // Set the option as selected
+            }
             valueSpan.textContent = ''; // Clear the span
-            selectField.value = valueSpan.textContent.trim();  // Set the current value
+            // selectField.value = valueSpan.textContent.trim();  // Set the current value
             item.appendChild(selectField);
         }
     });
