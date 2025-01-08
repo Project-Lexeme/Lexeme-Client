@@ -184,38 +184,97 @@ function changeConfigurationValues(){
 function convertConfigurationValuesToEditable() {
     const configItems = document.querySelectorAll('#app-configuration ul li');
     
+    // Define the option sets (updated with the provided data)
+    const optionsNumProcessors = new Map([
+        ['1 - my computer is slow','1'], 
+        ['2','2'], 
+        ['3 - my computer is pretty fast', '3'], 
+        ['4','4'], 
+        ['5 - my computer is blazing fast', '5'], 
+        ['6 - please buy the devs a CPU upgrade for your trouble','6']
+    ]);
+    const optionsTesseractConfigurationMap = new Map([
+        ['SINGLE LINE OF TEXT', '--psm 7'], 
+        ['BLOCK OF UNIFORM TEXT', "--psm 6"], 
+        ["DETECT AUTOMATICALLY", '--psm 1'], 
+        ['SPARSE TEXT', '--psm 12'], 
+        ['UNIFORM BLOCK OF VERTICAL TEXT', '--psm 5']
+    ]);
+    const optionsTimeBetweenScreenshots = new Map([
+        ['.5 seconds', '.5'],
+        ['.6 seconds', '.6'],
+        ['.7 seconds', '.7'],
+        ['.8 seconds', '.8'],
+        ['.9 seconds', '.9'],
+        ['1.0 seconds', '1.0'],
+        ['1.25 seconds', '1.25'],
+        ['1.5 seconds', '1.5']
+    ]);
+    const optionsLanguage = [document.getElementById('lang').textContent];
+    const optionsProficiency = new Map([
+        ['Beginner','Beginner'],
+    ]);
+
+    const optionsMap = {
+        "Number of Preprocessors": optionsNumProcessors,
+        "Tesseract Configuration": optionsTesseractConfigurationMap,
+        "Time Between Screenshots": optionsTimeBetweenScreenshots,
+        "Language": optionsLanguage,
+        "Proficiency": optionsProficiency,
+    };
+
+    // Loop over each configuration item (li)
     configItems.forEach(item => {
         const strong = item.querySelector('strong');
         const valueSpan = item.querySelector('span');
         const fieldName = strong.textContent.trim().replace(':', '');
-        
         const currentValue = valueSpan.textContent.trim();
+        valueSpan.textContent = '';
 
-        // Change "Base URL" to a free text input field
-        if (fieldName === "Base URL" || fieldName === "API Key") {
+
+        // Handle "Base URL" and "API Key" fields (free text input)
+        if (fieldName === "Base URL" || fieldName === "API Key" || fieldName === 'Model') {
             const inputField = document.createElement('input');
             inputField.type = 'text';
-            inputField.value = valueSpan.textContent.trim();  // Retain the current value
+            inputField.value = currentValue;  // Retain the current value
             valueSpan.textContent = '';  // Clear the span
             item.appendChild(inputField);
         } else {
-            // Change other fields to dropdowns (select elements)
+            // Create dropdowns for other fields
             const selectField = document.createElement('select');
-            const options = ['Option 1', 'Option 2', 'Option 3']; // Example options
+            let options = [];
+            let isMap = false;
+
+            // Determine if the fieldName corresponds to a Map or a simple array
+            if (optionsMap[fieldName] instanceof Map) {
+                options = Array.from(optionsMap[fieldName].keys());  // Get keys (for display)
+                isMap = true;
+            } else if (Array.isArray(optionsMap[fieldName])) {
+                options = optionsMap[fieldName];  // Get the array options
+            }
+
+            // Create option elements for the dropdown
             options.forEach(optionText => {
                 const option = document.createElement('option');
-                option.textContent = optionText;
+                option.textContent = optionText;  // Display key text
+                if (isMap) {
+                    // For Maps, set the value attribute to the corresponding value
+                    option.value = optionsMap[fieldName].get(optionText);
+                } else {
+                    // For arrays, just use the text as value
+                    option.value = optionText;
+                }
                 selectField.appendChild(option);
             });
-            
+
             // Set the default selected option to match the current value from the span
-            const defaultOption = Array.from(selectField.options).find(option => option.text === currentValue);
+            const defaultOption = Array.from(selectField.options).find(option => option.value === currentValue);
             if (defaultOption) {
                 defaultOption.selected = true;  // Set the option as selected
             }
-            valueSpan.textContent = ''; // Clear the span
-            // selectField.value = valueSpan.textContent.trim();  // Set the current value
-            item.appendChild(selectField);
+
+            
+            item.appendChild(selectField); // Append the dropdown to the item
         }
     });
 }
@@ -228,30 +287,33 @@ function revertConfigurationValuesToReadOnly() {
         const inputField = item.querySelector('input');
         const selectField = item.querySelector('select');
         
-        // If there is an input field (Base URL)
+        // If there is an input field (Base URL or API Key)
         if (inputField) {
             const value = inputField.value;
-            const valueSpan = document.createElement('span');
-            valueSpan.textContent = value;
-            item.appendChild(valueSpan);
+            const valueSpan = item.querySelector('span');  // Find the existing span
+            if (valueSpan) {
+                valueSpan.textContent = value;  // Update the textContent of the existing span
+            }
             inputField.remove();  // Remove the input field
         } 
         // If there is a select field (other fields like Model, Language)
         else if (selectField) {
             const selectedOption = selectField.options[selectField.selectedIndex];
             if (selectedOption) {
-                const value = selectedOption.text;
-                const valueSpan = document.createElement('span');
-                valueSpan.textContent = value;
-                item.appendChild(valueSpan);
-                selectField.remove();  // Remove the select field
+                const value = selectedOption.value; // Get the value (not the text)
+                const valueSpan = item.querySelector('span');  // Find the existing span
+                if (valueSpan) {
+                    valueSpan.textContent = value;  // Update the textContent of the existing span
+                }
             }
+            selectField.remove();  // Remove the select field
         }
     });
 }
 
 
-function submitSettings(){
+
+function submitSettings() {
     const submitSettingsButton = document.getElementById('submit-settings-button');
     submitSettingsButton.style.display = 'none';
     const configurationBackButton = document.getElementById('configuration-back-button');
@@ -260,10 +322,50 @@ function submitSettings(){
     if (h2element) {
         h2element.textContent = "GO BACK"
     }
-    document.getElementById('response').textContent = 'Changes Submitted!';
+    
     revertConfigurationValuesToReadOnly();
+
+    // Collect configuration values to send to Flask
+    const configItems = document.querySelectorAll('#app-configuration ul li');
+    let configData = {};
+
+    configItems.forEach(item => {
+        const strong = item.querySelector('strong');
+        const valueSpan = item.querySelector('span');
+        const fieldName = valueSpan.id;     
+        // Get the value from the span (since it's now the final value after being edited)
+        const fieldValue = valueSpan.textContent;
+        
+        if (fieldValue) {
+            configData[fieldName] = fieldValue;  // Add to the configData object
+        }
+    });
+
+    // Call the new function to send data to Flask
+    sendConfigDataToFlask(configData);
+    document.getElementById('response').textContent = 'Changes Submitted!';
+
     const changeConfigurationValuesButton = document.getElementById('change-settings-button');
     changeConfigurationValuesButton.style.display = 'block';
+}
+
+function sendConfigDataToFlask(configData) {
+    fetch('/submit-settings', {  // Your Flask endpoint here
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',  // We're sending JSON data
+        },
+        body: JSON.stringify(configData)  // Convert the config data to JSON string
+    })
+    .then(response => response.json())  // Assuming the server returns JSON
+    .then(data => {
+        console.log('Success:', data);  // Handle the response from Flask
+        // You can update the UI or handle the success response here
+    })
+    .catch((error) => {
+        console.error('Error:', error);  // Handle any errors
+        // You can show an error message to the user if necessary
+    });
 }
 
 function getLessonFromVocabulary() {

@@ -269,35 +269,20 @@ def open_subtitles_folder():
 
     return '', 204
 
-@app.route('/open-configuration', methods=['POST'])
-def open_configuration():
-    subtitles_path = os.path.normpath(f'{config.get_data_directory()}/subtitles/')
+@app.route('/submit-settings', methods=['POST'])
+def submit_settings():
+    try:
+        # Parse the incoming JSON data
+        config_data = request.get_json()
 
-    # Ensure the directory exists
-    os.makedirs(subtitles_path, exist_ok=True)
+        # Here, you can process the config_data (e.g., save to a database or file)
+        print(config_data)  # For now, just print it to the console
 
-    # Platform-specific file explorer opening
-    if platform.system() == 'Windows':
-        subprocess.Popen(f'explorer "{subtitles_path}"', shell=True)
-    elif platform.system() == 'Darwin':  # macOS
-        subprocess.Popen(['open', subtitles_path])
-    else:  # Linux and other Unix-like systems
-        subprocess.Popen(['xdg-open', subtitles_path])
-
-    return '', 204
-
-@app.route('/open-config-file', methods=['POST'])
-def open_config_file():
-    config_path = os.path.join(config.get_data_directory(), 'config.ini')
-
-    if platform.system() == 'Windows':
-        subprocess.Popen(f'notepad "{config_path}"', shell=True)
-    elif platform.system() == 'Darwin':  # macOS
-        subprocess.Popen(['open', '-t', config_path])
-    else:  # Linux
-        subprocess.Popen(['xdg-open', config_path])
-
-    return '', 204
+        # Respond with a success message
+        return jsonify({'message': 'Settings received successfully', 'data': config_data}), 200
+    except Exception as e:
+        # If there was an error, return an error response
+        return jsonify({'message': 'Failed to submit settings', 'error': str(e)}), 400
 
 @app.route('/open-prompt-directory', methods=['POST'])
 def open_prompt_directory():

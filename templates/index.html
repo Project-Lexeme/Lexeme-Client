@@ -13,6 +13,7 @@
 
     <title>Project Lexeme</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
 </head>
 <body>
@@ -51,7 +52,7 @@
         <li><strong>Tesseract Configuration:</strong> <span id="tesseract_configuration">{{ tesseract_configuration }}</span></li>
         <li><strong>Time Between Screenshots:</strong> <span id="time_between_screenshots">{{ time_between_screenshots }}</span></li>
         <li><strong>Base URL:</strong> <span id="base_url">{{ base_url }}</span></li>
-        <li><strong>API Key:</strong> <span id="api_key"></span></li>  <!-- HIDDEN: {{ api_key }} -->       
+        <li><strong>API Key:</strong> <span id="api_key">{{ api_key }}</span></li>     
         <li><strong>Model:</strong> <span id="model">{{ model }}</span></li>
         <li><strong>Language:</strong> <span id="lang">{{ lang }}</span></li>
         <li><strong>Proficiency:</strong> <span id="prof">{{ prof }}</span></li>
