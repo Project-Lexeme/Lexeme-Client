@@ -57,6 +57,7 @@ def get_config() -> configparser.ConfigParser:
     return cfg
 
 
+
 def init_config() -> None:
     cfg = configparser.ConfigParser()
 
@@ -157,6 +158,33 @@ def get_config_home_page_attributes():
     prof = cfg['Language']['proficiency']
 
     return num_processors,tesseract_configuration,time_between_screenshots, base_url,api_key,model, lang, prof
+
+def update_config_settings_from_webapp(config_settings):
+    cfg = configparser.ConfigParser()
+    data_dir = get_data_directory()
+    try:
+        with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
+            cfg.read_file(configfile)
+    except:
+        init_config()
+        with open(os.path.join(data_dir, 'config.ini'), 'r') as configfile:
+            cfg.read_file(configfile)
+
+    num_processors, tesseract_configuration, time_between_screenshots, base_url, api_key, model, lang, prof = config_settings
+    cfg.set('SettingsOCR','num_of_preprocessors', num_processors)
+    cfg.set('SettingsOCR', 'tesseract_configuration', tesseract_configuration)
+    cfg.set('SettingsOCR', 'time_between_screenshots', time_between_screenshots)
+    cfg.set('Server','base_url',base_url)
+    cfg.set('Server', 'api_key', api_key)
+    cfg.set('Server', 'model', model)
+    cfg.set('Language', 'language', lang)
+    cfg.set('Language', 'proficiency', prof)
+    
+    
+    try: 
+        with open(os.path.join(data_dir, 'config.ini'), 'w') as config_file:
+            cfg.write(config_file)
+    except: print('error writing file!') 
 
 if __name__ == '__main__':
     get_data_directory()

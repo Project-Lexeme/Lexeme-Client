@@ -212,7 +212,12 @@ function convertConfigurationValuesToEditable() {
     ]);
     const optionsLanguage = [document.getElementById('lang').textContent];
     const optionsProficiency = new Map([
-        ['Beginner','Beginner'],
+        ['No proficiency','No proficiency'],
+        ['Memorized proficiency','Memorized proficiency'], 
+        ['Elementary proficiency','Elementary proficiency'],
+        ['Limited working proficiency','Limited working proficiency'], 
+        ['General professional proficiency','General professional proficiency'],
+        ['Advanced professional proficiency','Advanced professional proficiency'],
     ]);
 
     const optionsMap = {

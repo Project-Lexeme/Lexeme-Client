@@ -275,8 +275,7 @@ def submit_settings():
         # Parse the incoming JSON data
         config_data = request.get_json()
 
-        # Here, you can process the config_data (e.g., save to a database or file)
-        print(config_data)  # For now, just print it to the console
+        config.update_config_settings_from_webapp(config_data.values())
 
         # Respond with a success message
         return jsonify({'message': 'Settings received successfully', 'data': config_data}), 200
