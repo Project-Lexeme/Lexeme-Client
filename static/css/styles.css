@@ -1,0 +1,218 @@
+body {
+    margin: 0;
+    font-family: 'Courier', Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+#app-configuration {
+    position: absolute;
+    bottom: 20px;  /* Distance from the bottom */
+    left: 20px;    /* Distance from the left */
+    background-color: #e0e0e0;  /* Slightly gray background */
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #2c3e50;  /* Ensure text is dark for contrast */
+    font-size: 16px;
+    font-family: 'Courier', Arial, sans-serif;
+    z-index: 999;  /* Make sure it appears above other elements */
+    display: none;
+}
+
+#app-configuration h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #34495e;  /* Darker color for the heading */
+}
+
+#app-configuration ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+#app-configuration li {
+    margin-bottom: 5px;
+    color: #7f8c8d;  /* Lighter color for the list items */
+}
+
+#header {
+    font-size: 72px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: #2c3e50;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+}
+
+#lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options, #modify-configuration-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.tile {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tile:hover {
+    background-color: #dedede;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tile h2 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.tile p {
+    margin-bottom: 0;
+    color: #7f8c8d;
+}
+
+#lesson-prompt-options, #record-content-options, #subtitle-selection, #change-settings-options, #upload-content-options, #modify-configuration-options {
+    display: none;
+}
+
+#lesson-prompt-options .tile:last-child,
+#record-content-options .tile:last-child,
+#subtitle-selection .tile:last-child,
+#change-settings-options .tile:last-child,
+#upload-content-options .tile:last-child
+,
+#modify-configuration-options .tile:last-child {
+    grid-column: 2;
+}
+
+
+.dropdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dropdown-container select {
+    padding: 10px;
+    font-size: 16px;
+    width: 300px;
+}
+
+.dropdown-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#response {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #2ecc71;
+}
+
+/*TEST TO CHANGE THIS*/
+#record-content-options .tile[data-recording="false"]:hover {
+    background-color: #2ecc71; /* Green on hover */
+    color: white;
+}
+
+#record-content-options .tile[data-recording="true"] {
+    background-color: #e74c3c; /* Red when recording */
+    color: white;
+}
+
+/* File input styled directly on the tile */
+#fileInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer; /* Make the entire tile clickable */
+    border: 2px dashed #ccc; /* Optional styling for the upload area */
+    box-sizing: border-box;
+}
+
+#fileInputWrapper input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* Hide the default file input */
+    cursor: pointer;
+}
+
+#fileLabel {
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+    color: #000; /* Customize the color */
+    font-size: 16px;
+    font-weight: bold;
+    pointer-events: none; /* Prevent the label from blocking the file input */
+}
+
+/* Slider container styling */
+#sliderContainer {
+    display: none;
+    margin-top: 20px;
+}
+
+.prompt-container {
+    grid-column: 1 / span 3;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.prompt-container .dropdown-wrapper {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.custom-dropdown {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: 'Courier', Arial, sans-serif;
+    font-size: 18px;
+    appearance: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-dropdown:hover {
+    background-color: #dedede;
+}

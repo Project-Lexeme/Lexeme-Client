@@ -13,7 +13,7 @@ from src import LLMserver, logger, startup, subtitle_upload_parser
 
 
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -241,7 +241,16 @@ def get_uploaded_file(filename):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    num_processors, tesseract_configuration, time_between_screenshots, base_url, api_key, model, lang, prof = config.get_config_home_page_attributes()
+
+    return render_template('index.html', num_processors=num_processors,
+                           tesseract_configuration=tesseract_configuration,
+                           time_between_screenshots=time_between_screenshots,
+                           base_url=base_url,
+                           api_key=api_key,
+                           model=model,
+                           lang=lang,
+                           prof=prof)
 
 @app.route('/open-subtitles-folder', methods=['POST'])
 def open_subtitles_folder():
@@ -260,35 +269,19 @@ def open_subtitles_folder():
 
     return '', 204
 
-@app.route('/open-configuration', methods=['POST'])
-def open_configuration():
-    subtitles_path = os.path.normpath(f'{config.get_data_directory()}/subtitles/')
+@app.route('/submit-settings', methods=['POST'])
+def submit_settings():
+    try:
+        # Parse the incoming JSON data
+        config_data = request.get_json()
 
-    # Ensure the directory exists
-    os.makedirs(subtitles_path, exist_ok=True)
+        config.update_config_settings_from_webapp(config_data.values())
 
-    # Platform-specific file explorer opening
-    if platform.system() == 'Windows':
-        subprocess.Popen(f'explorer "{subtitles_path}"', shell=True)
-    elif platform.system() == 'Darwin':  # macOS
-        subprocess.Popen(['open', subtitles_path])
-    else:  # Linux and other Unix-like systems
-        subprocess.Popen(['xdg-open', subtitles_path])
-
-    return '', 204
-
-@app.route('/open-config-file', methods=['POST'])
-def open_config_file():
-    config_path = os.path.join(config.get_data_directory(), 'config.ini')
-
-    if platform.system() == 'Windows':
-        subprocess.Popen(f'notepad "{config_path}"', shell=True)
-    elif platform.system() == 'Darwin':  # macOS
-        subprocess.Popen(['open', '-t', config_path])
-    else:  # Linux
-        subprocess.Popen(['xdg-open', config_path])
-
-    return '', 204
+        # Respond with a success message
+        return jsonify({'message': 'Settings received successfully', 'data': config_data}), 200
+    except Exception as e:
+        # If there was an error, return an error response
+        return jsonify({'message': 'Failed to submit settings', 'error': str(e)}), 400
 
 @app.route('/open-prompt-directory', methods=['POST'])
 def open_prompt_directory():
