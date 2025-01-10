@@ -165,7 +165,9 @@ def begin_recording():
 
 @app.route('/stop-recording', methods=['POST'])
 def stop_recording(): #TODO pass filename in here from JS
-    if _recorder.stop_recording():
+    data = request.get_json()  # Parse the incoming JSON body
+    subtitle_file_name = data.get('subtitle')  # Extract the 'subtitle' value
+    if _recorder.stop_recording(subtitle_file_name): 
         return jsonify({"status":"success", "message":"Recording stopped"})
     return jsonify({"status":"error", "message":"No recording in progress"})
 
