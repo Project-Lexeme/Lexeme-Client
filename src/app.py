@@ -1,3 +1,4 @@
+import time
 import webbrowser
 from flask import Flask, request, jsonify, send_from_directory, render_template
 import os
@@ -158,7 +159,8 @@ def begin_recording():
     if _recorder is None:
         instantiate_screen_recorder()
     if _recorder.start_recording():
-        return jsonify({"status":"success", "message":"Recording started"})
+        time_between_screenshots = _cfg['SettingsOCR']['time_between_screenshots']
+        return jsonify({"status":"success", "message":"Recording started", "time_between_screenshots":time_between_screenshots})
     return jsonify({"status":"error", "message":"Recording already started"})
 
 @app.route('/stop-recording', methods=['POST'])
@@ -251,6 +253,12 @@ def home():
                            model=model,
                            lang=lang,
                            prof=prof)
+
+@app.route('/long-poll-ocr')
+def long_poll():
+    text = _recorder.get_most_recent_text_ocr()
+    return jsonify({'ocr_text': text})
+
 
 @app.route('/open-subtitles-folder', methods=['POST'])
 def open_subtitles_folder():

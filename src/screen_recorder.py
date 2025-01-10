@@ -92,6 +92,7 @@ class ScreenRecorder:
         self.config = config
         self.time_between_screencaps = time_between_screencaps
         self.nlp_model = nlp_model
+        self.most_recent_text_ocr = ''
 
     def get_rectangle(self) -> tuple[int, int, int, int]:
         """Allows user to draw a rectangle on the screen to choose bounding box
@@ -144,12 +145,19 @@ class ScreenRecorder:
                                                                           number_of_preprocessors=self.preprocessors + 1,
                                                                           display_comparison=False)
         
+        self.set_most_recent_text_ocr(text)
+
         if len(text) > 0:
             terms = natural_language_processing.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
             logger.log_terms(terms, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
         return text
 
-
+    def set_most_recent_text_ocr(self, text):
+        self.most_recent_text_ocr = text
+    
+    def get_most_recent_text_ocr(self):
+        return self.most_recent_text_ocr
+    
     def start_recording(self) -> bool:
         self.subtitle_filename = self.prompt_for_filename()
 
@@ -176,7 +184,8 @@ class ScreenRecorder:
             filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.ocr_lang_code,
             minimum_confidence=self.minimum_confidence,
             config=self.config, number_of_preprocessors=self.preprocessors, display_comparison=False)
-
+        self.set_most_recent_text_ocr(text)
+        
         log_filepath = os.path.join(config.get_data_directory(), "subtitles", f"{self.subtitle_filename}")
         logger.log_subtitle(text, log_filepath)
         #print(f'Saved screencapture subtitles to {config.get_data_directory()}\\subtitles\\{self.subtitle_filename}')

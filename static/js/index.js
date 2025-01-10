@@ -520,7 +520,6 @@ function toggleScreenRecording() {
     const recordTile = document.querySelector('#record-content-options .tile[onclick="toggleScreenRecording()"]');
     const onStopRecordingSubmitLessonButton = document.getElementById('on-stop-recording-submit-lesson-button');  
 
-
     isRecording = !isRecording;
     recordTile.setAttribute('data-recording', isRecording);
 
@@ -535,6 +534,8 @@ function toggleScreenRecording() {
             .then(response => response.json())
             .then(data => {
                 document.getElementById('response').textContent = 'Screen recording started.';
+                let time_between_screenshots = data.time_between_screenshots;
+                fetchOCRData(time_between_screenshots);
             })
             .catch(error => {
                 document.getElementById('response').textContent = 'Failed to start recording.';
@@ -561,6 +562,23 @@ function toggleScreenRecording() {
             });
     }
 }
+
+function fetchOCRData(time_between_screenshots) {
+    if (!isRecording) return;  // Stop polling if flag is false
+    fetch('/long-poll-ocr')
+        .then(response => response.json())
+        .then(data => {
+            // Update the 'response' div with the OCR data
+            document.getElementById('response').innerText = `Most recent parsed subtitle:\n${data.ocr_text}`;
+            // Continue polling after receiving a response
+            setTimeout(fetchOCRData, time_between_screenshots * 1000, time_between_screenshots);
+        })
+        .catch(error => {
+            console.error('Error with long polling:', error);
+            setTimeout(fetchOCRData, 2*1000, time_between_screenshots);
+        });
+}
+
 function onStopRecordingSubmitLesson() {
     const onStopRecordingSubmitLessonButton = document.getElementById('on-stop-recording-submit-lesson-button');
     const subtitleFile = submitButton.getAttribute('data-subtitle');
