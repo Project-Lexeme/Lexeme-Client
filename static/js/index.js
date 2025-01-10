@@ -579,7 +579,7 @@ function fetchOCRData(time_between_screenshots) {
         });
 }
 
-function onStopRecordingSubmitLesson() {
+function onStopRecordingSubmitLesson() { // TODO: fix this subtitleFile const to get from a free text div that appears when the begin recording screen button is hit
     const onStopRecordingSubmitLessonButton = document.getElementById('on-stop-recording-submit-lesson-button');
     const subtitleFile = submitButton.getAttribute('data-subtitle');
     window.location.href = '/lesson?subtitle=${encodeURIComponent(subtitleFile)}&prompt_type=Summary';
