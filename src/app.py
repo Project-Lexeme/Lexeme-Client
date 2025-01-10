@@ -164,7 +164,7 @@ def begin_recording():
     return jsonify({"status":"error", "message":"Recording already started"})
 
 @app.route('/stop-recording', methods=['POST'])
-def stop_recording():
+def stop_recording(): #TODO pass filename in here from JS
     if _recorder.stop_recording():
         return jsonify({"status":"success", "message":"Recording stopped"})
     return jsonify({"status":"error", "message":"No recording in progress"})

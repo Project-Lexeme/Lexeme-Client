@@ -216,3 +216,38 @@ body {
 .custom-dropdown:hover {
     background-color: #dedede;
 }
+
+.text-input {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+    font-size: 16px;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.4);
+}
+
+.text-input:hover:not(:disabled) {
+    background-color: #dedede;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.text-input:disabled {
+    background-color: #f4f4f4;
+    cursor: not-allowed;
+    box-shadow: none;
+    border-color: #ddd;
+}
+
+.text-input::placeholder {
+    color: #7f8c8d;
+}

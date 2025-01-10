@@ -536,26 +536,39 @@ function toggleScreenRecording() {
                 document.getElementById('response').textContent = 'Screen recording started.';
                 let time_between_screenshots = data.time_between_screenshots;
                 fetchOCRData(time_between_screenshots);
+                document.getElementById('recorded-subtitle-filename-field').style.display = 'block';  
+                document.getElementById('recorded-subtitle-filename-field').disabled = false; 
             })
             .catch(error => {
                 document.getElementById('response').textContent = 'Failed to start recording.';
             });
     } else {
         recordTile.querySelector('h2').textContent = 'BEGIN RECORDING SCREEN ';
+
+        const subtitleFileName = document.getElementById('recorded-subtitle-filename-field').value;
+        const requestData = {
+            subtitle: subtitleFileName
+        };
+
         fetch('/stop-recording', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify(requestData)
         })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('response').textContent = 'Screen recording stopped.';
+                
 
-                const subtitleFileName = 'placeholder.csv'; // this needs to come from the web page, and tkinter interface needs to be removed entirely
+
                 onStopRecordingSubmitLessonButton.style.display = 'block';
+                document.getElementById('recorded-subtitle-filename-field').style.display = 'none'; 
+                document.getElementById('recorded-subtitle-filename-field').disabled = true;  
 
+                const subtitleFileName = document.getElementById('recorded-subtitle-filename-field').value;
                 submitButton.setAttribute('data-subtitle', subtitleFileName);
+                document.getElementById('response').innerText = `Screen recording stopped.\nSubtitles saved as ${subtitleFileName}.csv`;
             })
             .catch(error => {
                 document.getElementById('response').textContent = 'Failed to stop recording.';
@@ -569,7 +582,7 @@ function fetchOCRData(time_between_screenshots) {
         .then(response => response.json())
         .then(data => {
             // Update the 'response' div with the OCR data
-            document.getElementById('response').innerText = `Most recent parsed subtitle:\n${data.ocr_text}`;
+            document.getElementById('response').innerText = `Most recent parsed subtitle:\n${data.ocr_text}.csv`;
             // Continue polling after receiving a response
             setTimeout(fetchOCRData, time_between_screenshots * 1000, time_between_screenshots);
         })
@@ -582,7 +595,8 @@ function fetchOCRData(time_between_screenshots) {
 function onStopRecordingSubmitLesson() { // TODO: fix this subtitleFile const to get from a free text div that appears when the begin recording screen button is hit
     const onStopRecordingSubmitLessonButton = document.getElementById('on-stop-recording-submit-lesson-button');
     const subtitleFile = submitButton.getAttribute('data-subtitle');
-    window.location.href = '/lesson?subtitle=${encodeURIComponent(subtitleFile)}&prompt_type=Summary';
+    const encodedSubtitleFile = encodeURIComponent(subtitleFile) + '.csv';
+    window.location.href = `/lesson?subtitle=${encodedSubtitleFile}&prompt_type=Summary`;
 }
 
 function adjustBoundingBox() {

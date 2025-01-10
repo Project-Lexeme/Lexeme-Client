@@ -179,7 +179,9 @@ class ScreenRecorder:
                 return True
             return False
 
-    def log_screencap_subtitles(self) -> None:
+    # TODO: currently, screencap subtitle file is opened and appended with every write. 
+    # this needs to change to having a self.current_recording_subtitles list of subtitles so that the filename isn't needed until recording STOPS
+    def log_screencap_subtitles(self) -> None: 
         text = screenshot_text_extractor.comparative_read_text_from_image(
             filepath=f"{os.getcwd()}/uploads/Screenshot.png", language=self.ocr_lang_code,
             minimum_confidence=self.minimum_confidence,
