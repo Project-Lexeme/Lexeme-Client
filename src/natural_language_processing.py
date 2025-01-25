@@ -1,7 +1,7 @@
 import spacy
 import re
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
+def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language, filter=True) -> list[str]:
     """parses a sentence for a target parts of speech and returns any such tokens, also checking for compound nouns in supported languages
 
     Args:
@@ -12,7 +12,10 @@ def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: s
     Returns:
         list[str]: all instances of the target part of speech in the sentence
     """
-    filtered_sentence: str = filter_different_scripts(sentence, nlp)
+    if filter:
+        filtered_sentence: str = filter_different_scripts(sentence, nlp)
+    else:
+        filtered_sentence = sentence
     parts_of_speech_in_sentence: list[str] = []
     doc = nlp(filtered_sentence)
 
