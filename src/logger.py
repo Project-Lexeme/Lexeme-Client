@@ -18,36 +18,73 @@ def check_for_learner_profile(ocr_lang_code: str):
         with csv_file.open('w') as f:
             f.write('Term,Number of touches,Number correct,Number incorrect\n') 
 
-def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str) -> None: 
+# def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str) -> None: 
+#     '''
+#     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
+    
+#     '''
+#     check_for_learner_profile(ocr_lang_code)
+
+#     touched_terms = pd.read_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv")) # term, no_touches
+#     # indexer = touched_terms.loc[touched_terms['Term'].isin(terms)]
+    
+#     # if len(indexer) == 0: # if term is not in list of terms
+#     term_dictionary_contents = dictionary.get_term_dictionary_contents(terms, ocr_lang_code)
+#         # # need to also concat definition and other language info
+#     to_concat = pd.DataFrame({'Term': terms, on: [1 for i in range(len(terms))]}) # this is going to add 1 to whichever column you passed as 'on'
+#     to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])
+#         # If term_dictionary_contents is not empty, create a DataFrame from it
+#     if len(term_dictionary_contents) > 0:
+#         touched_terms = pd.concat([touched_terms,to_concat],axis=0).reset_index(drop=True)  
+        
+#     # elif len(indexer) == 1: # if term appears in list of terms once, as intended
+#     #     # does not append term dictionary contents
+#     #     touched_terms.loc[touched_terms['Term'] == term, on] += 1
+            
+#     # else: # duplicate entries exist, combine them    
+#     #     summed = sum(touched_terms.loc[touched_terms['Term'] == term, on])
+#     #     touched_terms.drop_duplicates('Term', inplace=True)
+#     #     touched_terms.loc[touched_terms['Term'] == term, on] = summed
+#     touched_terms.drop_duplicates('Term', inplace=True)
+
+#     touched_terms.to_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv"), index=False)
+
+def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str) -> None:
     '''
     on - the column name to increment. So far, 'Number of touches', 'Number correct', 'Number incorrect'
-    
     '''
-    check_for_learner_profile(ocr_lang_code)
+    check_for_learner_profile(ocr_lang_code)  # Assuming this checks if profile exists
 
-    touched_terms = pd.read_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv")) # term, no_touches
-    # indexer = touched_terms.loc[touched_terms['Term'].isin(terms)]
-    
-    # if len(indexer) == 0: # if term is not in list of terms
+    # Read existing learner profile (if it exists)
+    learner_profile_path = os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv")
+    if os.path.exists(learner_profile_path):
+        touched_terms = pd.read_csv(learner_profile_path)
+    else:
+        # If no learner profile exists, create an empty DataFrame to start
+        touched_terms = pd.DataFrame(columns=['Term', on])
+
+    # Fetch term dictionary contents (this will be used for merging additional information)
     term_dictionary_contents = dictionary.get_term_dictionary_contents(terms, ocr_lang_code)
-        # # need to also concat definition and other language info
-    to_concat = pd.DataFrame({'Term': terms, on: [1 for i in range(len(terms))]}) # this is going to add 1 to whichever column you passed as 'on'
-    to_concat = to_concat.merge(term_dictionary_contents, left_on='Term',right_on='term').drop(columns=['term'])
-        # If term_dictionary_contents is not empty, create a DataFrame from it
-    if len(term_dictionary_contents) > 0:
-        touched_terms = pd.concat([touched_terms,to_concat],axis=0).reset_index(drop=True)  
-        
-    # elif len(indexer) == 1: # if term appears in list of terms once, as intended
-    #     # does not append term dictionary contents
-    #     touched_terms.loc[touched_terms['Term'] == term, on] += 1
-            
-    # else: # duplicate entries exist, combine them    
-    #     summed = sum(touched_terms.loc[touched_terms['Term'] == term, on])
-    #     touched_terms.drop_duplicates('Term', inplace=True)
-    #     touched_terms.loc[touched_terms['Term'] == term, on] = summed
-    touched_terms.drop_duplicates('Term', inplace=True)
 
-    touched_terms.to_csv(os.path.join(config.get_data_directory(), f"{ocr_lang_code}_learner_profile.csv"), index=False)
+    # Prepare the DataFrame with the terms and the default value for 'on'
+    to_concat = pd.DataFrame({'Term': terms, on: [1] * len(terms)})
+
+    # If dictionary contents exist, merge them with the terms DataFrame
+    if len(term_dictionary_contents) > 0:
+        # Merge with a left join (all terms included, even if no match in dictionary)
+        to_concat = to_concat.merge(term_dictionary_contents, left_on='Term', right_on='term', how='left').drop(columns=['term'])
+    else:
+        # If no dictionary contents, just ensure terms are added with 'NaN' for missing columns
+        to_concat['definition'] = None  # Assuming you have a column like 'definition' in your dictionary
+
+    # Append the new terms and their data to the learner profile DataFrame
+    touched_terms = pd.concat([touched_terms, to_concat], axis=0).reset_index(drop=True)
+
+    # Handle duplicates by summing the 'on' column for duplicate terms
+    touched_terms = touched_terms.groupby('Term', as_index=False).agg({on: 'sum', 'definition': 'first'})  # Keep the first definition
+
+    # Save the updated learner profile to CSV
+    touched_terms.to_csv(learner_profile_path, index=False)
 
 def get_terms(ocr_lang_code: str, sort_by='weakest', qty=0, all=False):
     """Returns learner profile contents for selected language

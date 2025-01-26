@@ -1,4 +1,4 @@
-from src.startup import get_language_and_proficiency, install_and_load_nlp_lang_from_spacy, load_nlp_lang_from_bootstrapped_models
+from src.startup import get_language_and_proficiency, install_and_load_nlp_lang_from_spacy, load_nlp_lang_from_bootstrapped_models, load_korean_nlp_model
 from src.setup_pytesseract import set_tesseract_cmd, setup_tessdata
 from src.logger import check_for_learner_profile
 
@@ -21,8 +21,14 @@ class LanguageData:
             return False
         
     def load_nlp_lang(self):
-        if self.is_language_bootstrapped:
-            return load_nlp_lang_from_bootstrapped_models(self.nlp_lang_code)
+        if self.language == 'Korean':
+            return load_korean_nlp_model()
+            
         else:
-            return install_and_load_nlp_lang_from_spacy(self.nlp_lang_code)
+            if self.is_language_bootstrapped:
+                return load_nlp_lang_from_bootstrapped_models(self.nlp_lang_code)
+            else:
+                return install_and_load_nlp_lang_from_spacy(self.nlp_lang_code)
+            
+    
         
