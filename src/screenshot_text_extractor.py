@@ -76,7 +76,7 @@ def comparative_read_text_from_image(filepath: str, language: str, number_of_pre
     _, previous_parent_algorithms, previous_parent_params = preprocessed_images[max_index]
     selected_data = param_datas[int(max_index)]
     
-    if language not in ['chi_sim','chi_tra','kor','jpn']: # checks for languages that don't add spaces between characters
+    if language not in ['chi_sim','chi_tra','jpn']: # checks for languages that don't add spaces between characters
         text = ''.join([f'{t} ' for t in selected_data['text']]) # add spaces between characters
     else:
         text = ''.join(selected_data['text']) # no spaces

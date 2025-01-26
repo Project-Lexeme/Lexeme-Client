@@ -5,7 +5,7 @@ from spacy.cli import download
 import os
 from pathlib import Path
 import sys
-
+from konlpy.tag import Kkma
 from src import config
 
 # Initialize the appearance of customtkinter (light, dark, or system theme)
@@ -84,6 +84,11 @@ def load_nlp_lang_from_bootstrapped_models(module_name: str) -> spacy.Language:
     else:
         model_path = os.path.join('models', module_name)
     nlp = remove_excess_nlp_pipeline_parts(spacy.load(model_path))    
+    return nlp
+
+def load_korean_nlp_model():
+    nlp = Kkma()
+    nlp.lang = 'ko' # extend instantiated Kkma to have a .lang attribute in common with SpaCy - probably not pythonic
     return nlp
 
 def remove_excess_nlp_pipeline_parts(nlp_lang: spacy.Language):

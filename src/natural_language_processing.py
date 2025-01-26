@@ -1,7 +1,7 @@
 import spacy
 import re
 
-def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language) -> list[str]:
+def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: spacy.Language, filter=True) -> list[str]:
     """parses a sentence for a target parts of speech and returns any such tokens, also checking for compound nouns in supported languages
 
     Args:
@@ -12,24 +12,34 @@ def find_parts_of_speech_in_sentence(sentence: str, part_of_speech: list, nlp: s
     Returns:
         list[str]: all instances of the target part of speech in the sentence
     """
-    filtered_sentence: str = filter_different_scripts(sentence, nlp)
+    if filter:
+        filtered_sentence: str = filter_different_scripts(sentence, nlp)
+    else:
+        filtered_sentence = sentence
     parts_of_speech_in_sentence: list[str] = []
-    doc = nlp(filtered_sentence)
 
-    # check for compound nouns - not implemented in all spacy languages, (e.g. no support in chinese)
-    try:
-        for chunk in doc.noun_chunks:
-            if chunk.root.pos_ in part_of_speech:
-                parts_of_speech_in_sentence.append(chunk.text)
-    except:
-        pass
-    
-    print_token_attributes(doc)
-    # then parse all tokens regardless of whether they were combined to form compound nouns
-    for token in doc:
-
-        if token.pos_ in part_of_speech:
-            parts_of_speech_in_sentence.append(token.text)
+    if nlp.lang == 'ko': # korean Kkma POS parser uses different methods
+        for term, POS in nlp.pos(sentence):
+            if POS in get_kkma_POS_mapping(part_of_speech):
+                parts_of_speech_in_sentence.append(term) 
+        
+    else:
+        doc = nlp(filtered_sentence)
+        # check for compound nouns - not implemented in all spacy languages, (e.g. no support in chinese)
+        try:
+            for chunk in doc.noun_chunks:
+                if chunk.root.pos_ in part_of_speech:
+                    parts_of_speech_in_sentence.append(chunk.text)
+        except:
+            pass
+        
+        print_token_attributes(doc)
+        # then parse all tokens regardless of whether they were combined to form compound nouns
+        
+        for token in doc:
+            if token.pos_ in part_of_speech:
+                parts_of_speech_in_sentence.append(token.text)
+            
 
     return parts_of_speech_in_sentence
 
@@ -37,7 +47,7 @@ def filter_different_scripts(sentence: str, nlp: spacy.Language) -> str:
     '''
     filter sentence to remove all characters not in a target script
     '''
-    lang = nlp.meta['lang'] # returns two-letter spacy lang code e.g. en for English, fr for French
+    lang = nlp.lang # returns two-letter spacy lang code e.g. en for English, fr for French
     pattern_dict = {'en':'A-Za-zÀ-ÿ ', 'zh':'一-龯 ', 'ko':'가-힣 ', 'ru':'\u0400-\u04FF ', 'ja':'ァ-ヴぁ-ゔー '} # regex patterns that capture each target script INCLUDE A SPACE
     if lang in pattern_dict:
         pattern = pattern_dict[lang]
@@ -53,6 +63,16 @@ def print_token_attributes(doc):
         print(f"Tag: {token.tag_}")
         print(f"POS: {token.pos_}")
         print("-" * 50)
+        
+def get_kkma_POS_mapping(parts_of_speech):
+    kkma_POS_tags = []
+    kkma_POS_mappings = {'NOUN':['NNG','NNP','NNB','NNM','NP','NR','XSN'],
+                         'VERB':['VV','VXV','VXA','VCP','VCN','MDN','MDT'],
+                         'ADJ':['VA'],
+                         'ADV':['MAG','MAJ','MAC']}
+    for POS in parts_of_speech:
+        kkma_POS_tags.extend(kkma_POS_mappings[POS])
+    return kkma_POS_tags
 
 if __name__ == "__main__":
     print(find_parts_of_speech_in_sentence("عبارات کلیدی که به این تم اشاره دارند عبارتند از: «بی نهایت نوستالژیک»، «دوست داشتم»،", ["NOUN", "VERB"], spacy.load("../models/fa_dep_web_sm")))
