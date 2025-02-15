@@ -165,7 +165,7 @@
         <div class="term-cell tooltip" onclick="highlightTerm(this, '{{ terms[i] }}')">
             {{ terms[i] }}
             <span class="tooltiptext">
-            <strong>{{csv_data[0][4] | capitalize}}: </strong> {{ csv_data[i + 1][4] }} <br>
+            <strong>{{csv_data[0][2] | capitalize}}: </strong> {{ csv_data[i + 1][2] }} <br>
             <strong>{{csv_data[0][5] | capitalize}}: </strong> {{ csv_data[i + 1][5] }} <br>
             <strong>{{csv_data[0][6] | capitalize}}: </strong> {{ csv_data[i + 1][6] }} <br>
         {% if csv_data[0][7] and csv_data[i + 1][7] %}
