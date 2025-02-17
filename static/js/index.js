@@ -502,12 +502,15 @@ function submitSubtitleUpload() {
 }   
 
 function takeScreenshot() {
+    const onScreenshotSubmitLessonButton = document.getElementById('on-screenshot-submit-lesson-button');
     fetch('/take-screenshot', {
         method: 'POST'
     })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('response').textContent = data.message;
+            document.getElementById('response').textContent = data.message;  
+            onScreenshotSubmitLessonButton.style.display = 'block';
+
         })
         .catch(error => {
             document.getElementById('response').textContent = 'Failed to take screenshot.';
@@ -579,10 +582,16 @@ function fetchOCRData(time_between_screenshots) {
         });
 }
 
+function onScreenshotSubmitLesson() {
+    const screenshotText = document.getElementById('response').innerText;
+    window.location.href = `/lesson?choice=${encodeURIComponent(screenshotText)}&prompt_type=Definition`; 
+    
+}
+
 function onStopRecordingSubmitLesson() { // TODO: fix this subtitleFile const to get from a free text div that appears when the begin recording screen button is hit
     const onStopRecordingSubmitLessonButton = document.getElementById('on-stop-recording-submit-lesson-button');
     const subtitleFile = submitButton.getAttribute('data-subtitle');
-    window.location.href = '/lesson?subtitle=${encodeURIComponent(subtitleFile)}&prompt_type=Summary';
+    window.location.href = `/lesson?subtitle=${encodeURIComponent(subtitleFile)}&prompt_type=Summary`;
 }
 
 function adjustBoundingBox() {

@@ -171,9 +171,10 @@ def stop_recording():
 
 @app.route('/take-screenshot', methods=['POST'])
 def take_screenshot():
-    if _recorder == None:
-        instantiate_screen_recorder()
+    # if _recorder == None:
+    #     instantiate_screen_recorder()
     try:
+        instantiate_screen_recorder()
         # Create a screenshots directory if it doesn't exist1
         screenshot_dir = 'screenshots'
         os.makedirs(screenshot_dir, exist_ok=True)
@@ -184,11 +185,12 @@ def take_screenshot():
         full_path = os.path.abspath(os.path.join(screenshot_dir, filename))
 
         # Take screenshot
-        _recorder.take_screenshot()
+        text = _recorder.take_screenshot()
+        print(type(text))
 
         return jsonify({
-            'message': filename,
-            'path': full_path,
+            'message': text,
+            #'path': full_path,
             'status': 'success'
         })
     except Exception as e:
