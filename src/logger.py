@@ -42,13 +42,13 @@ def log_terms(terms: list[str], on: str, nlp_lang_code: str, ocr_lang_code: str)
     # If dictionary contents exist, merge them with the terms DataFrame
     if len(term_dictionary_contents) > 0:
         # Merge with a left join (all terms included, even if no match in dictionary)
-        to_concat = to_concat.merge(term_dictionary_contents, left_on='Term', right_on='term', how='right').drop(columns=['term'])
+        to_concat = to_concat.merge(term_dictionary_contents, left_on='Term', right_on='term', how='right')
     else:
         # If no dictionary contents, just ensure terms are added with 'NaN' for missing columns
         to_concat['definition'] = None  # Assuming you have a column like 'definition' in your dictionary
 
     # Append the new terms and their data to the learner profile DataFrame
-    touched_terms = pd.concat([touched_terms, to_concat], axis=0).reset_index(drop=True).fillna(0)
+    touched_terms = pd.concat([touched_terms, to_concat], axis=0).reset_index(drop=True).fillna(0).drop(columns=['term'])
 
     # Handle duplicates by summing the 'on' column for duplicate terms and retaining other columns
     # Here, we keep the first value for each column (definition, other columns, etc.)
