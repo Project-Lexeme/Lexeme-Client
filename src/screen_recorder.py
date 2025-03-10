@@ -149,7 +149,8 @@ class ScreenRecorder:
 
         if len(text) > 0:
             terms = natural_language_processing.find_parts_of_speech_in_sentence(text, ['NOUN', 'ADJ', 'VERB'], self.nlp_model)
-            logger.log_terms(terms, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
+            if len(terms) > 0:
+                logger.log_terms(terms, 'Number of touches', nlp_lang_code=self.nlp_lang_code, ocr_lang_code=self.ocr_lang_code)
         return text
 
     def set_most_recent_text_ocr(self, text):
